@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PodTemplate
+metadata:
+  name: {{ template "fullname" . }}
+spec:
+  volumes:
+  - name: prometheus-data
+    persistentVolumeClaim:
+      claimName: prometheus-data
+  containers:
+  - name: {{ template "fullname" . }}
+    image: prom/prometheus
+    args: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.local.path=/data"]
+    volumeMounts:
+    - name: prometheus-data
+      mountPath: /data

@@ -1,0 +1,26 @@
+replicaCount: 1
+imageRepository: smart-home-assistant
+imageTag: latest
+
+# Database configuration
+database:
+  image: postgres:latest
+  persistence:
+    enabled: true
+  secretName: database-secrets
+
+# Grafana configuration
+grafana:
+  image: grafana/grafana-enterprise
+  serviceName: grafana
+  persistence:
+    enabled: true
+  secretName: grafana-secrets
+
+# Prometheus configuration
+prometheus:
+  image: prom/prometheus
+  serviceName: prometheus
+  persistence:
+    enabled: true
+  secretName: prometheus-secrets

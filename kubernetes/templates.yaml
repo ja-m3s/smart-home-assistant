@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+    spec:
+      containers:
+      - name: {{ template "name" . }}
+        image: {{ .Values.imageRepository }}
+        ports:
+        - containerPort: 80
+          name: http
+        - name: DATABASE_SECRETS_NAMESPACE
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "database.secretName" . }}
+              key: namespace
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "database.secretName" . }}
+              key: password
+        - name: GRAFANA_SECRETS_NAMESPACE
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "grafana.secretName" . }}
+              key: namespace
+        env:
+        - name: GRAFANA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "grafana.secretName" . }}
+              key: password
+        - name: PROMTHEUS_SECRETS_NAMESPACE
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "prometheus.secretName" . }}
+              key: namespace
+        - name: PROMTHEUS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "prometheus.secretName" . }}
+              key: password
