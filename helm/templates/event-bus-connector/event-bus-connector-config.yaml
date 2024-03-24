@@ -13,24 +13,21 @@ data:
      offset.storage.file.filename=/tmp/connect.offsets
      offset.flush.interval.ms=10000
      plugin.path=/opt/bitnami/kafka/plugins
-     topics=connected_components_updates
   postgres.properties: |
     connector.class=io.confluent.connect.jdbc.JdbcSinkConnector
     connection.url=jdbc:postgresql://database-service.default.svc.cluster.local:5432/database_smart_home
     connection.user=event_bus_connector
     connection.password=password
-    topics=connected_components_updates
     tasks.max=1
-    table.name.format=schema_smart_home.connected_components_updates
-    auto.create=false
-    auto.evolve=false
+    table.name.format=schema_smart_home.${topic}
+    auto.create=true
+    auto.evolve=true
     name=kafka-postgres-sink-connector
     pk.mode=none
     delete.enabled=false  
     key.converter=org.apache.kafka.connect.json.JsonConverter
     value.converter=org.apache.kafka.connect.json.JsonConverter
-    key.converter.schemas.enable=true
-    value.converter.schemas.enable=true
     errors.log.enable = true
     errors.log.include.messages = true
+    topics.regex = ^TOPIC.*
 {{- end }}

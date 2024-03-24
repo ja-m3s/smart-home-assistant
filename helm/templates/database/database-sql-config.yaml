@@ -5,27 +5,12 @@ metadata:
   name: database-config
 data:
   database.sql: |
-        -- Create the smart_home database
         CREATE DATABASE database_smart_home;
-
-        -- Switch to the smart_home database
         \c database_smart_home;
-
-        -- Create a schema
         CREATE SCHEMA schema_smart_home;
-
-        -- Create the connected_components_updates table
-        CREATE TABLE  schema_smart_home.connected_components_updates (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            type VARCHAR(50) NOT NULL,
-            current_state VARCHAR(20) NOT NULL CHECK (current_state IN ('off', 'on', 'triggered')),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-
         CREATE USER event_bus_connector WITH PASSWORD 'password';
         GRANT CONNECT ON DATABASE database_smart_home TO event_bus_connector;
         GRANT USAGE ON SCHEMA schema_smart_home TO event_bus_connector;
         GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA schema_smart_home TO event_bus_connector;
-        GRANT USAGE, SELECT ON SEQUENCE schema_smart_home.connected_components_updates_id_seq TO event_bus_connector;
+        GRANT CREATE ON SCHEMA schema_smart_home TO event_bus_connector;
 {{- end }}

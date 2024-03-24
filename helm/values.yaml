@@ -31,7 +31,7 @@ producer:
   port: 9092  
   bootstrapServers: event-bus-service:9092
   groupId: "1"
-  topic: "connected_components_updates"
+  topic: "TOPIC_PRODUCER"
 
 consumer:
   enabled: true
@@ -39,4 +39,4 @@ consumer:
   port: 9092
   bootstrapServers: event-bus-service:9092
   groupId: "1"
-  topic: "connected_components_updates"
+  topic: "TOPIC_PRODUCER"
