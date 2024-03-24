@@ -1,0 +1,12 @@
+# producer-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: producer-service
+spec:
+  selector:
+    app: producer
+  ports:
+    - protocol: TCP
+      port: {{ .Values.producer.port }}
+      targetPort: {{ .Values.producer.port }}

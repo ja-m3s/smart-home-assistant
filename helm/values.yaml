@@ -1,3 +1,27 @@
-postgresPassword: "secure password of your choice"
-imageRepository: localhost:5000
-imageTag: latest
+# values.yaml
+consumer:
+  image: localhost:5000/consumer:latest
+  port: 9092
+
+database:
+  image: localhost:5000/database:latest
+  port: 5432
+  password:
+    # Base64 encoded password
+    value: cGFzc3dvcmQK
+
+eventBus:
+  image: localhost:5000/event-bus:latest
+  kafkaPort: 9092
+  controllerPort: 9093
+  connectorPort: 8083
+
+kafkaConnect:
+  image: localhost:5000/kafka-connect:latest
+  port: 9092
+  controllerPort: 9093
+  connectorPort: 8083
+
+producer:
+  image: localhost:5000/producer:latest
+  port: 9092

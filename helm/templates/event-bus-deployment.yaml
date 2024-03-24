@@ -1,0 +1,22 @@
+# event-bus-server.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-bus-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-bus-server
+  template:
+    metadata:
+      labels:
+        app: event-bus-server
+    spec:
+      containers:
+        - name: event-bus-server-container
+          image: {{ .Values.eventBus.image }}
+          ports:
+            - containerPort: {{ .Values.eventBus.kafkaPort }}
+            - containerPort: {{ .Values.eventBus.controllerPort }}
+            - containerPort: {{ .Values.eventBus.connectorPort }}

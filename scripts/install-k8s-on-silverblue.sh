@@ -2,7 +2,7 @@
 #   Name: install-local-k8s-on-silverblue.sh
 #   Description: Installs K8S on a local machine for development purposes
 #   Notes: Tested on Fedora Silverblue only.
-#   Author: jam3s
+#   Author: ja-m3s
 
 set -eux
 

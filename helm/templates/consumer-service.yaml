@@ -1,0 +1,12 @@
+# consumer-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: consumer-service
+spec:
+  selector:
+    app: consumer
+  ports:
+    - protocol: TCP
+      port: {{ .Values.consumer.port }}
+      targetPort: {{ .Values.consumer.port }}

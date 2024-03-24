@@ -6,5 +6,4 @@
 set -eux
 
 #Create all app components in k8s
-#Suppress error in case new apps are deployed.
-kubectl delete -f ../kubernetes | true
+kubectl delete -f ../kubernetes

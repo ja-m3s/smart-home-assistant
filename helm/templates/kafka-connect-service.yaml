@@ -1,0 +1,22 @@
+# kafka-connect-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-connect-service
+spec:
+  selector:
+    app: kafka-connect-server
+  ports:
+    - name: kafka
+      protocol: TCP
+      port: {{ .Values.kafkaConnect.port }}
+      targetPort: {{ .Values.kafkaConnect.port }}
+    - name: controller
+      protocol: TCP
+      port: {{ .Values.kafkaConnect.controllerPort }}
+      targetPort: {{ .Values.kafkaConnect.controllerPort }}
+    - name: connector
+      protocol: TCP
+      port: {{ .Values.kafkaConnect.connectorPort }}
+      targetPort: {{ .Values.kafkaConnect.connectorPort }}
+  type: ClusterIP

@@ -1,0 +1,22 @@
+# event-bus-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-bus-service
+spec:
+  selector:
+    app: event-bus-server
+  ports:
+    - name: kafka
+      protocol: TCP
+      port: {{ .Values.eventBus.kafkaPort }}
+      targetPort: {{ .Values.eventBus.kafkaPort }}
+    - name: controller
+      protocol: TCP
+      port: {{ .Values.eventBus.controllerPort }}
+      targetPort: {{ .Values.eventBus.controllerPort }}
+    - name: connector
+      protocol: TCP
+      port: {{ .Values.eventBus.connectorPort }}
+      targetPort: {{ .Values.eventBus.connectorPort }}
+  type: ClusterIP
