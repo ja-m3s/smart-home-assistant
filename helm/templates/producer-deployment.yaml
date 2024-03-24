@@ -1,4 +1,4 @@
-# producer-deployment.yaml
+{{- if .Values.producer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,3 +18,11 @@ spec:
           image: {{ .Values.producer.image }}
           ports:
             - containerPort: {{ .Values.producer.port }}
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: {{ .Values.producer.bootstrapServers }}
+            - name: GROUP_ID
+              value: "{{ .Values.producer.groupId }}"
+            - name: TOPIC
+              value: {{ .Values.producer.topic }}
+{{- end }}

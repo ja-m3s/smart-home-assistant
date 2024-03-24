@@ -1,4 +1,4 @@
-# database-deployment.yaml
+{{- if .Values.database.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,7 +20,5 @@ spec:
             - containerPort: {{ .Values.database.port }}
           env:
             - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: database-password
-                  key: password
+              value: {{ .Values.database.password }}
+{{- end }}

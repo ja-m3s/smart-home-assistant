@@ -1,10 +1,6 @@
+import os
 from confluent_kafka import Consumer, KafkaError
 import sys
-
-# Kafka broker configuration
-bootstrap_servers = 'event-bus-service.default.svc.cluster.local:9092'
-group_id = '1'
-topic = 'connected_components_updates'
 
 # Function to print messages
 def print_message(message):
@@ -13,6 +9,10 @@ def print_message(message):
 
 # Function to consume messages from Kafka topic
 def consume_messages():
+    bootstrap_servers = os.getenv('BOOTSTRAP_SERVERS')
+    group_id = os.getenv('GROUP_ID')
+    topic = os.getenv('TOPIC')
+
     consumer = Consumer({
         'bootstrap.servers': bootstrap_servers,
         'group.id': group_id,

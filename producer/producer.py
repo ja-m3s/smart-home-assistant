@@ -3,10 +3,11 @@ import json
 import time
 import random
 import sys
+import os
 
 # Kafka broker configuration
-bootstrap_servers = 'event-bus-service.default.svc.cluster.local:9092'
-topic = 'connected_components_updates'
+bootstrap_servers = os.getenv('BOOTSTRAP_SERVERS')
+topic = os.getenv('TOPIC')
 
 # Function to print messages
 def print_message(message):

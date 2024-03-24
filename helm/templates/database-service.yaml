@@ -1,4 +1,4 @@
-# database-service.yaml
+{{- if .Values.database.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,4 +10,5 @@ spec:
     - name: database
       protocol: TCP
       port: {{ .Values.database.port }}
-      targetPort: {{ .Values.database.port }}
+      targetPort: {{ .Values.database.port }}      
+{{- end }}

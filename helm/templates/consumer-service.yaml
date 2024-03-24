@@ -1,4 +1,4 @@
-# consumer-service.yaml
+{{- if .Values.consumer.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,3 +10,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.consumer.port }}
       targetPort: {{ .Values.consumer.port }}
+{{- end }}

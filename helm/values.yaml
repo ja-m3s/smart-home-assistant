@@ -1,27 +1,50 @@
 # values.yaml
-consumer:
-  image: localhost:5000/consumer:latest
-  port: 9092
-
 database:
+  enabled: true
   image: localhost:5000/database:latest
   port: 5432
-  password:
-    # Base64 encoded password
-    value: cGFzc3dvcmQK
+  password: password
 
 eventBus:
+  enabled: true
   image: localhost:5000/event-bus:latest
   kafkaPort: 9092
   controllerPort: 9093
-  connectorPort: 8083
+  clusterId: "1"
+  nodeId: "0"
+  processRoles: "controller,broker"
+  listeners: "PLAINTEXT://:9092,CONTROLLER://:9093"
+  listenerSecurityProtocolMap: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+  controllerQuorumVoters: "0@event-bus-service:9093"
+  controllerListenerNames: "CONTROLLER"
+  hostname: "event-bus-service"
 
-kafkaConnect:
-  image: localhost:5000/kafka-connect:latest
-  port: 9092
+eventBusConnector:
+  enabled: true
+  image: localhost:5000/event-bus-connector:latest
+  kafkaPort: 9092
   controllerPort: 9093
   connectorPort: 8083
+  hostname: "event-bus-connector-service"
 
 producer:
+  enabled: true
   image: localhost:5000/producer:latest
+  port: 9092  
+  #bootstrapServers: event-bus-service.default.svc.cluster.local:9092
+  bootstrapServers: event-bus-service:9092
+  #bootstrapServers: event-bus-connector-service:9092
+  groupId: "1"
+  topic: "connected_components_updates"
+
+consumer:
+  enabled: true
+  image: localhost:5000/consumer:latest
   port: 9092
+  bootstrapServers: event-bus-service:9092
+  #bootstrapServers: event-bus-service.default.svc.cluster.local:9092
+  #bootstrapServers: event-bus-connector-service:9092
+  groupId: "1"
+  topic: "connected_components_updates"
+
+

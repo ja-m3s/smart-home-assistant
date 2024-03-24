@@ -1,4 +1,4 @@
-# event-bus-service.yaml
+{{- if .Values.eventBus.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -15,8 +15,5 @@ spec:
       protocol: TCP
       port: {{ .Values.eventBus.controllerPort }}
       targetPort: {{ .Values.eventBus.controllerPort }}
-    - name: connector
-      protocol: TCP
-      port: {{ .Values.eventBus.connectorPort }}
-      targetPort: {{ .Values.eventBus.connectorPort }}
   type: ClusterIP
+  {{- end }}

@@ -1,4 +1,4 @@
-# templates/consumer-deployment.yaml
+{{- if .Values.consumer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,3 +18,11 @@ spec:
           image: {{ .Values.consumer.image }}
           ports:
             - containerPort: {{ .Values.consumer.port }}
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: {{ .Values.consumer.bootstrapServers }}
+            - name: GROUP_ID
+              value: "{{ .Values.consumer.groupId }}"
+            - name: TOPIC
+              value: {{ .Values.consumer.topic }}
+{{- end }}
