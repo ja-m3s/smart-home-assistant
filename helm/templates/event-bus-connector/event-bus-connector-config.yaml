@@ -15,11 +15,11 @@ data:
      plugin.path=/opt/bitnami/kafka/plugins
   postgres.properties: |
     connector.class=io.confluent.connect.jdbc.JdbcSinkConnector
-    connection.url=jdbc:postgresql://database-service.default.svc.cluster.local:5432/database_smart_home
+    connection.url=jdbc:postgresql://database-service.default.svc.cluster.local:5432/db_smart_home
     connection.user=event_bus_connector
     connection.password=password
     tasks.max=1
-    table.name.format=schema_smart_home.${topic}
+    table.name.format=s_smart_home.\${topic}
     auto.create=true
     auto.evolve=true
     name=kafka-postgres-sink-connector
@@ -29,5 +29,5 @@ data:
     value.converter=org.apache.kafka.connect.json.JsonConverter
     errors.log.enable = true
     errors.log.include.messages = true
-    topics.regex = ^TOPIC.*
+    topics.regex =^topic.*
 {{- end }}

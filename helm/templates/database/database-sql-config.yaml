@@ -5,12 +5,11 @@ metadata:
   name: database-config
 data:
   database.sql: |
-        CREATE DATABASE database_smart_home;
-        \c database_smart_home;
-        CREATE SCHEMA schema_smart_home;
+        CREATE DATABASE db_smart_home;
+        \c db_smart_home;
+        CREATE SCHEMA s_smart_home;
         CREATE USER event_bus_connector WITH PASSWORD 'password';
-        GRANT CONNECT ON DATABASE database_smart_home TO event_bus_connector;
-        GRANT USAGE ON SCHEMA schema_smart_home TO event_bus_connector;
-        GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA schema_smart_home TO event_bus_connector;
-        GRANT CREATE ON SCHEMA schema_smart_home TO event_bus_connector;
+        GRANT CONNECT ON DATABASE db_smart_home TO event_bus_connector;
+        GRANT USAGE ON SCHEMA s_smart_home TO event_bus_connector;
+        GRANT CREATE ON SCHEMA s_smart_home TO event_bus_connector;
 {{- end }}
