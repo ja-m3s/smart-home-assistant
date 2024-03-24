@@ -2,16 +2,9 @@
 #   Name: install-local-k8s-on-silverblue.sh
 #   Description: Installs K8S on a local machine for development purposes
 #   Notes: Tested on Fedora Silverblue only.
+#          RUN AS ROOT
 #   Author: ja-m3s
-
 set -eux
-
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-# shellcheck disable=SC1091
-source "${SCRIPT_DIR}/env.sh"
-
-# Check if the script is run as root
-check_root
 
 #Clear old configuration
 mkdir -p /OLD_K8S_CONFIG

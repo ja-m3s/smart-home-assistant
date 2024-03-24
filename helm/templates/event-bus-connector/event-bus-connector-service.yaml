@@ -7,14 +7,6 @@ spec:
   selector:
     app: event-bus-connector-server
   ports:
-    - name: kafka
-      protocol: TCP
-      port: {{ .Values.eventBusConnector.kafkaPort }}
-      targetPort: {{ .Values.eventBusConnector.kafkaPort }}
-    - name: controller
-      protocol: TCP
-      port: {{ .Values.eventBusConnector.controllerPort }}
-      targetPort: {{ .Values.eventBusConnector.controllerPort }}
     - name: connector
       protocol: TCP
       port: {{ .Values.eventBusConnector.connectorPort }}

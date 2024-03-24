@@ -1,7 +1,6 @@
 # Chart.yaml
 apiVersion: v2
-name: smart_home
+name: smart_home_assistant
 description: A Helm chart for an smart_home application
 version: 0.1.0
-#deploy with helm install my-release .
-# or helm install .
+

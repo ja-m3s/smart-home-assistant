@@ -16,4 +16,4 @@ spec:
       port: {{ .Values.eventBus.controllerPort }}
       targetPort: {{ .Values.eventBus.controllerPort }}
   type: ClusterIP
-  {{- end }}
+{{- end }}

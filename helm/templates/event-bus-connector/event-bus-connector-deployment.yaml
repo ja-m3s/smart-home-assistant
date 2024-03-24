@@ -23,14 +23,12 @@ spec:
               /opt/bitnami/kafka/bin/connect-standalone.sh /config/connect-standalone.properties /config/postgres.properties
           image: {{ .Values.eventBusConnector.image }}
           ports:
-            - containerPort: {{ .Values.eventBusConnector.kafkaPort }}
-            - containerPort: {{ .Values.eventBusConnector.controllerPort }}
             - containerPort: {{ .Values.eventBusConnector.connectorPort }}
           volumeMounts:
-            - name: connector-config
+            - name: event-bus-connector-config
               mountPath: /config
       volumes:
-        - name: connector-config
+        - name: event-bus-connector-config
           configMap:
-            name: connector-config
+            name: event-bus-connector-config
 {{- end }}

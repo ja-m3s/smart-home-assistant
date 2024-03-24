@@ -21,4 +21,11 @@ spec:
           env:
             - name: POSTGRES_PASSWORD
               value: {{ .Values.database.password }}
+          volumeMounts:
+            - name: database-config
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: database-config
+          configMap:
+            name: database-config
 {{- end }}

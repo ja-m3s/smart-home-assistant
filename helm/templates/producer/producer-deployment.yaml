@@ -15,6 +15,9 @@ spec:
     spec:
       containers:
         - name: producer-container
+          command:
+            - "python"
+            - "/app/producer.py"
           image: {{ .Values.producer.image }}
           ports:
             - containerPort: {{ .Values.producer.port }}
@@ -25,4 +28,11 @@ spec:
               value: "{{ .Values.producer.groupId }}"
             - name: TOPIC
               value: {{ .Values.producer.topic }}
+          volumeMounts:
+            - name: producer-python-config
+              mountPath: /app
+      volumes:
+        - name: producer-python-config
+          configMap:
+            name: producer-python-config
 {{- end }}

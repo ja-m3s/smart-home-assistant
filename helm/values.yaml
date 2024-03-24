@@ -1,13 +1,13 @@
 # values.yaml
 database:
   enabled: true
-  image: localhost:5000/database:latest
+  image: postgres:latest
   port: 5432
   password: password
 
 eventBus:
   enabled: true
-  image: localhost:5000/event-bus:latest
+  image: bitnami/kafka:latest
   kafkaPort: 9092
   controllerPort: 9093
   clusterId: "1"
@@ -22,29 +22,21 @@ eventBus:
 eventBusConnector:
   enabled: true
   image: localhost:5000/event-bus-connector:latest
-  kafkaPort: 9092
-  controllerPort: 9093
   connectorPort: 8083
   hostname: "event-bus-connector-service"
 
 producer:
   enabled: true
-  image: localhost:5000/producer:latest
+  image: localhost:5000/python-custom:latest
   port: 9092  
-  #bootstrapServers: event-bus-service.default.svc.cluster.local:9092
   bootstrapServers: event-bus-service:9092
-  #bootstrapServers: event-bus-connector-service:9092
   groupId: "1"
   topic: "connected_components_updates"
 
 consumer:
   enabled: true
-  image: localhost:5000/consumer:latest
+  image: localhost:5000/python-custom:latest
   port: 9092
   bootstrapServers: event-bus-service:9092
-  #bootstrapServers: event-bus-service.default.svc.cluster.local:9092
-  #bootstrapServers: event-bus-connector-service:9092
   groupId: "1"
   topic: "connected_components_updates"
-
-
