@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-connect-server
+spec:
+  replicas: 1  # Adjust the number of replicas as needed
+  selector:
+    matchLabels:
+      app: kafka-connect-server
+  template:
+    metadata:
+      labels:
+        app: kafka-connect-server
+    spec:
+      hostname: kafka-connect-service
+      containers:
+      - name: kafka-connect-container
+        image: localhost:5000/kafka-connect:latest
+        ports:
+        - containerPort: 9092
+        - containerPort: 9093
+        - containerPort: 8083

@@ -1,5 +1,5 @@
 FROM postgres:latest
 
-COPY create_table.sql /docker-entrypoint-initdb.d/
+COPY schema.sql /docker-entrypoint-initdb.d/
 
 EXPOSE 5432

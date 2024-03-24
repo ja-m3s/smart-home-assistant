@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-bus-service
+spec:
+  selector:
+    app: event-bus-server
+  ports:
+  - name: kafka
+    protocol: TCP
+    port: 9092
+    targetPort: 9092
+  - name: controller
+    protocol: TCP
+    port: 9093
+    targetPort: 9093
+  - name: connector
+    protocol: TCP
+    port: 8083
+    targetPort: 8083
+  type: ClusterIP  # Change type if necessary (e.g., LoadBalancer, NodePort)

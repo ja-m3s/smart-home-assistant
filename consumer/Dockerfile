@@ -1,7 +1,11 @@
 FROM python:3.8-slim
 
-RUN pip install kafka-python
+RUN pip install confluent_kafka
 
-COPY ./kafka_consumer.py /app/kafka_consumer.py
+WORKDIR /app
+
+COPY ./consumer.py /app/consumer.py
 
 EXPOSE 9092
+
+CMD ["python", "consumer.py"]

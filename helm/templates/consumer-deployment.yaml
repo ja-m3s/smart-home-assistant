@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "my-kafka-chart.fullname" . }}-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+      - name: consumer-container
+        image: {{ .Values.imageRepository }}/consumer:{{ .Values.imageTag }}
+        ports:
+        - containerPort: 9092
