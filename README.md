@@ -7,16 +7,16 @@ of the proposed project
 
 ## Project Layout
 
-/docker - custom docker configuration
-/helm - application configuration
-/scripts - helper scripts to aid with marshalling/unmarshalling/building the applications
+- /docker - custom docker configuration
+- /helm - application configuration
+- /scripts - helper scripts to aid with marshalling/unmarshalling/building the applications
 
 ## Technology Stack
 
-The producer and consumer programs use python.
-The event bus and event bus connectors utilize Apache Kafka.
-The database backend uses postgres.
-All sit upon a kubernetes cluster.
+- The producer and consumer programs use python.
+- The event bus and event bus connectors utilize Apache Kafka.
+- The database backend uses postgres.
+- All sit upon a kubernetes cluster.
 
 ## Configuration
 
