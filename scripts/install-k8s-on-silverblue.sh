@@ -7,6 +7,7 @@
 set -eux
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# shellcheck disable=SC1091
 source "${SCRIPT_DIR}/env.sh"
 
 # Check if the script is run as root
@@ -62,9 +63,9 @@ sudo systemctl enable --now kubelet
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
 #Setup kubectl for access to the local cluster for user
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+mkdir -p "${HOME}/.kube"
+sudo cp -i /etc/kubernetes/admin.conf "${HOME}/.kube/config"
+sudo chown "$(id -u):$(id -g)" "${HOME}/.kube/config"
 
 #Permit pods to be created on the same node as the control plane
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-

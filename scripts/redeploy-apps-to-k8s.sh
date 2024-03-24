@@ -9,6 +9,7 @@ set -eux
 
 # Source environment variables
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+# shellcheck disable=SC1091
 source "${SCRIPT_DIR}/env.sh"
 
 #Check running as root

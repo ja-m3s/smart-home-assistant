@@ -3,6 +3,7 @@
 #   Description: Convenient place to put well known configuration
 #   Author: ja-m3s
 
+# shellcheck disable=SC2034
 REGISTRY=127.0.0.1;
 REGISTRY_PORT=5000;
 

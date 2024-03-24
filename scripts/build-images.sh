@@ -8,6 +8,7 @@ set -eux
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
 # Source environment variables
+# shellcheck disable=SC1091
 source "${SCRIPT_DIR}/env.sh"
 
 # Function to build and push Docker images
