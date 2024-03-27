@@ -24,8 +24,6 @@ spec:
           env:
             - name: BOOTSTRAP_SERVERS
               value: {{ .Values.producer.bootstrapServers }}
-            - name: GROUP_ID
-              value: "{{ .Values.producer.groupId }}"
             - name: TOPIC
               value: {{ .Values.producer.topic }}
           volumeMounts:

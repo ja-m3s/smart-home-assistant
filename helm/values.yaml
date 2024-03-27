@@ -30,7 +30,6 @@ producer:
   image: localhost:5000/python-custom:latest
   port: 9092  
   bootstrapServers: event-bus-service:9092
-  groupId: "1"
   topic: "topic_producer"
 
 consumer:

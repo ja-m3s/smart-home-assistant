@@ -6,6 +6,18 @@
 #   Author: ja-m3s
 set -eux
 
+# Check if the script is run as root
+if [[ $(id -u) -ne 0 ]]; then
+    echo "This script must be run as root"
+    exit 1
+fi
+
+# Check if rpm-ostree is installed
+if ! command -v rpm-ostree &>/dev/null; then
+    echo "rpm-ostree is not installed. Please install rpm-ostree to proceed."
+    exit 1
+fi
+
 #Clear old configuration
 mkdir -p /OLD_K8S_CONFIG
 sudo mv /etc/kubernetes /OLD_K8S_CONFIG/ || true
