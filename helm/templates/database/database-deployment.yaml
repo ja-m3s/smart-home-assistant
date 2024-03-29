@@ -21,6 +21,12 @@ spec:
           env:
             - name: POSTGRES_PASSWORD
               value: {{ .Values.database.postgresUserPassword }}
+            - name: DB_NAME
+              value: {{ .Values.dbconf.dbName }}
+            - name: DB_USER
+              value: {{ .Values.dbconf.dbUser }}
+            - name: DB_PASSWORD
+              value: {{ .Values.dbconf.dbUserPassword }}
           volumeMounts:
             - name: database-config
               mountPath: /docker-entrypoint-initdb.d

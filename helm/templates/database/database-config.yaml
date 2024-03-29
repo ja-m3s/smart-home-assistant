@@ -4,21 +4,5 @@ kind: ConfigMap
 metadata:
   name: database-config
 data:
-  database.sql: |
-        CREATE DATABASE {{ .Values.dbconf.dbName }};
-        \c {{ .Values.dbconf.dbName }};
-        CREATE SCHEMA s_smart_home;
-        CREATE USER {{ .Values.dbconf.dbUser }} WITH PASSWORD '{{ .Values.dbconf.dbUserPassword }}';
-        GRANT CONNECT ON DATABASE {{ .Values.dbconf.dbName }} TO {{ .Values.dbconf.dbUser }};
-        GRANT USAGE ON SCHEMA s_smart_home TO {{ .Values.dbconf.dbUser }};
-        CREATE TABLE s_smart_home.messages (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(255),
-            type VARCHAR(255),
-            current_state VARCHAR(255),
-            received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        GRANT INSERT ON s_smart_home.messages TO event_bus_connector;
-        GRANT USAGE, SELECT ON SEQUENCE s_smart_home.messages_id_seq TO event_bus_connector;
-
+{{ (.Files.Glob "raw-files/database/*.sh").AsConfig | indent 2  }}
 {{- end }}
