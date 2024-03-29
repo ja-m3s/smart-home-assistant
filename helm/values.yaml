@@ -3,7 +3,9 @@ database:
   enabled: true
   image: postgres:latest
   port: 5432
-  password: password
+  postgresUserPassword: password
+  dbUser: event_bus_connector
+  dbUserPassword: password
 
 eventBus:
   enabled: true
@@ -21,20 +23,23 @@ eventBus:
 
 eventBusConnector:
   enabled: true
-  image: localhost:5000/event-bus-connector:latest
+  image: localhost:32000/event-bus-connector:latest
   connectorPort: 8083
   hostname: "event-bus-connector-service"
+  dbUser: event_bus_connector
+  dbConnectionString: jdbc:postgresql://database-service.default.svc.cluster.local:5432/db_smart_home
+  dbUserPassword: password
 
 producer:
   enabled: true
-  image: localhost:5000/python-custom:latest
+  image: localhost:32000/python-custom:latest
   port: 9092  
   bootstrapServers: event-bus-service:9092
   topic: "topic_producer"
 
 consumer:
   enabled: true
-  image: localhost:5000/python-custom:latest
+  image: localhost:32000/python-custom:latest
   port: 9092
   bootstrapServers: event-bus-service:9092
   groupId: "1"
