@@ -17,7 +17,7 @@ spec:
         - name: database-container
           image: {{ .Values.database.image }}
           ports:
-            - containerPort: {{ .Values.database.port }}
+            - containerPort: {{ .Values.dbconf.dbPort }}
           env:
             - name: POSTGRES_PASSWORD
               value: {{ .Values.database.postgresUserPassword }}

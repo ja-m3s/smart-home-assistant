@@ -5,12 +5,12 @@ metadata:
   name: database-config
 data:
   database.sql: |
-        CREATE DATABASE db_smart_home;
-        \c db_smart_home;
+        CREATE DATABASE {{ .Values.dbconf.dbName }};
+        \c {{ .Values.dbconf.dbName }};
         CREATE SCHEMA s_smart_home;
-        CREATE USER {{ .Values.consumerDb.dbUser }} WITH PASSWORD '{{ .Values.consumerDb.dbUserPassword }}';
-        GRANT CONNECT ON DATABASE db_smart_home TO {{ .Values.consumerDb.dbUser }};
-        GRANT USAGE ON SCHEMA s_smart_home TO {{ .Values.consumerDb.dbUser }};
+        CREATE USER {{ .Values.dbconf.dbUser }} WITH PASSWORD '{{ .Values.dbconf.dbUserPassword }}';
+        GRANT CONNECT ON DATABASE {{ .Values.dbconf.dbName }} TO {{ .Values.dbconf.dbUser }};
+        GRANT USAGE ON SCHEMA s_smart_home TO {{ .Values.dbconf.dbUser }};
         CREATE TABLE s_smart_home.messages (
             id SERIAL PRIMARY KEY,
             name VARCHAR(255),

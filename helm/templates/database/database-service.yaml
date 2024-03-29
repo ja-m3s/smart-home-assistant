@@ -9,6 +9,6 @@ spec:
   ports:
     - name: database
       protocol: TCP
-      port: {{ .Values.database.port }}
-      targetPort: {{ .Values.database.port }}      
+      port: {{ .Values.dbconf.dbPort }}
+      targetPort: {{ .Values.dbconf.dbPort }}      
 {{- end }}

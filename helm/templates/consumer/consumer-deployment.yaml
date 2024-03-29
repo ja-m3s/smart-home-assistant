@@ -20,18 +20,18 @@ spec:
             - "/app/consumer.py"
           image: {{ .Values.consumer.image }}
           ports:
-            - containerPort: {{ .Values.consumer.port }}
+            - containerPort: {{ .Values.rabbitmq.port }}
           env:
             - name: RABBITMQ_HOST
-              value: {{ .Values.producer.host }}
+              value: {{ .Values.rabbitmq.host }}
             - name: RABBITMQ_PORT
-              value: "{{ .Values.producer.port }}"
+              value: "{{ .Values.rabbitmq.port }}"
             - name: RABBITMQ_USER
-              value: {{ .Values.producer.user }}
+              value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_PASS
-              value: {{ .Values.producer.pass }}
+              value: {{ .Values.rabbitmq.pass }}
             - name: RABBITMQ_QUEUE
-              value: {{ .Values.producer.queue }}
+              value: {{ .Values.consumer.queue }}
           volumeMounts:
             - name: consumer-python-config
               mountPath: /app

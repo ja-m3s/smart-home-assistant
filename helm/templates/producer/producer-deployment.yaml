@@ -20,16 +20,16 @@ spec:
             - "/app/producer.py"
           image: {{ .Values.producer.image }}
           ports:
-            - containerPort: {{ .Values.producer.port }}
+            - containerPort: {{ .Values.rabbitmq.port }}
           env:
             - name: RABBITMQ_HOST
-              value: {{ .Values.producer.host }}
+              value: {{ .Values.rabbitmq.host }}
             - name: RABBITMQ_PORT
-              value: "{{ .Values.producer.port }}"
+              value: "{{ .Values.rabbitmq.port }}"
             - name: RABBITMQ_USER
-              value: {{ .Values.producer.user }}
+              value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_PASS
-              value: {{ .Values.producer.pass }}
+              value: {{ .Values.rabbitmq.pass }}
             - name: RABBITMQ_QUEUE
               value: {{ .Values.producer.queue }}
           volumeMounts:

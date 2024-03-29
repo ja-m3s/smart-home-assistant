@@ -8,6 +8,6 @@ spec:
     app: producer
   ports:
     - protocol: TCP
-      port: {{ .Values.producer.port }}
-      targetPort: {{ .Values.producer.port }}
+      port: {{ .Values.rabbitmq.port }}
+      targetPort: {{ .Values.rabbitmq.port }}
 {{- end }}

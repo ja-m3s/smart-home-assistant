@@ -2,22 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: event-bus-server
+  name: event-bus-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: event-bus-server
+      app: event-bus
   template:
     metadata:
       labels:
-        app: event-bus-server
+        app: event-bus
     spec:
-      hostname: {{ .Values.eventBus.hostname }}
       containers:
         - name: event-bus-server-container
           image: {{ .Values.eventBus.image }}
           ports:
             - name: port
-              containerPort: {{ .Values.eventBus.port }}
+              containerPort: {{ .Values.rabbitmq.port }}
 {{- end }}

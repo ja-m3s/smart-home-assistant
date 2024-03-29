@@ -1,46 +1,40 @@
 # values.yaml
+
+#shared values for rabbitmq
+rabbitmq:
+  host: event-bus-service
+  port: "5672"  
+  user: guest
+  pass: guest
+
+#shared values for database 
+dbconf:
+  dbUser: event_bus_connector
+  dbUserPassword: password
+  dbPort: "5432"
+  dbName: db_smart_home
+  dbHost: database-service.default.svc.cluster.local
+
 database:
   enabled: true
   image: postgres:latest
-  port: 5432
   postgresUserPassword: password
-  dbUser: event_bus_connector
-  dbUserPassword: password
 
 consumerDb:
   enabled: true
   image: localhost:32000/python-custom:latest
-  host: event-bus-service
-  port: "5672"  
-  user: guest
-  pass: guest
   queue: "topic_producer"
-  dbUser: event_bus_connector
-  dbHost: database-service.default.svc.cluster.local
-  dbPort: "5432"
-  dbName: db_smart_home
-  dbUserPassword: password
 
 eventBus:
   enabled: true
   image: rabbitmq:3.8
-  port: 5672
-  hostname: "event-bus-service"
 
 producer:
   enabled: true
   image: localhost:32000/python-custom:latest
-  host: event-bus-service
-  port: "5672"  
-  user: guest
-  pass: guest
   queue: "topic_producer"
 
 consumer:
   enabled: true
   image: localhost:32000/python-custom:latest
-  host: event-bus-service
-  port: "5672"  
-  user: guest
-  pass: guest
   queue: "topic_producer"

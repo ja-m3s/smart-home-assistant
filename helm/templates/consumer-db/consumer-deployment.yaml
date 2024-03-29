@@ -19,28 +19,28 @@ spec:
             - "/app/consumer-db.py"
           image: {{ .Values.consumerDb.image }}
           ports:
-            - containerPort: {{ .Values.consumerDb.port }}
+            - containerPort: {{ .Values.dbconf.dbPort }}
           env:
             - name: RABBITMQ_HOST
-              value: {{ .Values.producer.host }}
+              value: {{ .Values.rabbitmq.host }}
             - name: RABBITMQ_PORT
-              value: "{{ .Values.producer.port }}"
+              value: "{{ .Values.rabbitmq.port }}"
             - name: RABBITMQ_USER
-              value: {{ .Values.producer.user }}
+              value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_PASS
-              value: {{ .Values.producer.pass }}
+              value: {{ .Values.rabbitmq.pass }}
             - name: RABBITMQ_QUEUE
-              value: {{ .Values.producer.queue }}
+              value: {{ .Values.consumerDb.queue }}
             - name: DB_HOST
-              value: {{ .Values.consumerDb.dbHost }}
+              value: {{ .Values.dbconf.dbHost }}
             - name: DB_PORT
-              value: "{{ .Values.consumerDb.dbPort }}"
+              value: "{{ .Values.dbconf.dbPort }}"
             - name: DB_NAME
-              value: {{ .Values.consumerDb.dbName }}
+              value: {{ .Values.dbconf.dbName }}
             - name: DB_USER
-              value: {{ .Values.consumerDb.dbUser }}
+              value: {{ .Values.dbconf.dbUser }}
             - name: DB_PASSWORD
-              value: {{ .Values.consumerDb.dbUserPassword }}
+              value: {{ .Values.dbconf.dbUserPassword }}
           volumeMounts:
             - name: consumer-db-python-config
               mountPath: /app

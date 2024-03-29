@@ -8,6 +8,6 @@ spec:
     app: consumer
   ports:
     - protocol: TCP
-      port: {{ .Values.consumer.port }}
-      targetPort: {{ .Values.consumer.port }}
+      port: {{ .Values.rabbitmq.port }}
+      targetPort: {{ .Values.rabbitmq.port }}
 {{- end }}

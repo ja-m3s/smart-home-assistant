@@ -5,11 +5,11 @@ metadata:
   name: event-bus-service
 spec:
   selector:
-    app: event-bus-server
+    app: event-bus
   ports:
-    - name: kafka
+    - name: rabbitmq
       protocol: TCP
-      port: {{ .Values.eventBus.port }}
-      targetPort: {{ .Values.eventBus.port }}
+      port: {{ .Values.rabbitmq.port }}
+      targetPort: {{ .Values.rabbitmq.port }}
   type: ClusterIP
 {{- end }}
