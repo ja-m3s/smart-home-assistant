@@ -1,0 +1,8 @@
+{{- if .Values.consumerDb.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: consumer-db-python-config
+data:
+{{ (.Files.Glob "raw-files/consumer-db/*.py").AsConfig | indent 2  }}
+{{- end }}

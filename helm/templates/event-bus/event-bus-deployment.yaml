@@ -18,23 +18,6 @@ spec:
         - name: event-bus-server-container
           image: {{ .Values.eventBus.image }}
           ports:
-            - name: kafka
-              containerPort: {{ .Values.eventBus.kafkaPort }}
-            - name: controller
-              containerPort: {{ .Values.eventBus.controllerPort }}
-          env:
-            - name: KAFKA_CFG_CLUSTER_ID
-              value: "{{ .Values.eventBusConnector.clusterId }}"
-            - name: KAFKA_CFG_NODE_ID
-              value: "{{ .Values.eventBus.nodeId }}"
-            - name: KAFKA_CFG_PROCESS_ROLES
-              value: {{ .Values.eventBus.processRoles }}
-            - name: KAFKA_CFG_LISTENERS
-              value: {{ .Values.eventBus.listeners }}
-            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
-              value: {{ .Values.eventBus.listenerSecurityProtocolMap }}
-            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
-              value: {{ .Values.eventBus.controllerQuorumVoters }}
-            - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
-              value: {{ .Values.eventBus.controllerListenerNames }}
+            - name: port
+              containerPort: {{ .Values.eventBus.port }}
 {{- end }}

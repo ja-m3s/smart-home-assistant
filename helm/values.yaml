@@ -7,40 +7,40 @@ database:
   dbUser: event_bus_connector
   dbUserPassword: password
 
+consumerDb:
+  enabled: true
+  image: localhost:32000/python-custom:latest
+  host: event-bus-service
+  port: "5672"  
+  user: guest
+  pass: guest
+  queue: "topic_producer"
+  dbUser: event_bus_connector
+  dbHost: database-service.default.svc.cluster.local
+  dbPort: "5432"
+  dbName: db_smart_home
+  dbUserPassword: password
+
 eventBus:
   enabled: true
-  image: bitnami/kafka:latest
-  kafkaPort: 9092
-  controllerPort: 9093
-  clusterId: "1"
-  nodeId: "0"
-  processRoles: "controller,broker"
-  listeners: "PLAINTEXT://:9092,CONTROLLER://:9093"
-  listenerSecurityProtocolMap: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
-  controllerQuorumVoters: "0@event-bus-service:9093"
-  controllerListenerNames: "CONTROLLER"
+  image: rabbitmq:3.8
+  port: 5672
   hostname: "event-bus-service"
-
-eventBusConnector:
-  enabled: true
-  image: localhost:32000/event-bus-connector:latest
-  connectorPort: 8083
-  hostname: "event-bus-connector-service"
-  dbUser: event_bus_connector
-  dbConnectionString: jdbc:postgresql://database-service.default.svc.cluster.local:5432/db_smart_home
-  dbUserPassword: password
 
 producer:
   enabled: true
   image: localhost:32000/python-custom:latest
-  port: 9092  
-  bootstrapServers: event-bus-service:9092
-  topic: "topic_producer"
+  host: event-bus-service
+  port: "5672"  
+  user: guest
+  pass: guest
+  queue: "topic_producer"
 
 consumer:
   enabled: true
   image: localhost:32000/python-custom:latest
-  port: 9092
-  bootstrapServers: event-bus-service:9092
-  groupId: "1"
-  topic: "topic_producer"
+  host: event-bus-service
+  port: "5672"  
+  user: guest
+  pass: guest
+  queue: "topic_producer"

@@ -1,5 +1,5 @@
 import os
-from confluent_kafka import Consumer, KafkaError
+import pika
 import sys
 
 # Function to print messages
@@ -7,40 +7,38 @@ def print_message(message):
     print(message)
     sys.stdout.flush()  # Ensure the message is immediately flushed to stdout
 
-# Function to consume messages from Kafka topic
+# Function to consume messages from RabbitMQ queue
 def consume_messages():
-    bootstrap_servers = os.getenv('BOOTSTRAP_SERVERS')
-    group_id = os.getenv('GROUP_ID')
-    topic = os.getenv('TOPIC')
+    rabbitmq_host = os.getenv('RABBITMQ_HOST', 'localhost')
+    rabbitmq_port = os.getenv('RABBITMQ_PORT', '5672')
+    rabbitmq_user = os.getenv('RABBITMQ_USER', 'guest')
+    rabbitmq_pass = os.getenv('RABBITMQ_PASS', 'guest')
+    queue_name = os.getenv('RABBITMQ_QUEUE', 'my_queue')
 
-    consumer = Consumer({
-        'bootstrap.servers': bootstrap_servers,
-        'group.id': group_id,
-        'auto.offset.reset': 'earliest'
-    })
+    credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_pass)
+    parameters = pika.ConnectionParameters(rabbitmq_host, int(rabbitmq_port), '/', credentials)
+    connection = pika.BlockingConnection(parameters)
+    channel = connection.channel()
 
-    consumer.subscribe([topic])
+    # Declare the queue
+    channel.queue_declare(queue=queue_name)
 
     try:
-        while True:
-            msg = consumer.poll(1.0)
-            if msg is None:
-                continue
-            if msg.error():
-                if msg.error().code() == KafkaError._PARTITION_EOF:
-                    # End of partition event
-                    print_message('%% %s [%d] reached end at offset %d\n' %
-                        (msg.topic(), msg.partition(), msg.offset()))
-                else:
-                    print_message("Kafka Error: {}".format(msg.error()))
-            else:
-                # Message consumed successfully
-                print_message('Received message: {}'.format(msg.value().decode('utf-8')))
+        def callback(ch, method, properties, body):
+            # Message consumed successfully
+            print_message('Received message: {}'.format(body.decode('utf-8')))
+
+        # Consume messages from the queue
+        channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+
+        # Start consuming messages
+        print_message('Waiting for messages. To exit press CTRL+C')
+        channel.start_consuming()
     except KeyboardInterrupt:
         pass
     finally:
-        # Close the consumer
-        consumer.close()
+        # Close the connection
+        connection.close()
 
 if __name__ == '__main__':
     consume_messages()

@@ -1,55 +1,46 @@
-from confluent_kafka import Producer
+import pika
 import json
 import time
 import random
 import sys
 import os
 
-# Kafka broker configuration
-bootstrap_servers = os.getenv('BOOTSTRAP_SERVERS')
-topic = os.getenv('TOPIC')
+# RabbitMQ broker configuration
+rabbitmq_host = os.getenv('RABBITMQ_HOST', 'localhost')
+rabbitmq_port = os.getenv('RABBITMQ_PORT', '5672')
+rabbitmq_user = os.getenv('RABBITMQ_USER', 'guest')
+rabbitmq_pass = os.getenv('RABBITMQ_PASS', 'guest')
+queue_name = os.getenv('RABBITMQ_QUEUE', 'my_queue')
 
 # Function to print messages
 def print_message(message):
     print(message)
     sys.stdout.flush()  # Ensure the message is immediately flushed to stdout
 
-# Create Kafka producer configuration
-conf = {'bootstrap.servers': bootstrap_servers}
+# RabbitMQ connection parameters
+credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_pass)
+parameters = pika.ConnectionParameters(rabbitmq_host, int(rabbitmq_port), '/', credentials)
+connection = pika.BlockingConnection(parameters)
+channel = connection.channel()
 
-# Create Kafka producer instance
-producer = Producer(conf)
+# Declare the queue
+channel.queue_declare(queue=queue_name)
 
 # Initialize id counter
 id_counter = 1
 
 # Sample data to publish
 data_template = {
-    "schema": {
-        "type": "struct",
-        "fields": [
-            {"type": "int32", "optional": False, "field": "id", "primaryKey": True},
-            {"type": "string", "optional": False, "field": "name"},
-            {"type": "string", "optional": False, "field": "type"},
-            {"type": "string", "optional": False, "field": "current_state"}
-        ]
-    },
-    "payload": {
-        "id": "",  # Placeholder for dynamic id
-        "name": "LIGHT",
-        "type": "Producer",
-        "current_state": "on"
-    }
+    "name": "LIGHT",
+    "type": "Producer",
+    "current_state": "on"
 }
 
-# Publish messages to Kafka topic indefinitely
+# Publish messages to RabbitMQ queue indefinitely
 while True:
     try:
         # Create a copy of the template
-        data = data_template.copy() 
-
-        # Update the id field with the incremented value, wrapped in double quotes
-        data["payload"]["id"] = str(id_counter)
+        data = data_template.copy()
 
         # Convert data to JSON format
         json_data = json.dumps(data)
@@ -57,11 +48,8 @@ while True:
         # Print the message to be sent
         print_message(json_data)
 
-        # Publish message to Kafka topic
-        producer.produce(topic, value=json_data.encode('utf-8'))
-
-        # Increment id counter
-        id_counter += 1
+        # Publish message to RabbitMQ queue
+        channel.basic_publish(exchange='', routing_key=queue_name, body=json_data)
 
         # Sleep for random seconds
         random_sleep_seconds = random.uniform(1, 20)
@@ -70,6 +58,5 @@ while True:
         print_message("Error: {}".format(e))
         continue
 
-# Close the producer
-producer.flush()  # Flush any remaining messages
-producer.close()
+# Close the connection
+connection.close()

@@ -9,11 +9,7 @@ spec:
   ports:
     - name: kafka
       protocol: TCP
-      port: {{ .Values.eventBus.kafkaPort }}
-      targetPort: {{ .Values.eventBus.kafkaPort }}
-    - name: controller
-      protocol: TCP
-      port: {{ .Values.eventBus.controllerPort }}
-      targetPort: {{ .Values.eventBus.controllerPort }}
+      port: {{ .Values.eventBus.port }}
+      targetPort: {{ .Values.eventBus.port }}
   type: ClusterIP
 {{- end }}

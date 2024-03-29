@@ -22,12 +22,16 @@ spec:
           ports:
             - containerPort: {{ .Values.consumer.port }}
           env:
-            - name: BOOTSTRAP_SERVERS
-              value: {{ .Values.consumer.bootstrapServers }}
-            - name: GROUP_ID
-              value: "{{ .Values.consumer.groupId }}"
-            - name: TOPIC
-              value: {{ .Values.consumer.topic }}
+            - name: RABBITMQ_HOST
+              value: {{ .Values.producer.host }}
+            - name: RABBITMQ_PORT
+              value: "{{ .Values.producer.port }}"
+            - name: RABBITMQ_USER
+              value: {{ .Values.producer.user }}
+            - name: RABBITMQ_PASS
+              value: {{ .Values.producer.pass }}
+            - name: RABBITMQ_QUEUE
+              value: {{ .Values.producer.queue }}
           volumeMounts:
             - name: consumer-python-config
               mountPath: /app
