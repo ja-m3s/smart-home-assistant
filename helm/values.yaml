@@ -11,18 +11,13 @@ rabbitmq:
 dbconf:
   dbUser: event_bus_connector
   dbUserPassword: password
-  dbPort: "5432"
+  dbPort: "26257"
   dbName: db_smart_home
-  dbHost: database-service.default.svc.cluster.local
-
-database:
-  enabled: true
-  image: postgres:latest
-  postgresUserPassword: password
+  dbSchema: s_smart_home
 
 consumerDb:
   enabled: true
-  image: localhost:32000/python-custom:latest
+  image: localhost:32000/python-custom:3.9.19-slim-bullseye
   queue: "topic_producer"
 
 eventBus:
@@ -31,10 +26,17 @@ eventBus:
 
 producer:
   enabled: true
-  image: localhost:32000/python-custom:latest
+  image: localhost:32000/python-custom:3.9.19-slim-bullseye
   queue: "topic_producer"
 
 consumer:
   enabled: true
-  image: localhost:32000/python-custom:latest
+  image: localhost:32000/python-custom:3.9.19-slim-bullseye
   queue: "topic_producer"
+
+##cockroach config
+conf:
+  cache: "500Mi"
+  max-sql-memory: "500Mi"
+
+cockroachImage: cockroachdb/cockroach:v23.2.3

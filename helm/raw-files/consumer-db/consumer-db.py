@@ -20,6 +20,7 @@ def consume_messages():
     db_host = os.getenv('DB_HOST', 'database-service.default.svc.cluster.local')
     db_port = os.getenv('DB_PORT', '5432')
     db_name = os.getenv('DB_NAME', 'db_smart_home')
+    db_schema = os.getenv('DB_SCHEMA', 's_smart_home')
     db_user = os.getenv('DB_USER', 'event_bus_connector')
     db_password = os.getenv('DB_PASSWORD', 'password')
 
@@ -48,7 +49,7 @@ def consume_messages():
         print_message('Received message: {}'.format(message_body))
         
         # Insert record into the database
-        db_cursor.execute("INSERT INTO s_smart_home.messages (name, type, current_state) VALUES (%s, %s, %s)", (message_body['name'], message_body['type'], message_body['current_state']))
+        db_cursor.execute("INSERT INTO " + db_schema + ".messages (name, type, current_state) VALUES (%s, %s, %s)", (message_body['name'], message_body['type'], message_body['current_state']))
         db_connection.commit()
 
     # Consume messages from the queue

@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: event-bus-deployment
+  name: {{ .Release.Name }}-event-bus-deployment
 spec:
   replicas: 1
   selector:

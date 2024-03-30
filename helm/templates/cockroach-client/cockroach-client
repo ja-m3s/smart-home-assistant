@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}-cockroachdb-secure-client
+spec:
+  serviceAccountName: {{ .Release.Name }}-cockroachdb
+  containers:
+  - name: cockroachdb-client-secure
+    image: {{ .Values.cockroachImage }}
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: DB_NAME
+        value: {{ .Values.dbconf.dbName }}
+      - name: DB_USER
+        value: {{ .Values.dbconf.dbUser }}
+      - name: DB_PASSWORD
+        value: {{ .Values.dbconf.dbUserPassword }}
+      - name: DB_SCHEMA
+        value: {{ .Values.dbconf.dbSchema }}
+    volumeMounts:
+    - name: client-certs
+      mountPath: /cockroach/cockroach-certs/
+    - name: cockroach-config
+      mountPath: /cockroach/scripts/
+    command:
+    - /bin/bash
+    - ./scripts/schema.sh
+  terminationGracePeriodSeconds: 300
+  volumes:
+  - name: client-certs
+    projected:
+        defaultMode: 0400
+        sources:
+          - secret:
+              name: {{ .Release.Name }}-cockroachdb-client-secret # Use the existing secret name
+              items:
+                - key: ca.crt
+                  path: ca.crt
+                - key: tls.crt
+                  path: client.root.crt
+                - key: tls.key
+                  path: client.root.key
+  - name: cockroach-config
+    configMap:
+      name: cockroach-config
+
+
+
+
+   

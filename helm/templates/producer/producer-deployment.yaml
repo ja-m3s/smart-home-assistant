@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: producer-deployment
+  name: {{ .Release.Name }}-producer-deployment
 spec:
   replicas: 1
   selector:
