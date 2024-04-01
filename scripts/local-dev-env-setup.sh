@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-apt install microk8s docker.io
+#Docker
+sudo apt install docker.io
+sudo usermod -a -G docker $USER
 
+#Microk8s
+sudo apt install microk8s
 microk8s enable hostpath-storage registry rbac cert-manager
-
-sudo usermod -a -G docker user
+microk8s start
+microk8s status

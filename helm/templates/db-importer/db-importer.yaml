@@ -42,7 +42,7 @@ spec:
             - name: RABBITMQ_QUEUE
               value: {{ .Values.dbImporter.queue }}
             - name: DB_HOST
-              value: "{{ .Release.Name }}-{{ .Values.dbImporter.dbHost }}"
+              value: "{{ .Release.Name }}-{{ .Values.dbconf.dbHost }}"
             - name: DB_PORT
               value: "{{ .Values.dbconf.dbPort }}"
             - name: DB_NAME
@@ -51,6 +51,8 @@ spec:
               value: {{ .Values.dbconf.dbUser }}
             - name: DB_PASSWORD
               value: {{ .Values.dbconf.dbUserPassword }}
+            - name: DB_SCHEMA
+              value: {{ .Values.dbconf.dbSchema }}
           volumeMounts:
             - name: db-importer-python-config
               mountPath: /app

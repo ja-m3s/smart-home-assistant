@@ -2,7 +2,7 @@ import pika
 import sys
 import time
 
-from env import rabbitmq_user, rabbitmq_pass, rabbitmq_host, rabbitmq_port, rabbitmq_queue
+from env import rabbitmq_user, rabbitmq_pass, rabbitmq_host, rabbitmq_port
 
 # Function to print messages
 def print_message(message):
@@ -19,8 +19,6 @@ def setup_connection(max_retries=None):
     print_message(rabbitmq_port)
     print_message(rabbitmq_user)
     print_message(rabbitmq_pass)
-    print_message(rabbitmq_queue)
-
 
     while max_retries is None or retry_count < max_retries:
         try:
@@ -30,11 +28,13 @@ def setup_connection(max_retries=None):
             channel = connection.channel()
 
             # Declare the queue
-            channel.queue_declare(queue=rabbitmq_queue, durable=True)
-            channel.basic_qos(prefetch_count=1)  # Limit each consumer to one message at a time
+            channel.exchange_declare(exchange='messages', exchange_type='fanout')
+            result = channel.queue_declare(queue='', exclusive=True)
+            queue = result.method.queue
+            channel.queue_bind(exchange='messages', queue=queue)
 
             print_message("Connection to RabbitMQ established successfully.")
-            return connection, channel
+            return connection, channel, queue
         except pika.exceptions.AMQPConnectionError as e:
             print_message(f"Failed to connect to RabbitMQ: {e}")
             if max_retries is not None:
@@ -45,4 +45,4 @@ def setup_connection(max_retries=None):
             retry_count += 1
 
     print_message("Failed to connect after retries.")
-    return None, None
+    return None, None, None

@@ -3,17 +3,19 @@ import pika
 import json
 import time
 from helpers import print_message, setup_connection
-from env import rabbitmq_queue, hostname, data_template
+from env import hostname, data_template
 
 # Function to consume messages from RabbitMQ queue
 def consume_messages():
     print_message(hostname +" monitoring.")
-    connection, channel = setup_connection()
+    connection, channel, queue = setup_connection()
 
     try:
         def callback(ch, method, properties, body):
             # Message consumed successfully
             print_message('Received message: {}'.format(body.decode('utf-8')))
+            ch.basic_ack(delivery_tag=method.delivery_tag)
+
             message = json.loads(body.decode('utf-8'))
             
             # Check if the state is 'on'
@@ -27,12 +29,11 @@ def consume_messages():
                 json_data = json.dumps(new_message)
 
                 # Publish the new message back to the queue
-                channel.basic_publish(exchange='', routing_key=rabbitmq_queue, body=json_data)
+                channel.basic_publish(exchange='messages', routing_key='', body=json_data)
                 print_message('Published new message: {}'.format(json_data))
-                ch.basic_ack(delivery_tag=method.delivery_tag)
 
         # Consume messages from the queue
-        channel.basic_consume(queue=rabbitmq_queue, on_message_callback=callback, auto_ack=False)
+        channel.basic_consume(queue=queue, on_message_callback=callback, auto_ack=False)
 
         # Start consuming messages
         print_message('Waiting for messages...')
@@ -40,9 +41,9 @@ def consume_messages():
     except Exception as e:
             print_message(f"Error: {e} ")
             pass
-    finally:
+    #finally:
         # Close the connection
-        connection.close()
+        #connection.close()
 
 if __name__ == '__main__':
     consume_messages()

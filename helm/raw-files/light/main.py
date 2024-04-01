@@ -2,13 +2,16 @@ import threading
 import pika
 import json
 import time
-from helpers import print_message, setup_connection
-from env import rabbitmq_queue, hostname, state, data_template
+from helpers import print_message, setup_producer_connection, setup_consumer_connection
+from env import hostname, state, data_template
 
-def publish_messages(channel):
-    """Publish messages to RabbitMQ queue indefinitely."""
+def publish_messages():
+    #Publish messages to RabbitMQ queue indefinitely.
+    connection, channel = setup_producer_connection()
+
     while True:
         try:
+
             # Sleep for three seconds
             time.sleep(3)
 
@@ -23,37 +26,47 @@ def publish_messages(channel):
             print_message("Sending Message: " + json_data)
 
             # Publish message to RabbitMQ queue
-            channel.basic_publish(exchange='', routing_key=rabbitmq_queue, body=json_data)
+            channel.basic_publish(exchange='messages',routing_key='',body=json_data)
 
         except Exception as e:
             print_message(f"Error: {e} ")
 
-def consume_messages(channel):
-    """Consume messages from RabbitMQ queue."""
-    def callback(ch, method, properties, body):
-        """Callback function to handle received messages."""
-        message = json.loads(body)
-        if message.get('current_state') == 'triggered':
-            print_message(f"Received triggered message: {body}")
-            # Update the state variable to 'off' 
-            state = 'off'
-        else:
-            print_message(f"Ignoring message: {body}")
+def consume_light_monitor():
+    print_message(hostname +" monitoring.")
+    connection, channel,queue = setup_consumer_connection()
 
-    # Set up the consumer
-    channel.basic_consume(queue=rabbitmq_queue, on_message_callback=callback, auto_ack=True)
+    try:
+        def callback(ch, method, properties, body):
+            # Message consumed successfully
+            print_message('Received message: {}'.format(body.decode('utf-8')))
+            ch.basic_ack(delivery_tag=method.delivery_tag)
 
-    # Start consuming messages
-    print_message("Waiting for messages...")
-    channel.start_consuming()
+            message = json.loads(body.decode('utf-8'))
+            
+            # Check if the state is 'triggered'
+            if message.get('current_state') == 'triggered':
+              global state
+              state='off'
+              print_message("turned light off")
+
+        # Consume messages from the queue
+        channel.basic_consume(queue=queue, on_message_callback=callback, auto_ack=False)
+
+        # Start consuming messages
+        print_message('Waiting for messages...')
+        channel.start_consuming()
+    except Exception as e:
+            print_message(f"Error: {e} ")
+            pass
+    #finally:
+        # Close the connection
+        #connection.close()
 
 def main():
-    # Setup RabbitMQ connection and channel
-    connection, channel = setup_connection()
 
     # Create threads for publishing and consuming messages
-    publish_thread = threading.Thread(target=publish_messages, args=(channel,))
-    consume_thread = threading.Thread(target=consume_messages, args=(channel,))
+    publish_thread = threading.Thread(target=publish_messages, args=())
+    consume_thread = threading.Thread(target=consume_light_monitor, args=())
 
     # Set threads as daemons
     publish_thread.daemon = True
@@ -61,7 +74,7 @@ def main():
 
     # Start threads
     publish_thread.start()
-    #consume_thread.start()
+    consume_thread.start()
 
     # Keep the main thread running
     try:
@@ -69,8 +82,6 @@ def main():
             time.sleep(1)
     except KeyboardInterrupt:
         pass
-    finally:
-        connection.close()
 
 if __name__ == "__main__":
     main()
