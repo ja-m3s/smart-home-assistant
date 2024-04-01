@@ -15,24 +15,26 @@ dbconf:
   dbName: db_smart_home
   dbSchema: s_smart_home
 
-consumerDb:
+dbImporter:
   enabled: true
   image: localhost:32000/python-custom:3.9.19-slim-bullseye
-  queue: "topic_producer"
+  queue: "topic_light"
+  dbHost: cockroachdb-public.default.svc.cluster.local
 
 eventBus:
   enabled: true
   image: rabbitmq:3.8
 
-producer:
+light:
   enabled: true
   image: localhost:32000/python-custom:3.9.19-slim-bullseye
-  queue: "topic_producer"
+  queue: "topic_light"
 
-consumer:
+lightMonitor:
   enabled: true
   image: localhost:32000/python-custom:3.9.19-slim-bullseye
-  queue: "topic_producer"
+  queue: "topic_light"
+
 
 ##cockroach config
 conf:

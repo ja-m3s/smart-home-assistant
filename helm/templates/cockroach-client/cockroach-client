@@ -1,4 +1,13 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cockroach-config
+data:
+{{ (.Files.Glob "raw-files/cockroach/*").AsConfig | indent 2  }}
+
+---
+
+apiVersion: v1
 kind: Pod
 metadata:
   name: {{ .Release.Name }}-cockroachdb-secure-client

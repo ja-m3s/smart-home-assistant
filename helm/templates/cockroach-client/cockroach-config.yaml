@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cockroach-config
-data:
-{{ (.Files.Glob "raw-files/cockroach/*").AsConfig | indent 2  }}
