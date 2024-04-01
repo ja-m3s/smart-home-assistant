@@ -24,7 +24,7 @@ dbImporter:
 
 eventBus:
   enabled: true
-  image: rabbitmq:3.8
+  image: rabbitmq:alpine
 
 light:
   enabled: true

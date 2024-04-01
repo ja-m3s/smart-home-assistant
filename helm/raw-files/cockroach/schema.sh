@@ -30,4 +30,4 @@ GRANT ALL ON ${DB_SCHEMA}.messages TO ${DB_USER};
 echo "$SQL_COMMANDS" | ./cockroach sql --certs-dir=./cockroach-certs --host=test-release-cockroachdb-public 
 
 #Keep the client up in case you want to access DB.
-sleep 2147483648
+#sleep 2147483648

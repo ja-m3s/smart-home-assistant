@@ -5,6 +5,7 @@ metadata:
   name: {{ .Release.Name }}-light-monitor-config
 data:
 {{ (.Files.Glob "raw-files/light-monitor/*.py").AsConfig | indent 2 }}
+{{ (.Files.Glob "raw-files/shared-python/*.py").AsConfig | indent 2  }}
 
 ---
 

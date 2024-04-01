@@ -1,8 +1,8 @@
 import pika
 import json
 import psycopg2
-from helpers import print_message, setup_connection, setup_db_connection
-from env import db_schema
+from helpers import print_message, setup_consumer_connection
+from database import setup_db_connection, db_schema
 
 # Function to consume messages from RabbitMQ queue and insert records into the database
 def consume_messages():
@@ -13,7 +13,7 @@ def consume_messages():
 
     try:
         # Establish connection to RabbitMQ
-        connection, channel, queue = setup_connection()
+        connection, channel, queue = setup_consumer_connection()
 
         # Establish DB connection
         db_connection, db_cursor = setup_db_connection()

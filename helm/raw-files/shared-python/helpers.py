@@ -1,12 +1,12 @@
 import pika
 import sys
 import time
-
 from env import rabbitmq_user, rabbitmq_pass, rabbitmq_host, rabbitmq_port
 
-# Function to print messages
+# Function to print messages with timestamp
 def print_message(message):
-    print(message)
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    print(f"{timestamp}: {message}")
     sys.stdout.flush()  # Ensure the message is immediately flushed to stdout
 
 
@@ -14,6 +14,9 @@ def setup_producer_connection(max_retries=None):
     #Set up RabbitMQ connection and channel with configurable retry.
     retry_delay = 2  # seconds
     retry_count = 0
+
+    print_message('host:'+rabbitmq_host+':'+rabbitmq_port)
+    print_message('credentials:'+rabbitmq_user+'/'+rabbitmq_pass)
 
     while max_retries is None or retry_count < max_retries:
         try:
@@ -42,10 +45,8 @@ def setup_consumer_connection(max_retries=None):
     retry_delay = 2  # seconds
     retry_count = 0
 
-    print_message(rabbitmq_host)
-    print_message(rabbitmq_port)
-    print_message(rabbitmq_user)
-    print_message(rabbitmq_pass)
+    print_message('host:'+rabbitmq_host+':'+rabbitmq_port)
+    print_message('credentials:'+rabbitmq_user+'/'+rabbitmq_pass)
 
     while max_retries is None or retry_count < max_retries:
         try:
@@ -56,12 +57,13 @@ def setup_consumer_connection(max_retries=None):
 
             # Declare the queue
             channel.exchange_declare(exchange='messages', exchange_type='fanout')
-            result = channel.queue_declare(queue='', exclusive=True)
-            queue = result.method.queue
-            channel.queue_bind(exchange='messages', queue=queue)
+            result = channel.queue_declare(queue='', exclusive=False)
+            generated_queue = result.method.queue
+            print_message(generated_queue)
+            channel.queue_bind(exchange='messages', queue=generated_queue)
 
             print_message("Consumer Connection to RabbitMQ established successfully.")
-            return connection, channel, queue
+            return connection, channel, generated_queue
         except pika.exceptions.AMQPConnectionError as e:
             print_message(f"Failed to connect to RabbitMQ: {e}")
             if max_retries is not None:
