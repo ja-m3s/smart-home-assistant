@@ -1,8 +1,7 @@
-import pika
+import os
 import sys
 import time
 import psycopg2
-import os
 from helpers import print_message
 
 db_host = os.getenv('DB_HOST')
@@ -13,16 +12,18 @@ db_user = os.getenv('DB_USER')
 db_password = os.getenv('DB_PASSWORD')
 
 def setup_db_connection(max_retries=None):
-    #Set up Database connection.
+    """
+    Set up Database connection.
+    """
     retry_delay = 2  # seconds
     retry_count = 0
 
-    print_message('dbhost: '+db_host+':'+db_port+'/'+db_name)
-    print_message('db credentials: '+db_user+'/'+db_password)
+    print_message('dbhost: ' + db_host + ':' + db_port + '/' + db_name)
+    print_message('db credentials: ' + db_user + '/' + db_password)
 
     while max_retries is None or retry_count < max_retries:
         try:
-                # Establish connection to the database
+            # Establish connection to the database
             db_connection = psycopg2.connect(
                 host=db_host,
                 port=db_port,
@@ -33,7 +34,7 @@ def setup_db_connection(max_retries=None):
             db_cursor = db_connection.cursor()
             print_message("Successfully established connection to database")
             return db_connection, db_cursor
-        except Exception as e:
+        except psycopg2.Error as e:
             print_message(f"Failed to connect to Database: {e}")
             if max_retries is not None:
                 print_message(f"Retry {retry_count + 1} of {max_retries}...")
@@ -44,3 +45,4 @@ def setup_db_connection(max_retries=None):
 
     print_message("Failed to connect after retries.")
     return None, None
+

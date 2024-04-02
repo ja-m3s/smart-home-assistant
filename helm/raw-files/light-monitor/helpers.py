@@ -1,22 +1,25 @@
-import pika
 import sys
 import time
+import pika  # Add import for pika module
 from env import rabbitmq_user, rabbitmq_pass, rabbitmq_host, rabbitmq_port
 
-# Function to print messages with timestamp
 def print_message(message):
+    """
+    Function to print messages with timestamp.
+    """
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     print(f"{timestamp}: {message}")
     sys.stdout.flush()  # Ensure the message is immediately flushed to stdout
 
-
 def setup_producer_connection(max_retries=None):
-    #Set up RabbitMQ connection and channel with configurable retry.
+    """
+    Set up RabbitMQ connection and channel with configurable retry.
+    """
     retry_delay = 2  # seconds
     retry_count = 0
 
-    print_message('host:'+rabbitmq_host+':'+rabbitmq_port)
-    print_message('credentials:'+rabbitmq_user+'/'+rabbitmq_pass)
+    print_message('host:' + rabbitmq_host + ':' + rabbitmq_port)
+    print_message('credentials:' + rabbitmq_user + '/' + rabbitmq_pass)
 
     while max_retries is None or retry_count < max_retries:
         try:
@@ -24,7 +27,7 @@ def setup_producer_connection(max_retries=None):
             parameters = pika.ConnectionParameters(rabbitmq_host, int(rabbitmq_port), '/', credentials)
             connection = pika.BlockingConnection(parameters)
             channel = connection.channel()
-            channel.exchange_declare(exchange='messages',exchange_type='fanout')
+            channel.exchange_declare(exchange='messages', exchange_type='fanout')
             print_message("Producer Connection to RabbitMQ established successfully.")
             return connection, channel
         except pika.exceptions.AMQPConnectionError as e:
@@ -39,14 +42,15 @@ def setup_producer_connection(max_retries=None):
     print_message("Failed to connect after retries.")
     return None, None
 
-
 def setup_consumer_connection(max_retries=None):
-    """Set up RabbitMQ connection and channel with configurable retry."""
+    """
+    Set up RabbitMQ connection and channel with configurable retry.
+    """
     retry_delay = 2  # seconds
     retry_count = 0
 
-    print_message('host:'+rabbitmq_host+':'+rabbitmq_port)
-    print_message('credentials:'+rabbitmq_user+'/'+rabbitmq_pass)
+    print_message('host:' + rabbitmq_host + ':' + rabbitmq_port)
+    print_message('credentials:' + rabbitmq_user + '/' + rabbitmq_pass)
 
     while max_retries is None or retry_count < max_retries:
         try:

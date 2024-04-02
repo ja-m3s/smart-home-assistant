@@ -2,7 +2,7 @@ import os
 
 # Environment variables
 hostname = os.getenv('HOSTNAME')
-state = 'on'
+STATE = 'on'
 data_template = {
     "name": "unset",
     "type": "light",
