@@ -1,1 +1,1 @@
-shared-python/helpers.py
+helm/raw-files/shared-python/helpers.py
