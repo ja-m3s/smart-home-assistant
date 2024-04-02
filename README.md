@@ -4,6 +4,15 @@
 
 Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project description.
 
+## Components Description
+
+- event-bus - a RabbitMQ messaging queue bus
+- light - a simple python program representing a 'light', it has a state of on and off.
+- light monitor - a simple python program representing a light monitor, sends a message to a light when it's been on for longer than necessary.
+- cockroachdb - database - stores messages in a database.
+- db_exporter - a simple python program which feeds from the event-bus and inserts records into the database.
+- cockroachdb-client - a single pod for database administration and automatic schema deployment.
+
 ## Project Layout
 
 - /docker - custom Dockerfiles
@@ -13,11 +22,7 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 
 ## Technology Stack
 
-- The producer and consumer programs use python.
-- The event bus uses RabbitMQ
-- The database backend uses cockroachDB.
-- All are designed to be deployed upon a kubernetes cluster via helm3.
-- Helm is used to deploy the application
+- Python, RabbitMQ, cockroachDB, kubernetes, helm3.
 
 ## Configuration
 
