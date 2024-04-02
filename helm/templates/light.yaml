@@ -1,10 +1,10 @@
-{{- if .Values.lightMonitor.enabled }}
+{{- if .Values.light.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-light-monitor-config
+  name: {{ .Release.Name }}-light-config
 data:
-{{ (.Files.Glob "raw-files/light-monitor/*.py").AsConfig | indent 2 }}
+{{ (.Files.Glob "raw-files/light/*.py").AsConfig | indent 2 }}
 {{ (.Files.Glob "raw-files/shared-python/*.py").AsConfig | indent 2  }}
 
 ---
@@ -12,23 +12,23 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-light-monitor
+  name: {{ .Release.Name }}-light
 spec:
-  replicas: 1
+  replicas: {{ .Values.light.numLights }}
   selector:
     matchLabels:
-      app: light-monitor
+      app: light
   template:
     metadata:
       labels:
-        app: light-monitor
+        app: light
     spec:
       containers:
-        - name: light-monitor-container
+        - name: light-container
           command:
             - "python"
             - "/app/main.py"
-          image: {{ .Values.lightMonitor.image }}
+          image: {{ .Values.light.image }}
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
           env:
@@ -40,13 +40,12 @@ spec:
               value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_PASS
               value: {{ .Values.rabbitmq.pass }}
-            - name: RABBITMQ_QUEUE
-              value: {{ .Values.lightMonitor.queue }}
           volumeMounts:
-            - name: light-monitor-python
+            - name: light-python
               mountPath: /app
       volumes:
-        - name: light-monitor-python
+        - name: light-python
           configMap:
-            name: {{ .Release.Name }}-light-monitor-config
+            name: {{ .Release.Name }}-light-config
 {{- end }}
+

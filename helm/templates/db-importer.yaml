@@ -7,11 +7,10 @@ data:
 {{ (.Files.Glob "raw-files/db-importer/*.py").AsConfig | indent 2  }}
 {{ (.Files.Glob "raw-files/shared-python/*.py").AsConfig | indent 2  }}
 
-
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-db-importer
 spec:
@@ -41,8 +40,6 @@ spec:
               value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_PASS
               value: {{ .Values.rabbitmq.pass }}
-            - name: RABBITMQ_QUEUE
-              value: {{ .Values.dbImporter.queue }}
             - name: DB_HOST
               value: "{{ .Release.Name }}-{{ .Values.dbconf.dbHost }}"
             - name: DB_PORT
