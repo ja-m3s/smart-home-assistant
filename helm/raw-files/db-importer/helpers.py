@@ -77,5 +77,4 @@ def setup_consumer_connection(max_retries=None):
             time.sleep(retry_delay)
             retry_count += 1
 
-    print_message("Failed to connect after retries.")
-    return None, None, None
+    print_mes
