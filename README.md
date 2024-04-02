@@ -2,7 +2,7 @@
 
 ## Project Description
 
-Please see [Smart Home Assistant Project brief]("Brief.pdf") for a project description.
+Please see [Smart Home Assistant Project brief]("./Brief.pdf") for a project description.
 
 ## Project Layout
 
