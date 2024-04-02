@@ -2,8 +2,8 @@ import threading
 import pika
 import json
 import time
-from helpers import print_message, setup_producer_connection, setup_consumer_connection
-from env import hostname, state, data_template
+from shared.helpers import print_message, setup_producer_connection, setup_consumer_connection
+from shared.env import hostname, state, data_template
 
 def publish_messages():
     #Publish messages to RabbitMQ queue indefinitely.

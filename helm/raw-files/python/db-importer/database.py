@@ -2,7 +2,7 @@ import os
 import sys
 import time
 import psycopg2
-from helpers import print_message
+from shared.helpers import print_message
 
 db_host = os.getenv('DB_HOST')
 db_port = os.getenv('DB_PORT')

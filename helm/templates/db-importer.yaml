@@ -5,6 +5,7 @@ metadata:
   name: db-importer-python-config
 data:
 {{ (.Files.Glob "raw-files/db-importer/*.py").AsConfig | indent 2  }}
+{{ (.Files.Glob "raw-files/shared/*.py").AsConfig | indent 2  }}
 
 ---
 

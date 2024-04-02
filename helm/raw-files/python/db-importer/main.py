@@ -1,7 +1,7 @@
 import pika
 import json
 import psycopg2
-from helpers import print_message, setup_consumer_connection
+from shared.helpers import print_message, setup_consumer_connection
 from database import setup_db_connection, db_schema
 
 # Function to consume messages from RabbitMQ queue and insert records into the database
