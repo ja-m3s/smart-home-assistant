@@ -25,7 +25,14 @@ All configuration can be found within the Helm .yaml files, either in values.yam
 
 ## Setup
 
-### Local Configuration on Ubuntu
+### Local Cluster Deployment on Ubuntu
+1. cd scripts && ./microk8s.sh -- this installs a development kubernetes
+2. ./build-images.sh -- build images and add to the repository
+3. ./helm-deploy.sh -- deploy into K8S
 
 ### Remote Cluster Deployment
-1. 
+1. cd scripts
+2. ./build-images <<your registry>>
+3.  amend helm values.yaml and change python.registry to your <<your registry>>
+4. point kubectl to K8S cluster
+5.  helm install "release-name" ../helm
