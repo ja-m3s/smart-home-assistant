@@ -29,10 +29,9 @@ def consume_messages():
             print_message("Executing query: {} with params: {}".format(query, params))
             db_cursor.execute(query, params)
             db_connection.commit()
-            ch.basic_ack(delivery_tag=method.delivery_tag)
 
         # Consume messages from the queue
-        channel.basic_consume(queue=queue, on_message_callback=callback, auto_ack=False)
+        channel.basic_consume(queue=queue, on_message_callback=callback, auto_ack=True)
 
         # Start consuming messages
         print_message('Waiting for messages.')
