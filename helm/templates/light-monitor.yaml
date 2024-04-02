@@ -28,7 +28,7 @@ spec:
           command:
             - "python"
             - "/app/main.py"
-          image: {{ .Values.lightMonitor.image }}
+          image: "{{ .Values.pythonConf.registry }}/{{ .Values.pythonConf.image }}"
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
           env:

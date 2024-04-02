@@ -17,23 +17,24 @@ dbconf:
   #NB. release name is autoprepended to dbHost
   dbHost: cockroachdb-public.default.svc.cluster.local
 
-dbImporter:
-  enabled: true
-  image: localhost:32000/python-custom:3.9.19-slim-bullseye
-
 eventBus:
   enabled: true
   image: rabbitmq:alpine
 
 light:
   enabled: true
-  image: localhost:32000/python-custom:3.9.19-slim-bullseye
   numLights: 1
 
 lightMonitor:
   enabled: true
-  image: localhost:32000/python-custom:3.9.19-slim-bullseye
-  
+
+dbImporter:
+  enabled: true
+
 cockroachClient:
   enabled: true
   image: cockroachdb/cockroach:v23.2.3
+
+pythonConf:
+  registry: localhost:32000
+  image: python-custom:3.9.19-slim-bullseye
