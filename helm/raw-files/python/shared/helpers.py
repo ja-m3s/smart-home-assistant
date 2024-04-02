@@ -1,7 +1,7 @@
 import sys
 import time
 import pika  # Add import for pika module
-from shared.env import rabbitmq_user, rabbitmq_pass, rabbitmq_host, rabbitmq_port
+from env import rabbitmq_user, rabbitmq_pass, rabbitmq_host, rabbitmq_port
 
 def print_message(message):
     """
