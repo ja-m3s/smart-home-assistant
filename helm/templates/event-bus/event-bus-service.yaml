@@ -1,15 +1,26 @@
 {{- if .Values.eventBus.enabled }}
 apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
+  namespace: default
   name: event-bus-service
+  labels:
+    app: rabbitmq
+    type: LoadBalancer
 spec:
-  selector:
-    app: event-bus
+  type: NodePort
   ports:
-    - name: rabbitmq
-      protocol: TCP
-      port: {{ .Values.rabbitmq.port }}
-      targetPort: {{ .Values.rabbitmq.port }}
-  type: ClusterIP
+   - name: http
+     protocol: TCP
+     port: 15672
+     targetPort: 15672
+     nodePort: 31672
+   - name: amqp
+     protocol: TCP
+     port: 5672
+     targetPort: 5672
+     nodePort: 30672
+  selector:
+    app: rabbitmq
 {{- end }}

@@ -6,6 +6,7 @@ rabbitmq:
   port: "5672"  
   user: guest
   pass: guest
+  erlangCookie: 'chocolateCookie'
 
 #shared values for database 
 dbconf:
@@ -37,10 +38,11 @@ lightMonitor:
   image: localhost:32000/python-custom:3.9.19-slim-bullseye
   queue: "topic_light"
 
+cockroachClient:
+  enabled: true
+  image: cockroachdb/cockroach:v23.2.3
 
-##cockroach config
+##cockroach database config
 conf:
   cache: "500Mi"
   max-sql-memory: "500Mi"
-
-cockroachImage: cockroachdb/cockroach:v23.2.3

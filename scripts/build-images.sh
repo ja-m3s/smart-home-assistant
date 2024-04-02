@@ -14,3 +14,5 @@ REPO=localhost:32000
 docker build -t "${REPO}/python-custom:3.9.19-slim-bullseye"  "${SCRIPT_DIR}/../docker/python-custom"
 docker push ${REPO}/python-custom:3.9.19-slim-bullseye
 
+#docker build -t "${REPO}/rabbitmq-custom:alpine"  "${SCRIPT_DIR}/../docker/event-bus"
+#docker push ${REPO}/rabbitmq-custom:alpine

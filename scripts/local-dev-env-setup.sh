@@ -6,6 +6,6 @@ sudo usermod -a -G docker $USER
 
 #Microk8s
 sudo apt install microk8s
-microk8s enable hostpath-storage registry rbac cert-manager
+microk8s enable hostpath-storage registry rbac cert-manager dashboard
 microk8s start
 microk8s status
