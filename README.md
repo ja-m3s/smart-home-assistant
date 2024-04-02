@@ -1,9 +1,8 @@
-# smart-home-assistant
+# Smart Home Assistant 
 
 ## Project Description
 
-Please see Smart Home Assistant Project for a full description 
-of the proposed project
+Please see [Smart Home Assistant Project brief]("Brief.pdf") for a project description.
 
 ## Project Layout
 
