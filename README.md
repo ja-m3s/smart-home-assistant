@@ -7,10 +7,10 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 ## Components Description
 
 - event-bus - a RabbitMQ messaging queue bus
-- light - a simple python program representing a 'light', it has a state of on and off.
-- light monitor - a simple python program representing a light monitor, sends a message to a light when it's been on for longer than necessary.
+- light - a simple java program representing a 'light', it has a state of on and off.
+- light monitor - a simple java program representing a light monitor, sends a message to a light when it's been on for longer than necessary.
 - cockroachdb - database - stores messages in a database.
-- db_exporter - a simple python program which feeds from the event-bus and inserts records into the database.
+- db_exporter - a simple java program which feeds from the event-bus and inserts records into the database.
 - cockroachdb-client - a single pod for database administration and automatic schema deployment.
 
 ## Project Layout
@@ -22,7 +22,7 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 
 ## Technology Stack
 
-- Python, RabbitMQ, cockroachDB, kubernetes, helm3.
+- java, RabbitMQ, cockroachDB, kubernetes, helm3.
 
 ## Configuration
 
@@ -31,7 +31,7 @@ All configuration can be found within the Helm .yaml files, either in values.yam
 ## Setup
 
 ### Local Cluster Deployment on Ubuntu
-1. cd scripts && ./microk8s.sh -- this installs a development kubernetes
+1. cd scripts && ./microk8s.sh install -- this installs a development kubernetes
 2. ./build-images.sh -- build images and add to the repository
 3. ./helm-deploy.sh -- deploy into K8S
 
