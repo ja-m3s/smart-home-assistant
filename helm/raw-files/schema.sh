@@ -10,10 +10,6 @@ fi
 # Schema
 SQL_COMMANDS="CREATE USER IF NOT EXISTS roach WITH PASSWORD 'roach';
 GRANT admin to roach;
-
-#TESTING ONLY - COMMENT THIS OUT ON PROD
-DROP DATABASE ${DB_NAME};
-
 CREATE DATABASE IF NOT EXISTS ${DB_NAME};
 USE ${DB_NAME};
 CREATE SCHEMA IF NOT EXISTS ${DB_SCHEMA};
@@ -29,5 +25,5 @@ GRANT ALL ON ${DB_SCHEMA}.messages TO ${DB_USER};
 "
 
 # Execute SQL commands in CockroachDB
-echo "$SQL_COMMANDS" | ./cockroach sql --certs-dir=./cockroach-certs --host=test-release-cockroachdb-public 
+echo "$SQL_COMMANDS" | ./cockroach sql --certs-dir=./cockroach-certs --host=cockroach-db-public 
 exit 0

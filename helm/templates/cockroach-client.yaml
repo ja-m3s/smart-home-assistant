@@ -51,7 +51,7 @@ spec:
             defaultMode: 0400
             sources:
               - secret:
-                  name: cockroachdb-client-secret # Use the existing secret name
+                  name: cockroach-db-client-secret # Use the existing secret name
                   items:
                     - key: ca.crt
                       path: ca.crt

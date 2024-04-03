@@ -15,7 +15,7 @@ dbconf:
   dbName: db_smart_home
   dbSchema: s_smart_home
   #NB. release name is autoprepended to dbHost
-  dbHost: cockroachdb-public.default.svc.cluster.local
+  dbHost: cockroach-db-public.default.svc.cluster.local
 
 eventBus:
   enabled: true
