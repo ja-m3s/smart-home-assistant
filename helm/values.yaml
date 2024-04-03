@@ -27,11 +27,11 @@ lightBulb:
   numLights: 1
 
 lightBulbMonitor:
-  enabled: true
+  enabled: false
   image: eclipse-temurin-light-bulb-monitor:21
 
 dbImporter:
-  enabled: true
+  enabled: false
   image: eclipse-temurin-db-importer:21
 
 cockroachClient:

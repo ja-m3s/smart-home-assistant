@@ -1,4 +1,4 @@
-package lightBulb.jar;
+package lightBulb;
 
 public class LightBulbTest {
 

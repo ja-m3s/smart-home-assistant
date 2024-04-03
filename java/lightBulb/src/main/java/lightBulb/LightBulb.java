@@ -1,4 +1,4 @@
-package lightBulb.jar;
+package lightBulb;
 
 public class LightBulb {
 	    private State lightBulbState = State.ON;

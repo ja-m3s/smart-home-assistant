@@ -1,4 +1,4 @@
-package lightBulb.jar;
+package lightBulb;
 
 public enum State {
     ON("on"),

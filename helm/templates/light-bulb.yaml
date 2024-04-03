@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lightBulb
+  name: light-bulb
 spec:
   replicas: {{ .Values.lightBulb.numLights }}
   selector:
     matchLabels:
-      app: lightBulb
+      app: light-bulb
   template:
     metadata:
       labels:
-        app: lightBulb
+        app: light-bulb
     spec:
       containers:
         - name: light-bulb-container
