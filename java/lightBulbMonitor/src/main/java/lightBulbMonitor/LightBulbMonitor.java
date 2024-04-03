@@ -1,28 +1,32 @@
-package lightBulb;
+package lightBulbMonitor;
 
 import java.io.IOException;
+
 import org.json.JSONObject;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DeliverCallback;
 
-public class LightBulbController {
+public class LightBulbMonitor {
 
     private final static String EXCHANGE="messages";
     private final static String EXCHANGE_TYPE = "fanout";
     
-    private final String queue_name = "";
-    private LightBulb lightBulb;
     private ConnectionFactory connectionFactory;
     private Connection connection;
     private Channel channel;
     private String hostname;
+    private String queue_name = "";
 
-    public LightBulbController(String rabbitmqHost, String rabbitmqPort, String rabbitmqUser, String rabbitmqPass, String hostname) {
-        this.lightBulb = new LightBulb(State.ON);
+    public LightBulbMonitor(String rabbitmqHost, String rabbitmqPort, String rabbitmqUser, String rabbitmqPass, String hostname) {
         this.connectionFactory = createConnectionFactory(rabbitmqHost, rabbitmqPort, rabbitmqUser, rabbitmqPass);
         this.hostname = hostname;
+    }
+
+    private void setupExchange() throws IOException {
+        this.channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
     }
 
     private ConnectionFactory createConnectionFactory(String rabbitmqHost, String rabbitmqPort, String rabbitmqUser, String rabbitmqPass) {
@@ -62,16 +66,14 @@ public class LightBulbController {
     }
 
     private void setupQueue() throws IOException {
-      //String queueName = channel.queueDeclare().getQueue();
-      channel.queueBind(this.queue_name, EXCHANGE,"");
-    }
-
-    private void setupExchange() throws IOException {
-        this.channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
-    }
+        String queueName = channel.queueDeclare().getQueue();
+        System.out.println("Created queue: "+queueName);
+        channel.queueBind(queueName, EXCHANGE,"");
+        this.queue_name = queueName;
+      }
 
     private void sendMessage(String message) throws IOException, InterruptedException {
-                this.channel.basicPublish(EXCHANGE, queue_name, null, message.getBytes());
+                this.channel.basicPublish(EXCHANGE, "", null, message.getBytes());
                 System.out.println("Sent '" + message + "'");
                 Thread.sleep(5000); // Sleep for 5 seconds
     }
@@ -88,16 +90,53 @@ public class LightBulbController {
         return variableValue;
     }
 
-    private JSONObject createMessage(){
+    private JSONObject createMessage(String target){
         JSONObject msg = new JSONObject();
         msg.put("hostname", this.hostname);
-        msg.put("bulb_state", this.lightBulb.getState());
+        msg.put("bulb_state", "triggered");
+        msg.put("target", target);
         msg.put("sent_timestamp", System.currentTimeMillis());
-        msg.put("time_turned_on", this.lightBulb.getTimeTurnedOn());
-
+        
         System.out.println("JSON message: " + msg);
 
         return msg;
+    }
+
+    private void consumeQueue() {
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println("Received '" + message + "'");
+            try {
+                JSONObject msg = new JSONObject(message);
+        
+                String bulb_state = msg.getString("bulb_state");
+                long sent_timestamp = msg.getLong("time_turned_on");
+                long currentTimestamp = System.currentTimeMillis();
+                long limit = 20_000; // 20 seconds in milliseconds
+        
+                System.out.println(bulb_state);
+                System.out.println(sent_timestamp);
+                System.out.println(limit);
+        
+                if (bulb_state.equals("on") && sent_timestamp + limit <= currentTimestamp) {
+                    // Timestamp is 20 seconds or more in the past
+                    System.out.println("Switching off light");
+                    this.sendMessage(this.createMessage(msg.getString("hostname")).toString());
+                } else {
+                    System.out.println("Not switching off light");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+        
+        
+        try {
+            System.out.println("Consuming on"+this.queue_name);
+            this.channel.basicConsume(this.queue_name, true, deliverCallback, consumerTag -> { });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -105,7 +144,7 @@ public class LightBulbController {
      * @param args
      */
     public static void main(String[] args) {
-        System.out.println("Starting Light Bulb.");
+        System.out.println("Starting LightBulbMonitor.");
 
         String rabbitmqHost = retrieveEnvVariable("RABBITMQ_HOST");
         String rabbitmqPort = retrieveEnvVariable("RABBITMQ_PORT");
@@ -113,20 +152,15 @@ public class LightBulbController {
         String rabbitmqPass = retrieveEnvVariable("RABBITMQ_PASS");
         String hostname = retrieveEnvVariable("HOSTNAME");
 
-        LightBulbController controller = new LightBulbController(rabbitmqHost, rabbitmqPort, rabbitmqUser, rabbitmqPass,hostname);
-        System.out.println(controller.lightBulb.toString());
+        LightBulbMonitor controller = new LightBulbMonitor(rabbitmqHost, rabbitmqPort, rabbitmqUser, rabbitmqPass,hostname);
 
-        controller.connectToRabbitMQ(20); // Retry up to 3 times
+        controller.connectToRabbitMQ(20); // Retry up to 20 times
         
         try {
-            //controller.setupQueue();
             controller.setupExchange();
-            while (true) {
-                controller.sendMessage(controller.createMessage().toString());
-            }
+            controller.setupQueue();
+            controller.consumeQueue();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
             System.exit(1);
         }

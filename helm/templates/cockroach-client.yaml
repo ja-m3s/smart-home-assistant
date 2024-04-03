@@ -22,7 +22,7 @@ spec:
       labels:
         app: cockroachdb-secure-client
     spec:
-      serviceAccountName: cockroachdb
+      serviceAccountName: cockroach-db
       containers:
       - name: cockroachdb-client-secure
         image: {{ .Values.cockroachClient.image }}

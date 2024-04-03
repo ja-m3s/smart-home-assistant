@@ -2,7 +2,7 @@
 
 #shared values for rabbitmq
 rabbitmq:
-  host: event-bus-service
+  host: rabbitmq
   port: "5672"  
   user: guest
   pass: guest
@@ -23,19 +23,19 @@ eventBus:
 
 lightBulb:
   enabled: true
-  image: eclipse-temurin-light-bulb:21
+  image: eclipse-temurin-light-bulb:latest
   numLights: 1
 
 lightBulbMonitor:
-  enabled: false
-  image: eclipse-temurin-light-bulb-monitor:21
+  enabled: true
+  image: eclipse-temurin-light-bulb-monitor:latest
 
 dbImporter:
-  enabled: false
-  image: eclipse-temurin-db-importer:21
+  enabled: true
+  image: eclipse-temurin-db-importer:latest
 
 cockroachClient:
-  enabled: false
+  enabled: true
   image: cockroachdb/cockroach:v23.2.3
 
 registryConf:

@@ -10,6 +10,3 @@ set -eux
 ./helm-delete.sh
 ./build-images.sh
 ./helm-deploy.sh
-
-#Check pods are up
-kubectl get pods

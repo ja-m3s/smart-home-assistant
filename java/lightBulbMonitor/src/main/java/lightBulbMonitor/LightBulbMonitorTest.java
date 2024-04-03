@@ -1,4 +1,4 @@
-package lightBulb;
+package lightBulbMonitor;
 
 public class LightBulbMonitorTest {
 

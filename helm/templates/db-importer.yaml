@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: dbImporter
+  name: db-importer
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: dbImporter
+      app: db-importer
   template:
     metadata:
       labels:
-        app: dbImporter
+        app: db-importer
     spec:
       containers:
         - name: db-importer-container
@@ -28,7 +28,7 @@ spec:
             - name: RABBITMQ_PASS
               value: {{ .Values.rabbitmq.pass }}
             - name: DB_HOST
-              value: "{{ .Release.Name }}-{{ .Values.dbconf.dbHost }}"
+              value: "{{ .Values.dbconf.dbHost }}"
             - name: DB_PORT
               value: "{{ .Values.dbconf.dbPort }}"
             - name: DB_NAME
