@@ -19,22 +19,25 @@ dbconf:
 
 eventBus:
   enabled: true
-  image: rabbitmq:alpine
+  image: rabbitmq:management-alpine
 
-light:
+lightBulb:
   enabled: true
+  image: eclipse-temurin-light-bulb:21
   numLights: 1
 
-lightMonitor:
+lightBulbMonitor:
   enabled: true
+  image: eclipse-temurin-light-bulb-monitor:21
 
 dbImporter:
   enabled: true
+  image: eclipse-temurin-db-importer:21
 
 cockroachClient:
-  enabled: true
+  enabled: false
   image: cockroachdb/cockroach:v23.2.3
 
-pythonConf:
+registryConf:
   registry: localhost:32000
-  image: python-custom:3.9.19-slim-bullseye
+  

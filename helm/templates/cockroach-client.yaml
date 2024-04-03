@@ -4,14 +4,14 @@ kind: ConfigMap
 metadata:
   name: cockroach-config
 data:
-{{ (.Files.Glob "raw-files/cockroach/*").AsConfig | indent 2 }}
+{{ (.Files.Glob "raw-files/schema.sh").AsConfig | indent 2 }}
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-cockroachdb-secure-client
+  name: cockroachdb-secure-client
 spec:
   replicas: 1
   selector:
@@ -22,7 +22,7 @@ spec:
       labels:
         app: cockroachdb-secure-client
     spec:
-      serviceAccountName: {{ .Release.Name }}-cockroachdb
+      serviceAccountName: cockroachdb
       containers:
       - name: cockroachdb-client-secure
         image: {{ .Values.cockroachClient.image }}
@@ -51,7 +51,7 @@ spec:
             defaultMode: 0400
             sources:
               - secret:
-                  name: {{ .Release.Name }}-cockroachdb-client-secret # Use the existing secret name
+                  name: cockroachdb-client-secret # Use the existing secret name
                   items:
                     - key: ca.crt
                       path: ca.crt

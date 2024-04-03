@@ -1,36 +1,23 @@
 {{- if .Values.dbImporter.enabled }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: db-importer-python-config
-data:
-{{ (.Files.Glob "raw-files/db-importer/*.py").AsConfig | indent 2  }}
-{{ (.Files.Glob "raw-files/shared/*.py").AsConfig | indent 2  }}
-
----
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-db-importer
+  name: dbImporter
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: db-importer
+      app: dbImporter
   template:
     metadata:
       labels:
-        app: db-importer
+        app: dbImporter
     spec:
       containers:
         - name: db-importer-container
-          command:
-            - "python"
-            - "/app/main.py"
-          image: "{{ .Values.pythonConf.registry }}/{{ .Values.pythonConf.image }}"
+          image: "{{ .Values.registryConf.registry }}/{{ .Values.dbImporter.image }}"
           ports:
-            - containerPort: {{ .Values.dbconf.dbPort }}
+            - containerPort: {{ .Values.rabbitmq.port }}
           env:
             - name: RABBITMQ_HOST
               value: {{ .Values.rabbitmq.host }}
@@ -52,11 +39,4 @@ spec:
               value: {{ .Values.dbconf.dbUserPassword }}
             - name: DB_SCHEMA
               value: {{ .Values.dbconf.dbSchema }}
-          volumeMounts:
-            - name: db-importer-python-config
-              mountPath: /app
-      volumes:
-        - name: db-importer-python-config
-          configMap:
-            name: db-importer-python-config
 {{- end }}

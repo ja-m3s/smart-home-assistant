@@ -1,0 +1,30 @@
+{{- if .Values.lightBulbMonitor.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lightBulbMonitor
+spec:
+  replicas: {{ .Values.lightBulbMonitor.numLights }}
+  selector:
+    matchLabels:
+      app: lightBulbMonitor
+  template:
+    metadata:
+      labels:
+        app: lightBulbMonitor
+    spec:
+      containers:
+        - name: light-bulb-monitor-container
+          image: "{{ .Values.registryConf.registry }}/{{ .Values.lightBulbMonitor.image }}"
+          ports:
+            - containerPort: {{ .Values.rabbitmq.port }}
+          env:
+            - name: RABBITMQ_HOST
+              value: {{ .Values.rabbitmq.host }}
+            - name: RABBITMQ_PORT
+              value: "{{ .Values.rabbitmq.port }}"
+            - name: RABBITMQ_USER
+              value: {{ .Values.rabbitmq.user }}
+            - name: RABBITMQ_PASS
+              value: {{ .Values.rabbitmq.pass }}
+{{- end }}

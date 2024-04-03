@@ -17,7 +17,11 @@ if [ $# -eq 0 ]; then
 fi
 
 # Build the python-custom image
-docker build -t "${REPO}/python-custom:3.9.19-slim-bullseye"  "${SCRIPT_DIR}/../docker/python-custom"
-docker push "${REPO}/python-custom:3.9.19-slim-bullseye"
+docker build -t "${REPO}/eclipse-temurin-light-bulb:21"  "${SCRIPT_DIR}/../../docker/lightBulb"
+docker push "${REPO}/eclipse-temurin-light-bulb:21"
 
+docker build -t "${REPO}/eclipse-temurin-light-bulb-monitor:21"  "${SCRIPT_DIR}/../../docker/lightBulbMonitor"
+docker push "${REPO}/eclipse-temurin-light-bulb-monitor:21"
 
+docker build -t "${REPO}/eclipse-temurin-db-importer:21"  "${SCRIPT_DIR}/../../docker/dbImporter"
+docker push "${REPO}/eclipse-temurin-db-importer:21"
