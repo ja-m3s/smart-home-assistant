@@ -1,16 +1,12 @@
 package lightBulbMonitor;
 
 import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
-public class LightBulbMonitor {
-
+public class LightBulbMonitorTest {
 
     @Test
-    public void testConsumeQueue() throws Exception {
-
-        //TODO Write the tests
+    public void testBoilerplate() {
         assertEquals(true,true);
     }
 }
