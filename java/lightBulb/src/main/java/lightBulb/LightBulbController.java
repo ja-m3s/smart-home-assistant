@@ -4,7 +4,6 @@ import java.io.IOException;
 import org.json.JSONObject;
 
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 /**
@@ -21,7 +20,6 @@ public class LightBulbController {
     private final String queue_name = "";
     private LightBulb lightBulb;
     private ConnectionFactory connectionFactory;
-    private Connection connection;
     private Channel channel;
     private String hostname;
 
