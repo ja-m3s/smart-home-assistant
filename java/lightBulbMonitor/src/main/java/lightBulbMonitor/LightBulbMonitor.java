@@ -1,6 +1,7 @@
 package lightBulbMonitor;
 
 import java.io.IOException;
+
 import org.json.JSONObject;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
@@ -15,13 +16,14 @@ public class LightBulbMonitor {
     private static final long LIGHT_ON_LIMIT = 20_000; //20 seconds
     private static final String LIGHT_BULB_HOSTNAME_REGEX="light-bulb-\\d+";
 
-    private Channel channel;
+    public Channel channel;
+    private String hostname;
 
     public LightBulbMonitor() {
-        this.channel = setupRabbitMQConnection();
+       // this.channel = setupRabbitMQConnection();
     }
 
-    private Channel setupRabbitMQConnection() {
+    public Channel setupRabbitMQConnection() {
         int maxRetries = getMaxRetries();
         for (int attempt = 1; maxRetries == 0 || attempt <= maxRetries; attempt++) {
             try {
@@ -59,9 +61,9 @@ public class LightBulbMonitor {
         return 0;
     }
 
-    private JSONObject createTriggeredMessage(String target){
+    public JSONObject createTriggeredMessage(String target){
         JSONObject msg = new JSONObject();
-        msg.put("hostname", retrieveEnvVariable("HOSTNAME"));
+        msg.put("hostname", hostname);
         msg.put("bulb_state", "triggered");
         msg.put("target", target);
         msg.put("sent_timestamp", System.currentTimeMillis());
@@ -120,7 +122,7 @@ public class LightBulbMonitor {
         }
     }
 
-    private void sendMessage(JSONObject message) throws IOException, InterruptedException {
+    public void sendMessage(JSONObject message) throws IOException, InterruptedException {
         this.channel.basicPublish(EXCHANGE, "", null, message.toString().getBytes());
         System.out.println("Sent '" + message + "'");
 }
@@ -136,7 +138,18 @@ public class LightBulbMonitor {
     public static void main(String[] args) {
         System.out.printf("Starting DBImporter.%n");
         LightBulbMonitor monitor = new LightBulbMonitor();
+        monitor.setupRabbitMQConnection();
+        monitor.setHostname(retrieveEnvVariable("HOSTNAME"));
         monitor.consumeQueue();
+    }
+
+    public void setChannel(Channel channel) {
+        // TODO Auto-generated method stub
+        this.channel = channel;
+    }
+
+    public void setHostname(String hostname){
+        this.hostname = hostname;
     }
 }
 
