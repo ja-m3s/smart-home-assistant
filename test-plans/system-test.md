@@ -19,7 +19,7 @@ Run ./helm-deploy.sh to deploy the applications to K8S.
 
 - Inserts all messages on the RabbitMQ exchange into the database (once)
 
-## Tests - Database
+## Tests Database
 
 - Has messages written to the messages table on the table.
 

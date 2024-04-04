@@ -1,10 +1,10 @@
-package dbImporter;
+package lightBulbMonitor;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class DBImporterTest {
+public class LightBulbMonitor {
 
 
     @Test
