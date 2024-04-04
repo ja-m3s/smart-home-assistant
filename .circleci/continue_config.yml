@@ -20,17 +20,17 @@ jobs:
             docker cp temp_container:/app/jacoco /tmp/jacoco-dbImporter
             docker rm temp_container
       - run:
-          name: Extract artifact from Docker image
+          name: Extract artifact from Docker image - light-bulb-monitor
           command: |
-            docker create --name temp_container ${DOCKER_REPO}:light-bulb-monitor-latest
-            docker cp temp_container:/app/jacaco /tmp/jacoco-lightBulbMonitor
-            docker rm temp_container
+            docker create --name temp_container_lbm ${DOCKER_REPO}:light-bulb-monitor-latest
+            docker cp temp_container_lbm:/app/jacaco /tmp/jacoco-lightBulbMonitor
+            docker rm temp_container_lbm
       - run:
-          name: Extract artifact from Docker image
+          name: Extract artifact from Docker image - light-bulb
           command: |
-            docker create --name temp_container ${DOCKER_REPO}:light-bulb-latest
-            docker cp temp_container:/app/jacoco /tmp/jacoco-lightBulb
-            docker rm temp_container
+            docker create --name temp_container_lb ${DOCKER_REPO}:light-bulb-latest
+            docker cp temp_container_lb:/app/jacoco /tmp/jacoco-lightBulb
+            docker rm temp_container_lb
       - store_artifacts:
           path: /tmp/jacoco-dbImporter
       - store_artifacts:
