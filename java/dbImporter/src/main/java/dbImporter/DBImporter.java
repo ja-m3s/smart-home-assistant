@@ -10,176 +10,109 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
+/**
+ * The DBImporter class is responsible for importing messages from a RabbitMQ queue
+ * and storing them into a database.
+ */
 public class DBImporter {
 
-    private final static String EXCHANGE = "messages";
+    private static final String EXCHANGE = "messages";
     private static final String EXCHANGE_TYPE = "fanout";
     private static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
+    private static final String QUEUE_NAME = "DBIMPORT";
 
-    private ConnectionFactory connectionFactory;
-    private com.rabbitmq.client.Connection connection;
-    private Channel channel;
-    private String hostname;
-    private String queue_name = "DBIMPORT";
-    private Connection dbConnection;
+    private final Channel channel;
+    private final Connection dbConnection;
 
-    public DBImporter(String rabbitmqHost, String rabbitmqPort, String rabbitmqUser, String rabbitmqPass, String hostname, String dbHost, String dbPort, String dbName, String dbUser, String dbPassword) {
-        this.connectionFactory = createConnectionFactory(rabbitmqHost, rabbitmqPort, rabbitmqUser, rabbitmqPass);
-        this.hostname = hostname;
-        this.dbConnection = setupDBConnection(dbHost, dbPort, dbName, dbUser, dbPassword, null); // Retry up to 20 times for database connection
-        setupRabbitMQConnection();
-
+    /**
+     * Constructor for DBImporter class. Initializes RabbitMQ and database connections.
+     */
+    public DBImporter() {
+        this.channel = setupRabbitMQConnection();
+        this.dbConnection = setupDBConnection();
     }
 
-    private ConnectionFactory createConnectionFactory(String rabbitmqHost, String rabbitmqPort, String rabbitmqUser, String rabbitmqPass) {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(rabbitmqHost);
-        factory.setPort(Integer.parseInt(rabbitmqPort));
-        factory.setUsername(rabbitmqUser);
-        factory.setPassword(rabbitmqPass);
-        return factory;
-    }
-
-    private void setupRabbitMQConnection() {
-        connectToRabbitMQ(20); // Retry up to 20 times
+    /**
+     * Sets up the RabbitMQ connection.
+     */
+    private Channel setupRabbitMQConnection() {
         try {
-            setupExchange();
-            setupQueue();
-            consumeQueue();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
+            factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
+            factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
+            factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
+            return factory.newConnection().createChannel();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set up RabbitMQ connection", e);
         }
     }
 
-    private void setupExchange() throws IOException {
-        this.channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
+    /**
+     * Sets up the database connection.
+     */
+    private Connection setupDBConnection() {
+        try {
+            String dbHost = retrieveEnvVariable("DB_HOST");
+            String dbPort = retrieveEnvVariable("DB_PORT");
+            String dbName = retrieveEnvVariable("DB_NAME");
+            String dbUser = retrieveEnvVariable("DB_USER");
+            String dbPassword = retrieveEnvVariable("DB_PASSWORD");
+
+            String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+            return DriverManager.getConnection(connectionString, dbUser, dbPassword);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to set up database connection", e);
+        }
     }
 
-    private void connectToRabbitMQ(int maxAttempts) {
-        int attempts = 0;
-        boolean connected = false;
+    /**
+     * Consumes messages from the RabbitMQ queue and inserts them into the database.
+     */
+    public void consumeQueue() {
+        try {
+            channel.exchangeDeclare(DBImporter.EXCHANGE, DBImporter.EXCHANGE_TYPE);
+            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+            channel.queueBind(QUEUE_NAME, EXCHANGE, "");
 
-        while (!connected && (maxAttempts == 0 || attempts < maxAttempts)) {
-            try {
-                this.connection = connectionFactory.newConnection();
-                this.channel = connection.createChannel();
-                connected = true;
-                System.out.println("Connected to RabbitMQ");
-            } catch (Exception e) {
-                attempts++;
-                System.out.println("Connection attempt #" + attempts + " failed. Retrying...");
-                try {
-                    Thread.sleep(1000); // Wait for 1 second before retrying
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                String message = new String(delivery.getBody(), "UTF-8");
+                System.out.printf("Received Message: %s%n", message);
+
+                try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
+                    preparedStatement.setString(1, message);
+                    preparedStatement.executeUpdate();
+                    System.out.printf("Inserted record into the database: %s from %s%n", message, retrieveEnvVariable("HOSTNAME"));
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-            }
-        }
+            };
 
-        if (!connected) {
-            System.out.println("Failed to connect to RabbitMQ after " + attempts + " attempts.");
-            System.exit(1);
+            System.out.printf("Starting to consume %s%n", QUEUE_NAME);
+            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
         }
     }
 
-    private void setupQueue() throws IOException {
-        String queueName = channel.queueDeclare(queue_name, false, false, false, null).getQueue();
-        channel.queueBind(queueName, EXCHANGE, "");
-        System.out.println("Created queue: " + queueName);
-    }
-
+    /**
+     * Retrieves an environment variable.
+     */
     private static String retrieveEnvVariable(String variableName) {
         String variableValue = System.getenv(variableName);
         if (variableValue == null) {
-            System.out.println("Environment variable " + variableName + " not found. Please set in system environment");
-            System.exit(1);
-        } else {
-            System.out.println("Value of " + variableName + ": " + variableValue);
+            throw new IllegalArgumentException("Environment variable " + variableName + " not found. Please set in system environment");
         }
         return variableValue;
     }
 
-    private void consumeQueue() {
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            String message = new String(delivery.getBody(), "UTF-8");
-            System.out.println("Received '" + message + "'");
-
-            // Perform database insert
-            try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
-                preparedStatement.setString(1, message);
-                preparedStatement.executeUpdate();
-                System.out.println("Inserted record from " + hostname + " into the database.");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        };
-
-        try {
-            System.out.println("Starting to consume " + this.queue_name);
-            this.channel.basicConsume(this.queue_name, true, deliverCallback, consumerTag -> {
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Connection setupDBConnection(String dbHost, String dbPort, String dbName, String dbUser, String dbPassword, Integer maxRetries) {
-        int retryDelay = 2000; // milliseconds
-        int retryCount = 0;
-
-        System.out.println("dbhost: " + dbHost + ":" + dbPort + "/" + dbName);
-        System.out.println("db credentials: " + dbUser + "/" + dbPassword);
-
-        while (maxRetries == null || retryCount < maxRetries) {
-            try {
-                // Establish connection to the database
-                Connection connection = DriverManager.getConnection(
-                        "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName,
-                        dbUser,
-                        dbPassword
-                );
-                System.out.println("Successfully established connection to database");
-                return connection;
-            } catch (SQLException e) {
-                System.out.println("Failed to connect to Database: " + e.getMessage());
-                if (maxRetries != null) {
-                    System.out.println("Retry " + (retryCount + 1) + " of " + maxRetries + "...");
-                } else {
-                    System.out.println("Retrying in " + retryDelay / 1000 + " seconds...");
-                }
-                try {
-                    Thread.sleep(retryDelay);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
-                retryCount++;
-            }
-        }
-
-        System.out.println("Failed to connect after retries.");
-        return null;
-    }
-
     /**
-     * MAIN
-     *
-     * @param args
+     * The main method. It starts the DBImporter.
      */
     public static void main(String[] args) {
-        System.out.println("Starting DBImporter.");
-
-        String rabbitmqHost = retrieveEnvVariable("RABBITMQ_HOST");
-        String rabbitmqPort = retrieveEnvVariable("RABBITMQ_PORT");
-        String rabbitmqUser = retrieveEnvVariable("RABBITMQ_USER");
-        String rabbitmqPass = retrieveEnvVariable("RABBITMQ_PASS");
-        String hostname = retrieveEnvVariable("HOSTNAME");
-        String dbHost = retrieveEnvVariable("DB_HOST");
-        String dbPort = retrieveEnvVariable("DB_PORT");
-        String dbName = retrieveEnvVariable("DB_NAME");
-        String dbUser = retrieveEnvVariable("DB_USER");
-        String dbPassword = retrieveEnvVariable("DB_PASSWORD");
-
-        DBImporter controller = new DBImporter(rabbitmqHost, rabbitmqPort, rabbitmqUser, rabbitmqPass, hostname, dbHost, dbPort, dbName, dbUser, dbPassword);
+        System.out.printf("Starting DBImporter.%n");
+        DBImporter importer = new DBImporter();
+        importer.consumeQueue();
     }
 }
