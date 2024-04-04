@@ -18,7 +18,7 @@ import com.rabbitmq.client.AMQP;
  */
 public class LightBulbController {
 
-    private final static String EXCHANGE = "messages";
+    final static String EXCHANGE = "messages";
     private final static String EXCHANGE_TYPE = "fanout";
     private final static Integer SEND_MESSAGE_POLL_TIME = 5000; // 5 seconds
     private static final Integer RABBITMQ_RETRY_INTERVAL = 1000; // 1 second
@@ -35,14 +35,12 @@ public class LightBulbController {
      */
     public LightBulbController() {
         this.lightBulb = new LightBulb();
-        this.hostname = retrieveEnvVariable("HOSTNAME");
-        connectToRabbitMQ();
     }
 
     /**
      * Connects to RabbitMQ server.
      */
-    private void connectToRabbitMQ() {
+    public void connectToRabbitMQ() {
         int attempts = 0;
         boolean connected = false;
         int maxAttempts = 0;
@@ -87,7 +85,7 @@ public class LightBulbController {
      * @param message The message to be sent.
      * @throws IOException If an I/O error occurs.
      */
-    private void sendMessage(JSONObject message) throws IOException {
+    void sendMessage(JSONObject message) throws IOException {
         channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
         channel.queueBind(this.queue_name, EXCHANGE, "");
         channel.basicPublish(EXCHANGE, queue_name, null, message.toString().getBytes());
@@ -116,7 +114,7 @@ public class LightBulbController {
      * 
      * @return The JSON message.
      */
-    private JSONObject createMessage() {
+    JSONObject createMessage() {
         JSONObject msg = new JSONObject();
         msg.put("hostname", this.hostname);
         msg.put("bulb_state", this.lightBulb.getState());
@@ -180,7 +178,8 @@ public class LightBulbController {
         System.out.println("Starting Light Bulb.");
         LightBulbController controller = new LightBulbController();
         System.out.println(controller.lightBulb.toString());
-
+        controller.setHostname(retrieveEnvVariable("HOSTNAME"));
+        controller.connectToRabbitMQ();
         try {
             controller.receiveMessage();
             while (true) {
@@ -190,5 +189,23 @@ public class LightBulbController {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
+
+    public String getHostname() {
+        return this.hostname;
+    }
+
+    public boolean getQueueName() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getQueueName'");
+    }
+
+    public void setHostname(String hostname) {
+        // TODO Auto-generated method stub
+        this.hostname = hostname;
     }
 }
