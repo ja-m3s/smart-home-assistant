@@ -13,14 +13,6 @@ public class LightBulbMonitor {
     private static final String QUEUE_NAME = "LIGHTBULBMONITOR";
     private static final int RETRY_DELAY_MILLIS = 1000;
     private static final long LIGHT_ON_LIMIT = 20_000; //20 seconds
-
-    /**
-     * Explanation of Regex:
-     * light-bulb-: Matches the literal string "light-bulb-".
-     * \w{10}: Matches any word character (letters, digits, or underscore) exactly 10 times. This corresponds to the 10 characters after the hyphen.
-     * -: Matches the hyphen.
-     * \w{4}: Matches any word character exactly 4 times. This corresponds to the 4 characters after the second hyphen.
-     */
     private static final String LIGHT_BULB_HOSTNAME_REGEX="light-bulb-\\d+";
 
     private Channel channel;

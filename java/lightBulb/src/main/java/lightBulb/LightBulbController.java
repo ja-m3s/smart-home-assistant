@@ -7,11 +7,17 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
+/**
+ * The LightBulbController class manages the communication with RabbitMQ 
+ * and controls the state of the light bulb.
+ */
 public class LightBulbController {
 
-    private final static String EXCHANGE="messages";
+    private final static String EXCHANGE = "messages";
     private final static String EXCHANGE_TYPE = "fanout";
-    
+    private final static Integer SEND_MESSAGE_POLL_TIME = 5000 ; //5 seconds
+    private static final Integer RABBITMQ_RETRY_INTERVAL = 1000; //1 second
+
     private final String queue_name = "";
     private LightBulb lightBulb;
     private ConnectionFactory connectionFactory;
@@ -19,36 +25,45 @@ public class LightBulbController {
     private Channel channel;
     private String hostname;
 
-    public LightBulbController(String rabbitmqHost, String rabbitmqPort, String rabbitmqUser, String rabbitmqPass, String hostname) {
-        this.lightBulb = new LightBulb(State.ON);
-        this.connectionFactory = createConnectionFactory(rabbitmqHost, rabbitmqPort, rabbitmqUser, rabbitmqPass);
-        this.hostname = hostname;
+    /**
+     * Constructs a LightBulbController object and initializes the light bulb state.
+     */
+    public LightBulbController() {
+        this.lightBulb = new LightBulb();
+        this.hostname = retrieveEnvVariable("HOSTNAME");
+        connectToRabbitMQ();
     }
 
-    private ConnectionFactory createConnectionFactory(String rabbitmqHost, String rabbitmqPort, String rabbitmqUser, String rabbitmqPass) {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(rabbitmqHost);
-        factory.setPort(Integer.parseInt(rabbitmqPort));
-        factory.setUsername(rabbitmqUser);
-        factory.setPassword(rabbitmqPass);
-        return factory;
-    }
-
-    private void connectToRabbitMQ(int maxAttempts) {
+    /**
+     * Connects to RabbitMQ server.
+     */
+    private void connectToRabbitMQ() {
         int attempts = 0;
         boolean connected = false;
+        int maxAttempts = 0;
+
+        String rabbitmqHost = retrieveEnvVariable("RABBITMQ_HOST");
+        String rabbitmqPort = retrieveEnvVariable("RABBITMQ_PORT");
+        String rabbitmqUser = retrieveEnvVariable("RABBITMQ_USER");
+        String rabbitmqPass = retrieveEnvVariable("RABBITMQ_PASS");
+
+        connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost(rabbitmqHost);
+        connectionFactory.setPort(Integer.parseInt(rabbitmqPort));
+        connectionFactory.setUsername(rabbitmqUser);
+        connectionFactory.setPassword(rabbitmqPass);
 
         while (!connected && (maxAttempts == 0 || attempts < maxAttempts)) {
             try {
-                this.connection = connectionFactory.newConnection();
-                this.channel = connection.createChannel();
+                this.channel = connectionFactory.newConnection().createChannel();
                 connected = true;
                 System.out.println("Connected to RabbitMQ");
             } catch (Exception e) {
                 attempts++;
-                System.out.println("Connection attempt #" + attempts + " failed. Retrying...");
+                System.out.printf("Connection attempt #%s attempts. Retrying... %n",attempts);
+
                 try {
-                    Thread.sleep(1000); // Wait for 1 second before retrying
+                    Thread.sleep(RABBITMQ_RETRY_INTERVAL); // Wait for 1 second before retrying
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 }
@@ -56,39 +71,48 @@ public class LightBulbController {
         }
 
         if (!connected) {
-            System.out.println("Failed to connect to RabbitMQ after " + attempts + " attempts.");
+            System.out.printf("Failed to connect to RabbitMQ after %s attempts.%n",attempts);
             System.exit(1);
         }
     }
 
-    private void setupQueue() throws IOException {
-      //String queueName = channel.queueDeclare().getQueue();
-      channel.queueBind(this.queue_name, EXCHANGE,"");
+    /**
+     * Sends a message to RabbitMQ.
+     * 
+     * @param message The message to be sent.
+     * @throws IOException If an I/O error occurs.
+     * @throws InterruptedException If the thread is interrupted while sleeping.
+     */
+    private void sendMessage(JSONObject message) throws IOException, InterruptedException {
+        channel.queueBind(this.queue_name, EXCHANGE, "");
+        channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
+        channel.basicPublish(EXCHANGE, queue_name, null, message.toString().getBytes());
+        System.out.printf("Sent %s%n", message);
     }
 
-    private void setupExchange() throws IOException {
-        this.channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
-    }
-
-    private void sendMessage(String message) throws IOException, InterruptedException {
-                this.channel.basicPublish(EXCHANGE, queue_name, null, message.getBytes());
-                System.out.println("Sent '" + message + "'");
-                Thread.sleep(5000); // Sleep for 5 seconds
-    }
-    
-
+    /**
+     * Retrieves the value of an environment variable.
+     * 
+     * @param variableName The name of the environment variable.
+     * @return The value of the environment variable.
+     */
     private static String retrieveEnvVariable(String variableName) {
         String variableValue = System.getenv(variableName);
         if (variableValue == null) {
-            System.out.println("Environment variable " + variableName + " not found. Please set in system environment");
+            System.out.printf("Environment variable %s not found. Please set in system environment %n",variableName);
             System.exit(1);
         } else {
-            System.out.println("Value of " + variableName + ": " + variableValue);
+            System.out.printf("Value of %s: %s", variableName,variableValue);
         }
         return variableValue;
     }
 
-    private JSONObject createMessage(){
+    /**
+     * Creates a JSON message containing information about the light bulb state.
+     * 
+     * @return The JSON message.
+     */
+    private JSONObject createMessage() {
         JSONObject msg = new JSONObject();
         msg.put("hostname", this.hostname);
         msg.put("bulb_state", this.lightBulb.getState());
@@ -101,34 +125,22 @@ public class LightBulbController {
     }
 
     /**
-     * MAIN
-     * @param args
+     * The main method.
+     * 
+     * @param args The command-line arguments.
      */
     public static void main(String[] args) {
         System.out.println("Starting Light Bulb.");
-
-        String rabbitmqHost = retrieveEnvVariable("RABBITMQ_HOST");
-        String rabbitmqPort = retrieveEnvVariable("RABBITMQ_PORT");
-        String rabbitmqUser = retrieveEnvVariable("RABBITMQ_USER");
-        String rabbitmqPass = retrieveEnvVariable("RABBITMQ_PASS");
-        String hostname = retrieveEnvVariable("HOSTNAME");
-
-        LightBulbController controller = new LightBulbController(rabbitmqHost, rabbitmqPort, rabbitmqUser, rabbitmqPass,hostname);
+        LightBulbController controller = new LightBulbController();
         System.out.println(controller.lightBulb.toString());
-
-        controller.connectToRabbitMQ(20); // Retry up to 3 times
         
         try {
-            //controller.setupQueue();
-            controller.setupExchange();
             while (true) {
-                controller.sendMessage(controller.createMessage().toString());
+                controller.sendMessage(controller.createMessage());
+                Thread.sleep(SEND_MESSAGE_POLL_TIME); // Sleep for 5 seconds
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.exit(1);
         }
     }
 }
