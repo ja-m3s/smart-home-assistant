@@ -5,7 +5,7 @@ parameters:
     type: boolean
     default: false
 jobs:
-  build-operating-system:
+  build-apps:
     machine:
       image: ubuntu-2204:current
     steps:
@@ -19,4 +19,4 @@ workflows:
     jobs:
       - build-apps:
           context:
-            - org-context
+            - org-context-smart-home
