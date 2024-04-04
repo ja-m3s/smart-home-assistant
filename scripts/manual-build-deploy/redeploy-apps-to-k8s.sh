@@ -8,5 +8,5 @@ set -eux
 
 #Build and redeploy
 ./helm-delete.sh
-./build-images.sh
+./build-images-manual.sh
 ./helm-deploy.sh
