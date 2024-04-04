@@ -20,6 +20,7 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 - /helm/raw-files - application configuration
 - /java - the java component project files
 - /scripts - helper scripts to aid with marshalling/unmarshalling/building the applications/admin
+- /test-plans - manual test plans for inspecting that the environment has been created correctly
 
 ## Technology Stack
 
