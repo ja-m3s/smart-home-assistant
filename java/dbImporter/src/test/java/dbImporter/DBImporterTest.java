@@ -42,7 +42,7 @@ public class DBImporterTest {
     @Test
     public void testConsumeQueue() throws Exception {
 
-        //TODO
+        //TODO Write the tests
         assertEquals(true,true);
     }
 }
