@@ -13,6 +13,30 @@ jobs:
       - run: 
           name: Build apps
           command: ./scripts/circleci-build/build-images-circle.sh
+      - run:
+          name: Extract artifact from Docker image - dbImporter
+          command: |
+            docker create --name temp_container ${DOCKER_REPO}:db-importer-latest
+            docker cp temp_container:/app/jacoco /tmp/jacoco-dbImporter
+            docker rm temp_container
+      - run:
+          name: Extract artifact from Docker image
+          command: |
+            docker create --name temp_container ${DOCKER_REPO}:light-bulb-monitor-latest
+            docker cp temp_container:/app/jacaco /tmp/jacoco-lightBulbMonitor
+            docker rm temp_container
+      - run:
+          name: Extract artifact from Docker image
+          command: |
+            docker create --name temp_container ${DOCKER_REPO}:light-bulb-latest
+            docker cp temp_container:/app/jacoco /tmp/jacoco-lightBulb
+            docker rm temp_container
+      - store_artifacts:
+          path: /tmp/jacoco-dbImporter
+      - store_artifacts:
+          path: /tmp/jacoco-lightBulbMonitor
+      - store_artifacts:
+          path: /tmp/jacoco-lightBulb
 workflows:
   workflow-build-apps:
     when: << pipeline.parameters.param-build-apps >>
