@@ -5,6 +5,12 @@ import org.json.JSONObject;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
+
+import lightBulb.LightBulb.LightBulbState;
+
+import com.rabbitmq.client.AMQP;
 
 /**
  * The LightBulbController class manages the communication with RabbitMQ 
@@ -14,8 +20,9 @@ public class LightBulbController {
 
     private final static String EXCHANGE = "messages";
     private final static String EXCHANGE_TYPE = "fanout";
-    private final static Integer SEND_MESSAGE_POLL_TIME = 5000 ; //5 seconds
-    private static final Integer RABBITMQ_RETRY_INTERVAL = 1000; //1 second
+    private final static Integer SEND_MESSAGE_POLL_TIME = 5000; // 5 seconds
+    private static final Integer RABBITMQ_RETRY_INTERVAL = 1000; // 1 second
+    protected static final String LIGHT_BULB_MONITOR_HOSTNAME_REGEX = "light-bulb-monitor-.+";;
 
     private final String queue_name = "";
     private LightBulb lightBulb;
@@ -58,7 +65,7 @@ public class LightBulbController {
                 System.out.println("Connected to RabbitMQ");
             } catch (Exception e) {
                 attempts++;
-                System.out.printf("Connection attempt #%s attempts. Retrying... %n",attempts);
+                System.out.printf("Connection attempt #%s attempts. Retrying... %n", attempts);
 
                 try {
                     Thread.sleep(RABBITMQ_RETRY_INTERVAL); // Wait for 1 second before retrying
@@ -69,7 +76,7 @@ public class LightBulbController {
         }
 
         if (!connected) {
-            System.out.printf("Failed to connect to RabbitMQ after %s attempts.%n",attempts);
+            System.out.printf("Failed to connect to RabbitMQ after %s attempts.%n", attempts);
             System.exit(1);
         }
     }
@@ -79,9 +86,8 @@ public class LightBulbController {
      * 
      * @param message The message to be sent.
      * @throws IOException If an I/O error occurs.
-     * @throws InterruptedException If the thread is interrupted while sleeping.
      */
-    private void sendMessage(JSONObject message) throws IOException, InterruptedException {
+    private void sendMessage(JSONObject message) throws IOException {
         channel.queueBind(this.queue_name, EXCHANGE, "");
         channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
         channel.basicPublish(EXCHANGE, queue_name, null, message.toString().getBytes());
@@ -97,10 +103,10 @@ public class LightBulbController {
     private static String retrieveEnvVariable(String variableName) {
         String variableValue = System.getenv(variableName);
         if (variableValue == null) {
-            System.out.printf("Environment variable %s not found. Please set in system environment %n",variableName);
+            System.out.printf("Environment variable %s not found. Please set in system environment %n", variableName);
             System.exit(1);
         } else {
-            System.out.printf("Value of %s: %s", variableName,variableValue);
+            System.out.printf("Value of %s: %s%n", variableName, variableValue);
         }
         return variableValue;
     }
@@ -123,6 +129,49 @@ public class LightBulbController {
     }
 
     /**
+     * Receives a message from RabbitMQ.
+     */
+    private void receiveMessage() throws IOException {
+        channel.queueDeclare(queue_name, false, false, false, null);
+        channel.queueBind(queue_name, EXCHANGE, "");
+
+        System.out.println("Waiting for messages. To exit press Ctrl+C");
+
+        DefaultConsumer consumer = new DefaultConsumer(channel) {
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+                    byte[] body) throws IOException {
+                String message = new String(body, "UTF-8");
+                System.out.println("Received message: " + message);
+                // Make json object from message
+                JSONObject msg = new JSONObject(message);
+
+                // Check message is from a lightbulb, if not, disregard it.
+                String origin_hostname = msg.getString("hostname");
+                System.out.printf("Message from: %s%n", origin_hostname);
+                if (! origin_hostname.matches(LIGHT_BULB_MONITOR_HOSTNAME_REGEX)) {
+                    System.out.println("origin_hostname is not a light bulb monitor. Disregarding message.");
+                    return;
+                }
+                System.out.println("origin_hostname is a light bulb monitor. Processing.");
+                String target = msg.getString("target");
+
+                //is message for this light
+                if (target.equals(hostname)) {
+                    System.out.println("Switching off light");
+                    lightBulb.setState(LightBulbState.OFF);
+                }
+            }
+        };
+
+        try {
+            channel.basicConsume(queue_name, true, consumer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * The main method.
      * 
      * @param args The command-line arguments.
@@ -131,8 +180,9 @@ public class LightBulbController {
         System.out.println("Starting Light Bulb.");
         LightBulbController controller = new LightBulbController();
         System.out.println(controller.lightBulb.toString());
-        
+
         try {
+            controller.receiveMessage();
             while (true) {
                 controller.sendMessage(controller.createMessage());
                 Thread.sleep(SEND_MESSAGE_POLL_TIME); // Sleep for 5 seconds

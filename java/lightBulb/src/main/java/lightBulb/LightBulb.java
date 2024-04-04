@@ -1,10 +1,10 @@
 package lightBulb;
 
 public class LightBulb {
-    
+
     public enum LightBulbState {
         ON("on"),
-        ACTIVE("active"),
+        OFF("off"),
         TRIGGERED("triggered");
 
         private final String value;
@@ -36,7 +36,15 @@ public class LightBulb {
         return this.state.getValue();
     }
 
+    public void setState(LightBulbState state) {
+        this.state = state;
+    }
+
     public long getTimeTurnedOn() {
         return timeTurnedOn;
+    }
+
+    public void setTimeTurnedOn(long timeTurnedOn) {
+        this.timeTurnedOn = timeTurnedOn;
     }
 }
