@@ -10,5 +10,5 @@ RUN mvn package
 
 FROM eclipse-temurin:22_36-jre-jammy as production
 COPY --from=build /app/target/lightBulb-0.0.1-SNAPSHOT-jar-with-dependencies.jar /opt/app/app.jar
-COPY --from=build /app/target/jacoco /app/jacoco
+COPY --from=build /app/target/site/jacoco /app/jacoco
 CMD ["java", "-jar", "/opt/app/app.jar"]
