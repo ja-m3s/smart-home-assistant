@@ -16,8 +16,6 @@ if [ $# -eq 0 ]; then
     echo "You can pass a custom repository as an argument. Example: ./build-images.sh mycustomrepo:5000"
 fi
 
-microk8s ctr images rm $(microk8s ctr images ls name~='localhost:32000' | awk {'print $1'})
-
 # Build the python-custom image
 docker build -t "${REPO}/eclipse-temurin-db-importer:latest" "${SCRIPT_DIR}/../../java/dbImporter"
 docker push "${REPO}/eclipse-temurin-db-importer:latest"
