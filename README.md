@@ -7,17 +7,18 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 ## Components Description
 
 - event-bus - a RabbitMQ messaging queue bus
-- light - a simple java program representing a 'light', it has a state of on and off.
-- light monitor - a simple java program representing a light monitor, sends a message to a light when it's been on for longer than necessary.
+- light-bulb - simple java program representing a light bulb
+- light-bulb-monitor - a simple java program representing a light bulb monitor, sends a message to a light when it's been on for longer than necessary.
 - cockroachdb - database - stores messages in a database.
 - db_exporter - a simple java program which feeds from the event-bus and inserts records into the database.
-- cockroachdb-client - a single pod for database administration and automatic schema deployment.
+- cockroachdb-secure-client - automatic schema deployment.
 
 ## Project Layout
 
 - /docker - custom Dockerfiles
 - /helm - deployment configuration
 - /helm/raw-files - application configuration
+- /java - the java component project files
 - /scripts - helper scripts to aid with marshalling/unmarshalling/building the applications/admin
 
 ## Technology Stack
