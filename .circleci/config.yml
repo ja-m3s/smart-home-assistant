@@ -9,3 +9,4 @@ workflows:
           mapping: |
             java/.* param-build-apps true
             .circleci/.* param-build-apps true
+            scripts/circleci-build/.* param-build-apps true
