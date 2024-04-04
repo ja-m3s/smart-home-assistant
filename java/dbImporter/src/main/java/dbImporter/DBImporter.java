@@ -10,68 +10,90 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
-/**
- * The DBImporter class is responsible for importing messages from a RabbitMQ queue
- * and storing them into a database.
- */
 public class DBImporter {
 
     private static final String EXCHANGE = "messages";
     private static final String EXCHANGE_TYPE = "fanout";
     private static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
     private static final String QUEUE_NAME = "DBIMPORT";
+    private static final int RETRY_DELAY_MILLIS = 1000;
 
-    private final Channel channel;
-    private final Connection dbConnection;
+    private Channel channel;
+    private Connection dbConnection;
 
-    /**
-     * Constructor for DBImporter class. Initializes RabbitMQ and database connections.
-     */
     public DBImporter() {
         this.channel = setupRabbitMQConnection();
         this.dbConnection = setupDBConnection();
     }
 
-    /**
-     * Sets up the RabbitMQ connection.
-     */
     private Channel setupRabbitMQConnection() {
-        try {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
-            factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
-            factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
-            factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
-            return factory.newConnection().createChannel();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to set up RabbitMQ connection", e);
+        int maxRetries = getMaxRetries();
+        for (int attempt = 1; maxRetries == 0 || attempt <= maxRetries; attempt++) {
+            try {
+                ConnectionFactory factory = new ConnectionFactory();
+                factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
+                factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
+                factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
+                factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
+                return factory.newConnection().createChannel();
+            } catch (Exception e) {
+                System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
+                if (maxRetries != 0 && attempt == maxRetries) {
+                    throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
+                }
+                try {
+                    Thread.sleep(RETRY_DELAY_MILLIS);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
+        return null; // Unreachable code, added to satisfy compiler
     }
 
-    /**
-     * Sets up the database connection.
-     */
     private Connection setupDBConnection() {
-        try {
-            String dbHost = retrieveEnvVariable("DB_HOST");
-            String dbPort = retrieveEnvVariable("DB_PORT");
-            String dbName = retrieveEnvVariable("DB_NAME");
-            String dbUser = retrieveEnvVariable("DB_USER");
-            String dbPassword = retrieveEnvVariable("DB_PASSWORD");
+        int maxRetries = getMaxRetries();
+        for (int attempt = 1; maxRetries == 0 || attempt <= maxRetries; attempt++) {
+            try {
+                String dbHost = retrieveEnvVariable("DB_HOST");
+                String dbPort = retrieveEnvVariable("DB_PORT");
+                String dbName = retrieveEnvVariable("DB_NAME");
+                String dbUser = retrieveEnvVariable("DB_USER");
+                String dbPassword = retrieveEnvVariable("DB_PASSWORD");
 
-            String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
-            return DriverManager.getConnection(connectionString, dbUser, dbPassword);
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to set up database connection", e);
+                String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+                return DriverManager.getConnection(connectionString, dbUser, dbPassword);
+            } catch (SQLException e) {
+                System.out.printf("Failed to connect to database on attempt #%d. Retrying...%n", attempt);
+                if (maxRetries != 0 && attempt == maxRetries) {
+                    throw new RuntimeException("Failed to connect to database after multiple attempts.", e);
+                }
+                try {
+                    Thread.sleep(RETRY_DELAY_MILLIS);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
+        return null; // Unreachable code, added to satisfy compiler
     }
 
-    /**
-     * Consumes messages from the RabbitMQ queue and inserts them into the database.
-     */
+    private int getMaxRetries() {
+        String maxRetriesStr = System.getenv("MAX_CONNECTION_RETRIES");
+        if (maxRetriesStr != null) {
+            try {
+                return Integer.parseInt(maxRetriesStr);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid value for MAX_CONNECTION_RETRIES. Using default value.");
+            }
+        }
+        // Default to infinite retries if MAX_CONNECTION_RETRIES is not set or invalid
+        return 0;
+    }
+
     public void consumeQueue() {
         try {
-            channel.exchangeDeclare(DBImporter.EXCHANGE, DBImporter.EXCHANGE_TYPE);
+            channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
             channel.queueDeclare(QUEUE_NAME, false, false, false, null);
             channel.queueBind(QUEUE_NAME, EXCHANGE, "");
 
@@ -96,9 +118,6 @@ public class DBImporter {
         }
     }
 
-    /**
-     * Retrieves an environment variable.
-     */
     private static String retrieveEnvVariable(String variableName) {
         String variableValue = System.getenv(variableName);
         if (variableValue == null) {
@@ -107,9 +126,6 @@ public class DBImporter {
         return variableValue;
     }
 
-    /**
-     * The main method. It starts the DBImporter.
-     */
     public static void main(String[] args) {
         System.out.printf("Starting DBImporter.%n");
         DBImporter importer = new DBImporter();
