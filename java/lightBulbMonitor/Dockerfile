@@ -5,6 +5,7 @@ COPY pom.xml ./
 RUN mvn dependency:resolve
 COPY src ./src
 RUN mvn test
+RUN mvn clean verify
 RUN mvn package
 
 FROM eclipse-temurin:22_36-jre-jammy as production
