@@ -19,17 +19,11 @@ fi
 microk8s ctr images rm $(microk8s ctr images ls name~='localhost:32000' | awk {'print $1'})
 
 # Build the python-custom image
-cd "${SCRIPT_DIR}/../../java/dbImporter"
-mvn clean package
-docker build -t "${REPO}/eclipse-temurin-db-importer:latest" -f "${SCRIPT_DIR}/../../docker/dbImporter.Dockerfile" "${SCRIPT_DIR}/../../java/dbImporter"
+docker build -t "${REPO}/eclipse-temurin-db-importer:latest" "${SCRIPT_DIR}/../../java/dbImporter"
 docker push "${REPO}/eclipse-temurin-db-importer:latest"
 
-cd "${SCRIPT_DIR}/../../java/lightBulb"
-mvn clean package
-docker build -t "${REPO}/eclipse-temurin-light-bulb:latest" -f "${SCRIPT_DIR}/../../docker/lightBulb.Dockerfile" "${SCRIPT_DIR}/../../java/lightBulb"
+docker build -t "${REPO}/eclipse-temurin-light-bulb:latest" "${SCRIPT_DIR}/../../java/lightBulb"
 docker push "${REPO}/eclipse-temurin-light-bulb:latest"
 
-cd "${SCRIPT_DIR}/../../java/lightBulbMonitor"
-mvn clean package
-docker build -t "${REPO}/eclipse-temurin-light-bulb-monitor:latest" -f "${SCRIPT_DIR}/../../docker/lightBulbMonitor.Dockerfile" "${SCRIPT_DIR}/../../java/lightBulbMonitor"
+docker build -t "${REPO}/eclipse-temurin-light-bulb-monitor:latest" "${SCRIPT_DIR}/../../java/lightBulbMonitor"
 docker push "${REPO}/eclipse-temurin-light-bulb-monitor:latest"
