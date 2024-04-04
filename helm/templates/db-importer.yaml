@@ -13,9 +13,11 @@ spec:
       labels:
         app: db-importer
     spec:
+      imagePullSecrets:
+      - name: registry-credentials
       containers:
         - name: db-importer-container
-          image: "{{ .Values.registryConf.registry }}/{{ .Values.dbImporter.image }}"
+          image: "{{ .Values.registryConf.registry }}{{ .Values.dbImporter.image }}"
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
           env:

@@ -16,6 +16,7 @@ if [ $# -eq 0 ]; then
     echo "You can pass a custom repository as an argument. Example: ./build-images.sh mycustomrepo:5000"
 fi
 
+#Might need to login if using remote repo.
 #docker login --username $DOCKER_USER --password $DOCKER_PASS
 
 # Build the python-custom image

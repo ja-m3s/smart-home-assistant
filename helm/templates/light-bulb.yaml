@@ -13,9 +13,11 @@ spec:
       labels:
         app: light-bulb
     spec:
+      imagePullSecrets:
+      - name: registry-credentials
       containers:
         - name: light-bulb-container
-          image: "{{ .Values.registryConf.registry }}/{{ .Values.lightBulb.image }}"
+          image: "{{ .Values.registryConf.registry }}{{ .Values.lightBulb.image }}"
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
           env:

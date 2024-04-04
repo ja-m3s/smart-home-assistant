@@ -2,3 +2,5 @@ Chart.lock
 target
 .settings
 .vscode
+config.json
+config.json.b64

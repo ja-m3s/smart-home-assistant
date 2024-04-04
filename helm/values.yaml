@@ -23,21 +23,21 @@ eventBus:
 
 lightBulb:
   enabled: true
-  image: eclipse-temurin-light-bulb:latest
+  image: smart-home-assistant:light-bulb-latest
   numLights: 1
 
 lightBulbMonitor:
   enabled: true
-  image: eclipse-temurin-light-bulb-monitor:latest
+  image: smart-home-assistant:light-bulb-monitor-latest
 
 dbImporter:
   enabled: true
-  image: eclipse-temurin-db-importer:latest
+  image: smart-home-assistant:db-importer-latest
 
 cockroachClient:
   enabled: true
   image: cockroachdb/cockroach:v23.2.3
 
 registryConf:
-  registry: localhost:32000
+  registry: "dockerjam3s/"
   

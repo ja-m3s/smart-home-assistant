@@ -43,3 +43,8 @@ All configuration can be found within the Helm .yaml files, either in values.yam
 3.  amend helm values.yaml and change python.registry to your <<your registry>>
 4. point kubectl to K8S cluster
 5.  helm install "release-name" ../helm
+
+
+##TODO
+
+#Document docker login process for microk8s

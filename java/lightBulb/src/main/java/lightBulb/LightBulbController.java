@@ -88,8 +88,8 @@ public class LightBulbController {
      * @throws IOException If an I/O error occurs.
      */
     private void sendMessage(JSONObject message) throws IOException {
-        channel.queueBind(this.queue_name, EXCHANGE, "");
         channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
+        channel.queueBind(this.queue_name, EXCHANGE, "");
         channel.basicPublish(EXCHANGE, queue_name, null, message.toString().getBytes());
         System.out.printf("Sent %s%n", message);
     }
