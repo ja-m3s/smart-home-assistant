@@ -1,0 +1,11 @@
+version: 2.1
+setup: true
+orbs:
+  path-filtering: circleci/path-filtering@1.0.0
+workflows:
+  setup: 
+    jobs:
+      - path-filtering/filter:
+          mapping: |
+            java/.* param-build-apps true
+            .circleci/.* param-build-apps true

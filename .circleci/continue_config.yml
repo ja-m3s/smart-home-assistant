@@ -1,0 +1,22 @@
+version: 2.1
+
+parameters:
+  param-build-apps:
+    type: boolean
+    default: false
+jobs:
+  build-operating-system:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run: 
+          name: Build apps
+          command: ./scripts/circleci-build/build-images-circle.sh
+workflows:
+  workflow-build-apps:
+    when: << pipeline.parameters.param-build-apps >>
+    jobs:
+      - build-apps:
+          context:
+            - org-context
