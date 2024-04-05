@@ -1,5 +1,6 @@
 FROM maven:3.9.6-eclipse-temurin-22 as build
 WORKDIR /app
+RUN apt update && apt install zip
 COPY pom.xml ./
 RUN mvn dependency:resolve
 COPY src ./src
