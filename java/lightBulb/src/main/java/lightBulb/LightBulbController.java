@@ -24,7 +24,7 @@ public class LightBulbController {
     private static final Integer RABBITMQ_RETRY_INTERVAL = 1000; // 1 second
     protected static final String LIGHT_BULB_MONITOR_HOSTNAME_REGEX = "light-bulb-monitor-.+";;
 
-    private final String queue_name = "";
+    private final static String QUEUE_NAME = "";
     private LightBulb lightBulb;
     private ConnectionFactory connectionFactory;
     private Channel channel;
@@ -87,8 +87,8 @@ public class LightBulbController {
      */
     void sendMessage(JSONObject message) throws IOException {
         channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
-        channel.queueBind(this.queue_name, EXCHANGE, "");
-        channel.basicPublish(EXCHANGE, queue_name, null, message.toString().getBytes());
+        channel.queueBind(QUEUE_NAME, EXCHANGE, "");
+        channel.basicPublish(EXCHANGE, QUEUE_NAME, null, message.toString().getBytes());
         System.out.printf("Sent %s%n", message);
     }
 
@@ -130,8 +130,8 @@ public class LightBulbController {
      * Receives a message from RabbitMQ.
      */
     private void receiveMessage() throws IOException {
-        channel.queueDeclare(queue_name, false, false, false, null);
-        channel.queueBind(queue_name, EXCHANGE, "");
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.queueBind(QUEUE_NAME, EXCHANGE, "");
 
         System.out.println("Waiting for messages. To exit press Ctrl+C");
 
@@ -163,7 +163,7 @@ public class LightBulbController {
         };
 
         try {
-            channel.basicConsume(queue_name, true, consumer);
+            channel.basicConsume(QUEUE_NAME, true, consumer);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -199,9 +199,8 @@ public class LightBulbController {
         return this.hostname;
     }
 
-    public boolean getQueueName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getQueueName'");
+    public String getQueueName() {
+        return QUEUE_NAME;
     }
 
     public void setHostname(String hostname) {
