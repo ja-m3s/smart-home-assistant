@@ -3,8 +3,9 @@
 ## Pre-Test
 
  Deploy the applications to K8S via helm: 
-     ./helm-deploy.sh
-
+```
+./helm-deploy.sh
+```
 ## Tests - Light Bulb
 
 - Sends Messages containing details of the light bulb
