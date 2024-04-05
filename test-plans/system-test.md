@@ -2,7 +2,8 @@
 
 ## Pre-Test
 
-Run ./helm-deploy.sh to deploy the applications to K8S.
+ Deploy the applications to K8S via helm: 
+    ./helm-deploy.sh to deploy the applications to K8S.
 
 ## Tests - Light Bulb
 
