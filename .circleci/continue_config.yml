@@ -69,7 +69,7 @@ jobs:
       - run:
           name: Extract Code Coverage - light-bulb-monitor
           command: |
-            docker build -t temp_build_lbm java/lightBulbMonitor
+            docker build -t temp_build_lbm java/lightBulbMonitor --target build
             docker create --name temp_container_lbm temp_build_lbm
             docker cp temp_container_lbm:/app/target/site/jacoco /tmp/jacoco-lightBulbMonitor
             docker rm temp_container_lbm
