@@ -86,21 +86,27 @@ workflows:
   workflow-build-db-importer:
     when: << pipeline.parameters.param-build-db-importer >>
     jobs:
-      - docker-login
+      - docker-login:
+         context:
+            - org-context-smart-home
       - build-db-importer:
           context:
             - org-context-smart-home
   workflow-build-light-bulb:
     when: << pipeline.parameters.param-build-light-bulb >>
     jobs:
-      - docker-login
+      - docker-login:
+          context:
+            - org-context-smart-home
       - build-light-bulb:
           context:
             - org-context-smart-home
   workflow-build-light-bulb-monitor:
     when: << pipeline.parameters.param-build-light-bulb-monitor >>
     jobs:
-      - docker-login
+      - docker-login:
+          context:
+            - org-context-smart-home
       - build-light-bulb-monitor:
           context:
             - org-context-smart-home
