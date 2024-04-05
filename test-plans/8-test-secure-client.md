@@ -2,5 +2,6 @@
 
 Steps | Expected Result | Actual Result | Pass/Fail |
 | --- | --------------- | ------------- | ----------|
-| | Applys the schema to the database | | |
-| |  Can manipulate the database | | |
+| | The secure client is in 'Running' state | | |
+| | The schema has been successfully applied to the database | | |
+
