@@ -27,7 +27,7 @@ jobs:
             docker create --name temp_container_dbi temp_build_dbi
             docker cp temp_container_dbi:/app/target/site/jacoco /tmp/jacoco
             docker rm temp_container_dbi
-            zip -r /tmp/jacoco-dbImporter.zip /tmp/jacoco
+            zip -jr /tmp/jacoco-dbImporter.zip /tmp/jacoco
       - run: 
           name: Build dbImporter
           command: |
@@ -49,7 +49,7 @@ jobs:
             docker create --name temp_container_lb temp_build_lb
             docker cp temp_container_lb:/app/target/site/jacoco /tmp/jacoco
             docker rm temp_container_lb
-            zip -r /tmp/jacoco-lightBulb.zip /tmp/jacoco
+            zip -jr /tmp/jacoco-lightBulb.zip /tmp/jacoco
       - store_artifacts:
           path: /tmp/jacoco-lightBulb.zip
           destination: jacoco-lightBulb.zip
@@ -71,7 +71,7 @@ jobs:
             docker create --name temp_container_lbm temp_build_lbm
             docker cp temp_container_lbm:/app/target/site/jacoco /tmp/jacoco
             docker rm temp_container_lbm
-            zip -r /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco
+            zip -jr /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco
       - store_artifacts:
           path: /tmp/jacoco-lightBulbMonitor.zip
           destination: jacoco-lightBulbMonitor.zip
