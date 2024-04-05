@@ -26,4 +26,6 @@ GRANT ALL ON ${DB_SCHEMA}.messages TO ${DB_USER};
 
 # Execute SQL commands in CockroachDB
 echo "$SQL_COMMANDS" | ./cockroach sql --certs-dir=./cockroach-certs --host=cockroach-db-public 
-exit 0
+
+# Keep pod from shutting down by sleeping a good, long while.
+sleep 5000d
