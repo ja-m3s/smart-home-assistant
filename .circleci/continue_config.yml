@@ -29,11 +29,11 @@ jobs:
           name: Extract artifact from Docker image - dbImporter
           command: |
             docker create --name temp_container ${DOCKER_REPO}:db-importer-latest
-            docker cp temp_container:/app/jacoco jacoco-dbImporter
+            docker cp temp_container:/app/jacoco /tmp/jacoco-dbImporter
             docker rm temp_container
-            zip jacoco-dbImporter.zip jacoco-dbImporter
+            zip /tmp/jacoco-dbImporter.zip /tmp/jacoco-dbImporter
       - store_artifacts:
-          path: jacoco-dbImporter.zip
+          path: /tmp/jacoco-dbImporter.zip
   build-light-bulb:
     machine:
       image: ubuntu-2204:current
@@ -52,11 +52,11 @@ jobs:
           name: Extract artifact from Docker image - light-bulb
           command: |
             docker create --name temp_container_lb ${DOCKER_REPO}:light-bulb-latest
-            docker cp temp_container_lb:/app/jacoco jacoco-lightBulb
+            docker cp temp_container_lb:/app/jacoco /tmp/jacoco-lightBulb
             docker rm temp_container_lb
-            zip jacoco-lightBulb.zip jacoco-lightBulb
+            zip /tmp/jacoco-lightBulb.zip /tmp/jacoco-lightBulb
       - store_artifacts:
-          path: jacoco-lightBulb.zip
+          path: /tmp/jacoco-lightBulb.zip
   build-light-bulb-monitor:
     machine:
       image: ubuntu-2204:current
@@ -75,11 +75,11 @@ jobs:
           name: Extract artifact from Docker image - light-bulb-monitor
           command: |
             docker create --name temp_container_lbm ${DOCKER_REPO}:light-bulb-monitor-latest
-            docker cp temp_container_lbm:/app/jacoco jacoco-lightBulbMonitor
+            docker cp temp_container_lbm:/app/jacoco /tmp/jacoco-lightBulbMonitor
             docker rm temp_container_lbm
-            zip jacoco-lightBulbMonitor.zip jacoco-lightBulbMonitor
+            zip /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco-lightBulbMonitor
       - store_artifacts:
-          path: jacoco-lightBulbMonitor.zip
+          path: /tmp/jacoco-lightBulbMonitor.zip
 workflows:
   workflow-build-db-importer:
     when: << pipeline.parameters.param-build-db-importer >>
