@@ -20,20 +20,22 @@ jobs:
           name: Docker login
           command: |
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
+      - run:
+          name: Extract Code Coverage - db-importer
+          command: |
+            docker build -t temp_build_dbi java/dbImporter --target build
+            docker create --name temp_container_dbi temp_build_dbi
+            docker cp temp_container_dbi:/app/target/site/jacoco /tmp/jacoco-dbImporter
+            docker rm temp_container_dbi
+            zip -r /tmp/jacoco-dbImporter.zip /tmp/jacoco-lightBulb
       - run: 
           name: Build dbImporter
           command: |
             docker build -t "${DOCKER_REPO}:db-importer-latest" "java/dbImporter"
             docker push "${DOCKER_REPO}:db-importer-latest"
-      - run:
-          name: Extract artifact from Docker image - dbImporter
-          command: |
-            docker create --name temp_container_dbi ${DOCKER_REPO}:db-importer-latest
-            docker cp temp_container_dbi:/app/jacoco /tmp/jacoco-dbImporter
-            docker rm temp_container_dbi
-            zip -r /tmp/jacoco-dbImporter.zip /tmp/jacoco-dbImporter
       - store_artifacts:
           path: /tmp/jacoco-dbImporter.zip
+          destination: jacoco-dbImporter.zip
   build-light-bulb:
     machine:
       image: ubuntu-2204:current
@@ -43,21 +45,23 @@ jobs:
           name: Docker login
           command: |
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
+       - run:
+          name: Extract Code Coverage - light-bulb
+          command: |
+            docker build -t temp_build_lb java/lightBulb --target build
+            docker create --name temp_container_lb temp_build_lb
+            docker cp temp_container_lb:/app/target/site/jacoco /tmp/jacoco-lightBulb
+            docker rm temp_container_lb
+            zip -r /tmp/jacoco-lightBulb.zip /tmp/jacoco-lightBulb
+        - store_artifacts:
+          path: /tmp/jacoco-lightBulb.zip
+          destination: jacoco-lightBulb.zip
       - run: 
           name: Build light-bulb
           command: |
             docker build -t "${DOCKER_REPO}:light-bulb-latest" "java/lightBulb"
             docker push "${DOCKER_REPO}:light-bulb-latest"
-      - run:
-          name: Extract artifact from Docker image - light-bulb
-          command: |
-            docker create --name temp_container_lb ${DOCKER_REPO}:light-bulb-latest
-            docker cp temp_container_lb:/app/jacoco /tmp/jacoco-lightBulb
-            docker rm temp_container_lb
-            zip -r /tmp/jacoco-lightBulb.zip /tmp/jacoco-lightBulb
-      - store_artifacts:
-          path: /tmp/jacoco-lightBulb.zip
-  build-light-bulb-monitor:
+  build-light-bulb:
     machine:
       image: ubuntu-2204:current
     steps:
@@ -76,6 +80,7 @@ jobs:
             zip -r /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco-lightBulbMonitor
       - store_artifacts:
           path: /tmp/jacoco-lightBulbMonitor.zip
+          destination: jacoco-lightBulbMonitor.zip
       - run: 
           name: Build light-bulb-monitor
           command: |
