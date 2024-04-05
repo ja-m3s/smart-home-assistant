@@ -17,17 +17,17 @@ jobs:
       - run: 
           name: Build dbImporter
           command: |
-            docker build -t "${DOCKER_REPO}:db-importer-latest" "../java/dbImporter"
+            docker build -t "${DOCKER_REPO}:db-importer-latest" "java/dbImporter"
             docker push "${DOCKER_REPO}:db-importer-latest"
       - run: 
           name: Build light-bulb
           command: |
-            docker build -t "${DOCKER_REPO}:light-bulb-latest" "../java/lightBulb"
+            docker build -t "${DOCKER_REPO}:light-bulb-latest" "java/lightBulb"
             docker push "${DOCKER_REPO}:light-bulb-latest"
       - run: 
           name: Build light-bulb-monitor
           command: |
-            docker build -t "${DOCKER_REPO}:light-bulb-monitor-latest" "../java/lightBulbMonitor"
+            docker build -t "${DOCKER_REPO}:light-bulb-monitor-latest" "java/lightBulbMonitor"
             docker push "${DOCKER_REPO}:light-bulb-monitor-latest"
       - run:
           name: Extract artifact from Docker image - dbImporter
