@@ -7,6 +7,16 @@ workflows:
     jobs:
       - path-filtering/filter:
           mapping: |
-            java/.* param-build-apps true
-            .circleci/.* param-build-apps true
-            scripts/circleci-build/.* param-build-apps true
+            java/dbImporter/.* param-build-db-importer true
+            .circleci/.* param-build-db-importer true
+            scripts/circleci-build/.* param-build-db-importer true
+      - path-filtering/filter:
+          mapping: |
+            java/lightBulb/.* param-build-light-bulb true
+            .circleci/.* param-build-light-bulb true
+            scripts/circleci-build/.* param-build-light-bulb true
+      - path-filtering/filter:
+          mapping: |
+            java/lightBulbMonitor/.* param-build-light-bulb-monitor true
+            .circleci/.* param-build-light-bulb-monitor true
+            scripts/circleci-build/.* param-build-light-bulb-monitor true
