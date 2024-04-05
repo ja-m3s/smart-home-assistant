@@ -3,6 +3,7 @@
 Steps | Expected Result   | Actual Result | Pass/Fail |
 | --- | --- | --- | ---|
 | Run kubectl get logs light-bulb-0 and inspect the logs| Meaningful log output is displayed  |    |
+| | Establishes connection to event bus |     |
 | | Receives messages from the light bulb monitor |     |
 | | Disregards messages not from the light-bulb-monitor |     |
 | | Sends messages containing details of the light bulb state |     |
