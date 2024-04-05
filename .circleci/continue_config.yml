@@ -11,15 +11,19 @@ parameters:
     type: boolean
     default: false
 jobs:
+  docker-login:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - run: 
+          name: Docker login
+          command: |
+            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
   build-db-importer:
     machine:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run: 
-          name: Docker login
-          command: |
-            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
       - run:
           name: Extract Code Coverage - db-importer
           command: |
@@ -41,10 +45,6 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run: 
-          name: Docker login
-          command: |
-            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
       - run:
           name: Extract Code Coverage - light-bulb
           command: |
@@ -66,10 +66,6 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run: 
-          name: Docker login
-          command: |
-            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
       - run:
           name: Extract Code Coverage - light-bulb-monitor
           command: |
@@ -90,18 +86,21 @@ workflows:
   workflow-build-db-importer:
     when: << pipeline.parameters.param-build-db-importer >>
     jobs:
+      - docker-login
       - build-db-importer:
           context:
             - org-context-smart-home
   workflow-build-light-bulb:
     when: << pipeline.parameters.param-build-light-bulb >>
     jobs:
+      - docker-login
       - build-light-bulb:
           context:
             - org-context-smart-home
   workflow-build-light-bulb-monitor:
     when: << pipeline.parameters.param-build-light-bulb-monitor >>
     jobs:
+      - docker-login
       - build-light-bulb-monitor:
           context:
             - org-context-smart-home
