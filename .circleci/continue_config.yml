@@ -10,9 +10,27 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
+      - run: Docker login
+        command |
+            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
       - run: 
-          name: Build apps
-          command: ./scripts/circleci-build/build-images-circle.sh
+          name: Build dbImporter
+          command: |
+            SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+            docker build -t "${DOCKER_REPO}:db-importer-latest" "${SCRIPT_DIR}/../../java/dbImporter"
+            docker push "${DOCKER_REPO}:db-importer-latest"
+      - run: 
+          name: Build light-bulb
+          command: |
+            SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+            docker build -t "${DOCKER_REPO}:light-bulb-latest" "${SCRIPT_DIR}/../../java/lightBulb"
+            docker push "${DOCKER_REPO}:light-bulb-latest"
+      - run: 
+          name: Build light-bulb-monitor
+          command: |
+            SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+            docker build -t "${DOCKER_REPO}:light-bulb-monitor-latest" "${SCRIPT_DIR}/../../java/lightBulbMonitor"
+            docker push "${DOCKER_REPO}:light-bulb-monitor-latest"
       - run:
           name: Extract artifact from Docker image - dbImporter
           command: |
