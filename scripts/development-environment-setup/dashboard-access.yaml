@@ -1,3 +1,6 @@
+# Name: dashboard-access.yaml
+# Description: Enables access to the dashboard, used by microk8s.sh
+# Author: ja-m3s
 apiVersion: v1
 kind: ServiceAccount
 metadata:

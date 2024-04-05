@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-
+# Name: microk8s.sh
+# Description: Installs, Uninstalls and grants access to the microk8s dashboard.
+# Author: ja-m3s
 
 install() {
     # Docker
@@ -17,11 +19,9 @@ install() {
     microk8s kubectl apply -f dashboard-access.yaml
     echo 'YOU WILL NEED THIS TO ACCESS THE DASHBOARD:'
     microk8s kubectl get secret admin-user -n kube-system -o jsonpath={".data.token"} | base64 -d
-
 }
 
 uninstall() {
-    # Microk8s
     microk8s stop
     sudo microk8s disable dashboard
     sudo microk8s disable registry
@@ -29,8 +29,6 @@ uninstall() {
     sudo microk8s disable cert-manager
     sudo microk8s disable rbac
     snap remove microk8s
-
-    # Docker
     sudo apt remove docker.io
     sudo groupdel docker
 }

@@ -1,4 +1,8 @@
-#!/usr/bin/env bash
+##!/usr/bin/env bash
+# Name: create-docker-secret.sh
+# Description: Creates a docker secret to be used by microK8S when deploying with helm
+# Enables access to a private repository
+# Author: ja-m3s
 
 # Copy Docker configuration file to current directory
 cp ~/.docker/config.json .
@@ -15,8 +19,8 @@ metadata:
 type: kubernetes.io/dockerconfigjson
 data:
   .dockerconfigjson: |-
-    $DOCKER_CONFIG_BASE64
+    ${DOCKER_CONFIG_BASE64}
 "
 
 # Apply the Secret manifest using kubectl
-echo "$CONFIG" | microk8s kubectl apply -f -
+echo "${CONFIG}" | microk8s kubectl apply -f -

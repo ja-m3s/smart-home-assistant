@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-
-#Deletes the context called 'org-context'
+# Name: teardown-circle-context.sh
+# Description: Deletes the context called 'org-context'
+# Author: ja-m3s
 
 source circle-env.sh
 
-#Retrieve id of org-context
+#Retrieve id of context
 CONTEXT_ID=$(make_circleci_api_call "GET" \
     "https://circleci.com/api/v2/context?owner-id=${ORG_ID}" \
-    | jq -r '.items[] | select(.name == "org-context-smart-home") | .id')
+    | jq -r '.items[] | select(.name == "'"${CONTEXT_NAME}"'") | .id')
 
 # Delete the circleci context
 make_circleci_api_call "DELETE" \

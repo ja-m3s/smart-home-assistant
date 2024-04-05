@@ -1,3 +1,7 @@
+# Name: dns-checker-yaml
+# Description: A pod to check DNS on cluster, apply manually with
+# kubectl apply -f dns-checker.yaml
+# Author: ja-m3s
 apiVersion: v1
 kind: Pod
 metadata:

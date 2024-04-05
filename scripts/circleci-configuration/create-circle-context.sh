@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+# Name: create-circle-context.sh
+# Description: Creates a circle ci context
+# Author: ja-m3s
 
-# Update circleci with the environment variables of the temporary ftp server
-# using credentials from pass
-# MANUAL STEP
 set -x
 
 source circle-env.sh
@@ -10,7 +10,7 @@ source circle-env.sh
 CONTEXT_ID=$(make_circleci_api_call "POST" \
   "https://circleci.com/api/v2/context" \
   '{
-    "name": "org-context-smart-home",
+    "name": "'"${CONTEXT_NAME}"'",
     "owner": {
         "id": "'"${ORG_ID}"'",
         "type": "organization"

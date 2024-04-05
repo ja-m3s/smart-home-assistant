@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Name: circle-env.sh
+# Description: Env file for circle scripts
+# Author: ja-m3s
 
 # I use pass to store these, but you could just enter these on the CLI
 
@@ -15,6 +18,7 @@ CIRCLE_PROJECT_SLUG="${3:-$CIRCLE_PROJECT_SLUG_DEFAULT}"
 DOCKER_REPO=$(pass hub.docker.com/repo)
 DOCKER_USER=$(pass hub.docker.com/username)
 DOCKER_PASSWORD=$(pass hub.docker.com/password)
+CONTEXT_NAME=org-context-smart-home
 
 # Function to make API calls
 make_circleci_api_call() {
