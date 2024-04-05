@@ -75,6 +75,15 @@ data:
         - targets:
           - "alertmanager.monitoring.svc:9093"
     scrape_configs:
+      - job_name: 'cockroachdb'
+        metrics_path: '/_status/vars'
+        scheme: 'https'
+        tls_config:
+          insecure_skip_verify: true
+        static_configs:
+          - targets: ['cockroach-db-public.default.svc.cluster.local:8080']
+            labels:
+              cluster: 'database-cluster'
       - job_name: "rabbitmq"
         static_configs:
           - targets: ["rabbitmq.default.svc.cluster.local:15692"]

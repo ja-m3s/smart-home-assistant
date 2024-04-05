@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: cockroach-config
 data:
-{{ (.Files.Glob "raw-files/schema.sh").AsConfig | indent 2 }}
+{{ (.Files.Glob "raw-files/database/schema.sh").AsConfig | indent 2 }}
 
 ---
 
