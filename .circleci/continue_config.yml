@@ -25,16 +25,16 @@ jobs:
           command: |
             docker build -t temp_build_dbi java/dbImporter --target build
             docker create --name temp_container_dbi temp_build_dbi
-            docker cp temp_container_dbi:/app/target/site/jacoco /tmp/jacoco
+            docker cp temp_container_dbi:/app/target/site/jacoco jacoco
             docker rm temp_container_dbi
-            zip -r /tmp/jacoco-dbImporter.zip /tmp/jacoco
+            zip -r jacoco-dbImporter.zip jacoco
       - run: 
           name: Build dbImporter
           command: |
             docker build -t "${DOCKER_REPO}:db-importer-latest" "java/dbImporter"
             docker push "${DOCKER_REPO}:db-importer-latest"
       - store_artifacts:
-          path: /tmp/jacoco-dbImporter.zip
+          path: jacoco-dbImporter.zip
           destination: jacoco-dbImporter.zip
   build-light-bulb:
     machine:
@@ -50,11 +50,11 @@ jobs:
           command: |
             docker build -t temp_build_lb java/lightBulb --target build
             docker create --name temp_container_lb temp_build_lb
-            docker cp temp_container_lb:/app/target/site/jacoco /tmp/jacoco
+            docker cp temp_container_lb:/app/target/site/jacoco jacoco
             docker rm temp_container_lb
-            zip -r /tmp/jacoco-lightBulb.zip /tmp/jacoco
+            zip -r jacoco-lightBulb.zip jacoco
       - store_artifacts:
-          path: /tmp/jacoco-lightBulb.zip
+          path: jacoco-lightBulb.zip
           destination: jacoco-lightBulb.zip
       - run: 
           name: Build light-bulb
@@ -75,11 +75,11 @@ jobs:
           command: |
             docker build -t temp_build_lbm java/lightBulbMonitor --target build
             docker create --name temp_container_lbm temp_build_lbm
-            docker cp temp_container_lbm:/app/target/site/jacoco /tmp/jacoco
+            docker cp temp_container_lbm:/app/target/site/jacoco jacoco
             docker rm temp_container_lbm
-            zip -r /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco
+            zip -r jacoco-lightBulbMonitor.zip jacoco
       - store_artifacts:
-          path: /tmp/jacoco-lightBulbMonitor.zip
+          path: jacoco-lightBulbMonitor.zip
           destination: jacoco-lightBulbMonitor.zip
       - run: 
           name: Build light-bulb-monitor
