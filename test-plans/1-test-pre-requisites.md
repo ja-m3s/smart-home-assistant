@@ -32,17 +32,23 @@ microk8s status
 ```
 docker login
 ```
-8.   Configure microk8s to use the credentials for deployment of the image. The script pulls the credentials file from ~/.docker and creates a secret in microK8S:
+8. Configure microk8s to use the credentials for deployment of the image. The script pulls the credentials file from ~/.docker and creates a secret in microK8S:
 ```
 cd smart-home-assistant/scripts
 ./create-docker-secret.sh
 ```
-9.   Deploy the applications to K8S via helm: 
+9. Build the images, make sure to add your registry as an argument to the script:
+```
+apt update && apt install maven
+cd scripts
+./build-images-manual.sh <<Your registry on hub.docker.com>>
+```
+10. Deploy the applications to K8S via helm: 
 ```
 cd smart-home-assistant/scripts/manual-build-deploy
 ./helm-deploy.sh
 ```
-10. Verify the installation has been successful, it may take upto 10 minutes to fully deploy. All pods should be running/complete.
+11. Verify the installation has been successful, it may take upto 10 minutes to fully deploy. All pods should be running/complete.
 ```
 microk8s kubectl get pods
 ```
