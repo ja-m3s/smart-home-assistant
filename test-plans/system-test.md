@@ -2,7 +2,7 @@
 
 ## Testing pre-requisites
 
-In order to test the application you will need to deploy a Kubernetes cluster. For ease, I recommend doing this on a clean installation of Ubuntu. An Ubuntu 22.04 virtual machine was used to develop the system. To do this:
+In order to test the application you will need to deploy the application to a Kubernetes cluster. For ease, I recommend doing this on a clean installation of Ubuntu. An Ubuntu 22.04 virtual machine was used to develop the system. To do this:
 
 1. Install a fresh Ubuntu 22.04 in the usual way onto a virtual machine, Gnome Boxes was used to develop the system, and is the simplest solution
 2. Install git:
