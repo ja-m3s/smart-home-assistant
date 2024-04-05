@@ -10,7 +10,8 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run: Docker login
+      - run: 
+        name: Docker login
         command |
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
       - run: 
