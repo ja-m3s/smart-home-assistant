@@ -14,7 +14,7 @@ public class DBImporter {
 
     private static final String EXCHANGE = "messages";
     private static final String EXCHANGE_TYPE = "fanout";
-    private static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
+    static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
     private static final String QUEUE_NAME = "DBIMPORT";
     private static final int RETRY_DELAY_MILLIS = 1000;
 
@@ -130,5 +130,13 @@ public class DBImporter {
         System.out.printf("Starting DBImporter.%n");
         DBImporter importer = new DBImporter();
         importer.consumeQueue();
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
+
+    public void setDbConnection(Connection dbConnection) {
+        this.dbConnection = dbConnection;
     }
 }
