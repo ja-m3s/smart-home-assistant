@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Name: build-images.sh
 # Description: Builds all application images, by default this will push to the local microk8s registry unless passed a registry as parameter
+# Note: Might need to login if using remote repo.
+# docker login --username $DOCKER_USER --password $DOCKER_PASS
 # Author: ja-m3s
 set -eux
 
