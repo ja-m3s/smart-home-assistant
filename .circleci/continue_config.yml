@@ -31,7 +31,7 @@ jobs:
             docker create --name temp_container ${DOCKER_REPO}:db-importer-latest
             docker cp temp_container:/app/jacoco jacoco-dbImporter
             docker rm temp_container
-            zip jacoco-dbImporter jacoco-dbImporter.zip
+            zip jacoco-dbImporter.zip jacoco-dbImporter
       - store_artifacts:
           path: jacoco-dbImporter.zip
   build-light-bulb:
