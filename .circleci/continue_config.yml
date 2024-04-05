@@ -33,7 +33,7 @@ jobs:
             docker rm temp_container
       - store_artifacts:
           path: /tmp/jacoco-dbImporter
-build-db-light-bulb:
+  build-light-bulb:
     machine:
       image: ubuntu-2204:current
     steps:
@@ -55,7 +55,7 @@ build-db-light-bulb:
             docker rm temp_container_lb
       - store_artifacts:
           path: /tmp/jacoco-lightBulb
-build-light-bulb-monitor:
+  build-light-bulb-monitor:
     machine:
       image: ubuntu-2204:current
     steps:
@@ -90,7 +90,7 @@ workflows:
       - build-light-bulb:
           context:
             - org-context-smart-home
-    workflow-build-light-bulb-monitor:
+  workflow-build-light-bulb-monitor:
     when: << pipeline.parameters.param-build-light-bulb-monitor >>
     jobs:
       - build-light-bulb-monitor:
