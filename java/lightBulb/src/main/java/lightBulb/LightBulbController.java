@@ -18,13 +18,13 @@ import com.rabbitmq.client.AMQP;
  */
 public class LightBulbController {
 
-    final static String EXCHANGE = "messages";
+    private final static String EXCHANGE = "messages";
     private final static String EXCHANGE_TYPE = "fanout";
+    private final static String QUEUE_NAME = "";
     private final static Integer SEND_MESSAGE_POLL_TIME = 5000; // 5 seconds
     private static final Integer RABBITMQ_RETRY_INTERVAL = 1000; // 1 second
     protected static final String LIGHT_BULB_MONITOR_HOSTNAME_REGEX = "light-bulb-monitor-.+";;
 
-    private final static String QUEUE_NAME = "";
     private LightBulb lightBulb;
     private ConnectionFactory connectionFactory;
     private Channel channel;
@@ -130,8 +130,7 @@ public class LightBulbController {
      * Receives a message from RabbitMQ.
      */
     private void receiveMessage() throws IOException {
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        channel.queueBind(QUEUE_NAME, EXCHANGE, "");
+ 
 
         System.out.println("Waiting for messages. To exit press Ctrl+C");
 
@@ -181,6 +180,8 @@ public class LightBulbController {
         controller.setHostname(retrieveEnvVariable("HOSTNAME"));
         controller.connectToRabbitMQ();
         try {
+            controller.channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+            controller.channel.queueBind(QUEUE_NAME, EXCHANGE, "");
             controller.receiveMessage();
             while (true) {
                 controller.sendMessage(controller.createMessage());
