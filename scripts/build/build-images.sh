@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Name: build-images.sh
-# Description: Builds all application images
+# Description: Builds all application images, by default this will push to the local microk8s registry unless passed a registry as parameter
 # Author: ja-m3s
 set -eux
 
@@ -20,11 +20,15 @@ fi
 #docker login --username $DOCKER_USER --password $DOCKER_PASS
 
 # Build the python-custom image
-docker build -t "${REPO}/eclipse-temurin-db-importer:latest" "${SCRIPT_DIR}/../../java/dbImporter"
-docker push "${REPO}/eclipse-temurin-db-importer:latest"
 
-docker build -t "${REPO}/eclipse-temurin-light-bulb:latest" "${SCRIPT_DIR}/../../java/lightBulb"
-docker push "${REPO}/eclipse-temurin-light-bulb:latest"
+DB_IMPORTER_IMAGE="${REPO}/smart-home-assistant:db-importer-latest"
+docker build -t "${DB_IMPORTER_IMAGE}" "${SCRIPT_DIR}/../../java/lightBulb"
+docker push "${DB_IMPORTER_IMAGE}"
 
-docker build -t "${REPO}/eclipse-temurin-light-bulb-monitor:latest" "${SCRIPT_DIR}/../../java/lightBulbMonitor"
-docker push "${REPO}/eclipse-temurin-light-bulb-monitor:latest"
+LIGHTBULB_IMAGE="${REPO}/smart-home-assistant:light-bulb-latest"
+docker build -t "${LIGHTBULB_IMAGE}" "${SCRIPT_DIR}/../../java/lightBulb"
+docker push "${LIGHTBULB_IMAGE}"
+
+LIGHTBULB_MONITOR_IMAGE="${REPO}/smart-home-assistant:light-bulb-monitor-latest"
+docker build -t "${LIGHTBULB_MONITOR_IMAGE}" "${SCRIPT_DIR}/../../java/lightBulb"
+docker push "${LIGHTBULB_MONITOR_IMAGE}"
