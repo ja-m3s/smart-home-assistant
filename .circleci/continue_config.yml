@@ -11,14 +11,6 @@ parameters:
     type: boolean
     default: false
 jobs:
-  docker-login:
-    machine:
-      image: ubuntu-2204:current
-    steps:
-      - run: 
-          name: Docker login
-          command: |
-            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
   build-db-importer:
     machine:
       image: ubuntu-2204:current
@@ -29,16 +21,17 @@ jobs:
           command: |
             docker build -t temp_build_dbi java/dbImporter --target build
             docker create --name temp_container_dbi temp_build_dbi
-            docker cp temp_container_dbi:/app/target/site/jacoco jacoco
+            docker cp temp_container_dbi:/app/target/site/jacoco /tmp/jacoco
             docker rm temp_container_dbi
-            zip -r jacoco-dbImporter.zip jacoco
+            zip -r /tmp/jacoco-dbImporter.zip /tmp/jacoco
       - run: 
           name: Build dbImporter
           command: |
             docker build -t "${DOCKER_REPO}:db-importer-latest" "java/dbImporter"
+            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO}:db-importer-latest"
       - store_artifacts:
-          path: jacoco-dbImporter.zip
+          path: /tmp/jacoco-dbImporter.zip
           destination: jacoco-dbImporter.zip
   build-light-bulb:
     machine:
@@ -50,16 +43,17 @@ jobs:
           command: |
             docker build -t temp_build_lb java/lightBulb --target build
             docker create --name temp_container_lb temp_build_lb
-            docker cp temp_container_lb:/app/target/site/jacoco jacoco
+            docker cp temp_container_lb:/app/target/site/jacoco /tmp/jacoco
             docker rm temp_container_lb
-            zip -r jacoco-lightBulb.zip jacoco
+            zip -r /tmp/jacoco-lightBulb.zip /tmp/jacoco
       - store_artifacts:
-          path: jacoco-lightBulb.zip
+          path: /tmp/jacoco-lightBulb.zip
           destination: jacoco-lightBulb.zip
       - run: 
           name: Build light-bulb
           command: |
             docker build -t "${DOCKER_REPO}:light-bulb-latest" "java/lightBulb"
+            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO}:light-bulb-latest"
   build-light-bulb-monitor:
     machine:
@@ -71,42 +65,34 @@ jobs:
           command: |
             docker build -t temp_build_lbm java/lightBulbMonitor --target build
             docker create --name temp_container_lbm temp_build_lbm
-            docker cp temp_container_lbm:/app/target/site/jacoco jacoco
+            docker cp temp_container_lbm:/app/target/site/jacoco /tmp/jacoco
             docker rm temp_container_lbm
-            zip -r jacoco-lightBulbMonitor.zip jacoco
+            zip -r /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco
       - store_artifacts:
-          path: jacoco-lightBulbMonitor.zip
+          path: /tmp/jacoco-lightBulbMonitor.zip
           destination: jacoco-lightBulbMonitor.zip
       - run: 
           name: Build light-bulb-monitor
           command: |
             docker build -t "${DOCKER_REPO}:light-bulb-monitor-latest" "java/lightBulbMonitor"
+            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO}:light-bulb-monitor-latest"
 workflows:
   workflow-build-db-importer:
     when: << pipeline.parameters.param-build-db-importer >>
     jobs:
-      - docker-login:
-         context:
-            - org-context-smart-home
       - build-db-importer:
           context:
             - org-context-smart-home
   workflow-build-light-bulb:
     when: << pipeline.parameters.param-build-light-bulb >>
     jobs:
-      - docker-login:
-          context:
-            - org-context-smart-home
       - build-light-bulb:
           context:
             - org-context-smart-home
   workflow-build-light-bulb-monitor:
     when: << pipeline.parameters.param-build-light-bulb-monitor >>
     jobs:
-      - docker-login:
-          context:
-            - org-context-smart-home
       - build-light-bulb-monitor:
           context:
             - org-context-smart-home
