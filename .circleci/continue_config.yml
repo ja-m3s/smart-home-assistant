@@ -66,20 +66,21 @@ jobs:
           name: Docker login
           command: |
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
+      - run:
+          name: Extract Code Coverage - light-bulb-monitor
+          command: |
+            docker build -t temp_build_lbm java/lightBulbMonitor
+            docker create --name temp_container_lbm temp_build_lbm
+            docker cp temp_container_lbm:/app/target/site/jacoco /tmp/jacoco-lightBulbMonitor
+            docker rm temp_container_lbm
+            zip -r /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco-lightBulbMonitor
+      - store_artifacts:
+          path: /tmp/jacoco-lightBulbMonitor.zip
       - run: 
           name: Build light-bulb-monitor
           command: |
             docker build -t "${DOCKER_REPO}:light-bulb-monitor-latest" "java/lightBulbMonitor"
             docker push "${DOCKER_REPO}:light-bulb-monitor-latest"
-      - run:
-          name: Extract artifact from Docker image - light-bulb-monitor
-          command: |
-            docker create --name temp_container_lbm ${DOCKER_REPO}:light-bulb-monitor-latest
-            docker cp temp_container_lbm:/app/jacoco /tmp/jacoco-lightBulbMonitor
-            docker rm temp_container_lbm
-            zip -r /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco-lightBulbMonitor
-      - store_artifacts:
-          path: /tmp/jacoco-lightBulbMonitor.zip
 workflows:
   workflow-build-db-importer:
     when: << pipeline.parameters.param-build-db-importer >>
