@@ -1,4 +1,6 @@
 ## Tests Grafana
 
-- Applied correctly to cluster
-- Prometheus is added as a datasource
+Steps | Expected Result | Actual Result | Pass/Fail |
+| --- | --------------- | ------------- | ----------|
+| | Grafana is running | | |
+| |  Prometheus is added as a datasource | | |
