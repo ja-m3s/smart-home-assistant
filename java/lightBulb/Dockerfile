@@ -1,9 +1,9 @@
 FROM maven:3.9.6-eclipse-temurin-22 as build
 
 WORKDIR /app
-COPY pom.xml ./
+COPY pom.xml .
 RUN mvn dependency:resolve
-COPY src ./src
+COPY src .
 RUN mvn clean package
 
 FROM eclipse-temurin:22_36-jre-alpine as production
