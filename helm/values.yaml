@@ -24,7 +24,7 @@ eventBus:
 lightBulb:
   enabled: true
   image: smart-home-assistant:light-bulb-latest
-  numLights: 1
+  numLights: 3
 
 lightBulbMonitor:
   enabled: true

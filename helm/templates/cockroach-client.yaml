@@ -9,7 +9,7 @@ data:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: cockroachdb-secure-client
 spec:
