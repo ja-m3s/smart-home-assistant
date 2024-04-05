@@ -38,6 +38,7 @@ cockroachClient:
   enabled: true
   image: cockroachdb/cockroach:v23.2.3
 
+#If unset, this will default to the local microk8s registry.
 registryConf:
-  registry: "dockerjam3s/"
+  registry: "dockerjam3s"
   

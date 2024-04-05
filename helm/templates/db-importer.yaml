@@ -17,7 +17,7 @@ spec:
       - name: registry-credentials
       containers:
         - name: db-importer-container
-          image: "{{ .Values.registryConf.registry }}{{ .Values.dbImporter.image }}"
+          image: "{{ default "localhost:32000" .Values.registryConf.registry }}/{{ .Values.dbImporter.image }}"
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
           env:

@@ -17,7 +17,7 @@ spec:
       - name: registry-credentials
       containers:
         - name: light-bulb-container
-          image: "{{ .Values.registryConf.registry }}{{ .Values.lightBulb.image }}"
+          image: "{{ default "localhost:32000" .Values.registryConf.registry }}/{{ .Values.lightBulb.image }}"
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
           env:
