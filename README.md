@@ -23,7 +23,7 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 
 ## Technology Stack
 
-- java,junit, RabbitMQ, cockroachDB, kubernetes, helm3, circleci
+- java,junit,jacoco,maven,docker, RabbitMQ, cockroachDB,SQL, kubernetes, helm3, circleci
 
 ## Configuration
 
