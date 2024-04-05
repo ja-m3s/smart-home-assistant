@@ -1,3 +1,5 @@
 ## Tests Prometheus
 
-- Applied correctly to cluster
+Steps | Expected Result | Actual Result | Pass/Fail |
+| --- | --------------- | ------------- | ----------|
+| | Prometheus is running | | |
