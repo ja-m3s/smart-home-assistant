@@ -28,10 +28,10 @@ jobs:
       - run:
           name: Extract artifact from Docker image - dbImporter
           command: |
-            docker create --name temp_container ${DOCKER_REPO}:db-importer-latest
-            docker cp temp_container:/app/jacoco /tmp/jacoco-dbImporter
-            docker rm temp_container
-            zip /tmp/jacoco-dbImporter.zip /tmp/jacoco-dbImporter
+            docker create --name temp_container_dbi ${DOCKER_REPO}:db-importer-latest
+            docker cp temp_container_dbi:/app/jacoco /tmp/jacoco-dbImporter
+            docker rm temp_container_dbi
+            zip --recursive /tmp/jacoco-dbImporter.zip /tmp/jacoco-dbImporter
       - store_artifacts:
           path: /tmp/jacoco-dbImporter.zip
   build-light-bulb:
@@ -54,7 +54,7 @@ jobs:
             docker create --name temp_container_lb ${DOCKER_REPO}:light-bulb-latest
             docker cp temp_container_lb:/app/jacoco /tmp/jacoco-lightBulb
             docker rm temp_container_lb
-            zip /tmp/jacoco-lightBulb.zip /tmp/jacoco-lightBulb
+            zip --recursive /tmp/jacoco-lightBulb.zip /tmp/jacoco-lightBulb
       - store_artifacts:
           path: /tmp/jacoco-lightBulb.zip
   build-light-bulb-monitor:
@@ -77,7 +77,7 @@ jobs:
             docker create --name temp_container_lbm ${DOCKER_REPO}:light-bulb-monitor-latest
             docker cp temp_container_lbm:/app/jacoco /tmp/jacoco-lightBulbMonitor
             docker rm temp_container_lbm
-            zip /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco-lightBulbMonitor
+            zip --recursive /tmp/jacoco-lightBulbMonitor.zip /tmp/jacoco-lightBulbMonitor
       - store_artifacts:
           path: /tmp/jacoco-lightBulbMonitor.zip
 workflows:
