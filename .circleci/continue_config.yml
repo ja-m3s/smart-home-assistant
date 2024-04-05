@@ -11,8 +11,8 @@ jobs:
     steps:
       - checkout
       - run: 
-        name: Docker login
-        command: |
+          name: Docker login
+          command: |
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
       - run: 
           name: Build dbImporter
