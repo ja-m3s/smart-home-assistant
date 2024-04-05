@@ -15,7 +15,6 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 
 ## Project Layout
 
-- /docker - custom Dockerfiles
 - /helm - deployment configuration
 - /helm/raw-files - application configuration
 - /java - the java component project files
@@ -24,11 +23,11 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 
 ## Technology Stack
 
-- java, RabbitMQ, cockroachDB, kubernetes, helm3.
+- java,junit, RabbitMQ, cockroachDB, kubernetes, helm3, circleci
 
 ## Configuration
 
-All configuration can be found within the Helm .yaml files, either in values.yaml or the config maps associated with each component.
+All configuration can be found within the helm folder Values.yaml files, or the config maps associated with each component.
 
 ## Setup
 
@@ -40,7 +39,7 @@ All configuration can be found within the Helm .yaml files, either in values.yam
 ### Remote Cluster Deployment
 1. cd scripts
 2. ./build-images <<your registry>>
-3.  amend helm values.yaml and change python.registry to your <<your registry>>
+3.  amend helm values.yaml and change registry to your <<your registry>> in Values.yaml
 4. point kubectl to K8S cluster
 5.  helm install "release-name" ../helm
 
