@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Name: teardown-circle-context.sh
-# Description: Deletes the context called 'org-context'
+# Description: Deletes the context called specified in env file
 # Author: ja-m3s
 
 source circle-env.sh
