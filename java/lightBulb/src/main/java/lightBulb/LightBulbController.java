@@ -205,7 +205,6 @@ public class LightBulbController {
     }
 
     public void setHostname(String hostname) {
-        // TODO Auto-generated method stub
         this.hostname = hostname;
     }
 }

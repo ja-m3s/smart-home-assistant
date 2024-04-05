@@ -144,7 +144,6 @@ public class LightBulbMonitor {
     }
 
     public void setChannel(Channel channel) {
-        // TODO Auto-generated method stub
         this.channel = channel;
     }
 

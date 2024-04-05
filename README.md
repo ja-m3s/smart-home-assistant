@@ -44,7 +44,20 @@ All configuration can be found within the Helm .yaml files, either in values.yam
 4. point kubectl to K8S cluster
 5.  helm install "release-name" ../helm
 
+# Docker registry login
 
-##TODO
+- The Java apps by default push to a private registy on Dockerhub. To configure this locally, run the script /scripts/manual-build-deploy/create-docker-secret to enable
+helm to pull from this reply - you will need to have configured your docker repo already
+in .docker folder of your home directory.
+
+## CircleCI
+
+- The project is configured to automatically build the java applications 
+- To configure this yourself there are some scripts in the /scripts/circleci-build folder
+- They may require some changes in order to pass in the required variables
+
+## Jacoco
+
+- There are code coverage tools deployed in the Java projects, the output is visible when running mvn clean verify inside each Java project folder or in the Artifact section of circleci
 
 #Document docker login process for microk8s
