@@ -2,4 +2,4 @@
 
 Steps | Expected Result | Actual Result | Pass/Fail |
 | --- | --------------- | ------------- | ----------|
-| | Prometheus is running | | |
+|microk8s kubectl get pods -n monitoring| Prometheus is running | | |
