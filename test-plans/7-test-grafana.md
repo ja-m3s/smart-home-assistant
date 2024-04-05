@@ -2,5 +2,5 @@
 
 Steps | Expected Result | Actual Result | Pass/Fail |
 | --- | --------------- | ------------- | ----------|
-| | Grafana is running | | |
-| |  Prometheus is added as a datasource | | |
+| microk8s kubectl get pods | Grafana is running | | |
+| port forward and login to frontend with login admin/admin |  Prometheus is added as a datasource | | |
