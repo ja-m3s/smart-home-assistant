@@ -45,7 +45,7 @@ jobs:
           name: Docker login
           command: |
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
-       - run:
+      - run:
           name: Extract Code Coverage - light-bulb
           command: |
             docker build -t temp_build_lb java/lightBulb --target build
@@ -53,7 +53,7 @@ jobs:
             docker cp temp_container_lb:/app/target/site/jacoco /tmp/jacoco-lightBulb
             docker rm temp_container_lb
             zip -r /tmp/jacoco-lightBulb.zip /tmp/jacoco-lightBulb
-        - store_artifacts:
+      - store_artifacts:
           path: /tmp/jacoco-lightBulb.zip
           destination: jacoco-lightBulb.zip
       - run: 
@@ -61,7 +61,7 @@ jobs:
           command: |
             docker build -t "${DOCKER_REPO}:light-bulb-latest" "java/lightBulb"
             docker push "${DOCKER_REPO}:light-bulb-latest"
-  build-light-bulb:
+  build-light-bulb-monitor:
     machine:
       image: ubuntu-2204:current
     steps:
