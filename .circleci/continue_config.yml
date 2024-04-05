@@ -4,10 +4,10 @@ parameters:
   param-build-db-importer:
     type: boolean
     default: false
-  param-build-db-light-bulb:
+  param-build-light-bulb:
     type: boolean
     default: false
-  param-build-db-light-bulb-monitor:
+  param-build-light-bulb-monitor:
     type: boolean
     default: false
 jobs:
