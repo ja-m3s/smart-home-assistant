@@ -43,7 +43,7 @@ All configuration can be found within the helm folder Values.yaml files, or the 
 4. point kubectl to K8S cluster
 5.  helm install "release-name" ../helm
 
-# Docker registry login
+## Docker registry login
 
 - The Java apps by default push to a private registy on Dockerhub. To configure this locally, run the script /scripts/manual-build-deploy/create-docker-secret to enable
 helm to pull from this reply - you will need to have configured your docker repo already
