@@ -13,8 +13,10 @@ spec:
       labels:
         app: light-bulb-monitor
     spec:
+      {{- if .Values.registryConf.registry }}
       imagePullSecrets:
         - name: registry-credentials
+      {{- end }}
       containers:
         - name: light-bulb-monitor-container
           image: "{{ default "localhost:32000" .Values.registryConf.registry }}/{{ .Values.lightBulbMonitor.image }}"

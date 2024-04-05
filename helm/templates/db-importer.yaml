@@ -13,8 +13,10 @@ spec:
       labels:
         app: db-importer
     spec:
+      {{- if .Values.registryConf.registry }}
       imagePullSecrets:
-      - name: registry-credentials
+        - name: registry-credentials
+      {{- end }}
       containers:
         - name: db-importer-container
           image: "{{ default "localhost:32000" .Values.registryConf.registry }}/{{ .Values.dbImporter.image }}"
