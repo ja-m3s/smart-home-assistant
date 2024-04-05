@@ -59,5 +59,3 @@ in .docker folder of your home directory.
 ## Jacoco
 
 - There are code coverage tools deployed in the Java projects, the output is visible when running mvn clean verify inside each Java project folder or in the Artifact section of circleci
-
-#Document docker login process for microk8s
