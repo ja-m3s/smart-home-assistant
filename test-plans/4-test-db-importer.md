@@ -2,6 +2,7 @@
 
 Steps | Expected Result | Actual Result | Pass/Fail |
 | --- | --------------- | ------------- | ----------|
+| Run microk8s kubectl logs db-importer-0 | Meaningful log output is displayed | | |
 | Run microk8s kubectl logs db-importer-0 | Inserts messages on the RabbitMQ exchange queue DBIMPORTER into the database | | |
 | Run microk8s kubectl logs db-importer-0 | Database connection message stating the connection is established | | |
 | Run microk8s kubectl logs db-importer-0 | RabbitMQ connection message stating the connection is established | | |
