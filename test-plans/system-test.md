@@ -1,6 +1,6 @@
 # System Test
 
-## Testing pre-requisites
+## Testing Prerequisites
 
 In order to test the application you will need to deploy the application to a Kubernetes cluster. For ease, I recommend doing this on a clean installation of Ubuntu. An Ubuntu 22.04 virtual machine was used to develop the system. To do this:
 
