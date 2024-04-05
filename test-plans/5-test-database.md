@@ -1,4 +1,4 @@
-## Tests Database
+## Tests - Database
 
 Steps | Expected Result | Actual Result | Pass/Fail |
 | --- | --------------- | ------------- | ----------|
