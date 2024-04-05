@@ -1,3 +1,9 @@
+# Name: config.yml
+# Description: Pipeline for circleci. Based on the path of changes files programatically builds applications
+# If an app is changed, it is rebuilt
+# If the pipeline its self is changed, all apps are rebuilt
+# Continues in continue_config.yml
+# Author: ja-m3s
 version: 2.1
 setup: true
 orbs:
