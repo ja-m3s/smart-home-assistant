@@ -22,7 +22,7 @@ public class DBImporter {
     private static final String QUEUE_NAME = "DBIMPORT";
     private static final int RETRY_DELAY_MILLIS = 1000;
     private static final int RETRY_MAX_ATTEMPTS = 0; //forever
-
+    private static final int METRICS_SERVER_PORT= 8080;
     private static Counter receivedCounter;
 
     public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException, IOException {
@@ -43,7 +43,7 @@ public class DBImporter {
         Thread serverThread = new Thread(() -> {
             try {
                 HTTPServer server = HTTPServer.builder()
-                .port(8080)
+                .port(METRICS_SERVER_PORT)
                 .buildAndStart(); 
             } catch (IOException e) {
                 e.printStackTrace();
