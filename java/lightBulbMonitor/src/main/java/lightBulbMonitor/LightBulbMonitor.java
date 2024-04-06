@@ -22,6 +22,7 @@ public class LightBulbMonitor {
     private static final int RETRY_MAX_ATTEMPTS = 0; //forever
     private static final int METRICS_SERVER_PORT= 9400;
     private static Counter receivedCounter;
+    private static Counter sentCounter;
     private static Channel mqchannel; 
     private static String hostname;
     public static void main(String[] args) throws InterruptedException, IOException {
@@ -49,6 +50,12 @@ public class LightBulbMonitor {
             .register();
         receivedCounter.labelValues("requests_received").inc();
 
+        sentCounter = Counter.builder().name("lightbulbmonitor_requests_sent_total")
+        .help("Total number of sent requests")
+        .labelNames("requests_sent")
+        .register();
+    receivedCounter.labelValues("requests_sent").inc();
+
         Thread serverThread = new Thread(() -> {
             try {
                 HTTPServer server = HTTPServer.builder()
@@ -71,7 +78,7 @@ public class LightBulbMonitor {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 System.out.printf("Received %s%n", message);
-                receivedCounter.inc();
+                receivedCounter.labelValues("requests_received").inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
@@ -113,7 +120,7 @@ public class LightBulbMonitor {
 
     private static void sendMessage(JSONObject message) throws IOException, InterruptedException {
         mqchannel.basicPublish(EXCHANGE, "", null, message.toString().getBytes());
-        receivedCounter.labelValues("requests_received").inc();
+        receivedCounter.labelValues("requests_sent").inc();
         System.out.println("Sent '" + message + "'");
     }
 
