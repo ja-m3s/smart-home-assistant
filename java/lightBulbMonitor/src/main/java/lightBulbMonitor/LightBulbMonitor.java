@@ -5,6 +5,7 @@ import io.prometheus.metrics.exporter.httpserver.HTTPServer;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.json.JSONObject;
 import com.rabbitmq.client.Channel;
@@ -119,7 +120,7 @@ public class LightBulbMonitor {
     }
 
     private static void sendMessage(JSONObject message) throws IOException, InterruptedException {
-        mqchannel.basicPublish(EXCHANGE, "", null, message.toString().getBytes());
+        mqchannel.basicPublish(EXCHANGE, "", null, message.toString().getBytes(StandardCharsets.UTF_8));
         sentCounter.labelValues("requests_sent").inc();
         System.out.println("Sent '" + message + "'");
     }

@@ -1,6 +1,8 @@
 package lightBulb;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import org.json.JSONObject;
 import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.exporter.httpserver.HTTPServer;
@@ -125,7 +127,7 @@ public class LightBulbController {
     private static void sendMessage(JSONObject message) throws IOException {
         mqchannel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
         mqchannel.queueBind(QUEUE_NAME, EXCHANGE, "");
-        mqchannel.basicPublish(EXCHANGE, QUEUE_NAME, null, message.toString().getBytes());
+        mqchannel.basicPublish(EXCHANGE, QUEUE_NAME, null, message.toString().getBytes(StandardCharsets.UTF_8));
         sentCounter.labelValues("requests_sent").inc();
         System.out.printf("Sent %s%n", message);
     }
