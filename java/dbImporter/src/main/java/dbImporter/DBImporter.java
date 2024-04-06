@@ -26,12 +26,14 @@ public class DBImporter {
 
     public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException {
         System.out.printf("Starting DBImporter.%n");
-        setupMetricsServer();
-        consumeQueue();
+        Thread metricsServerThread = new Thread(DBImporter::setupMetricsServer);
+        Thread consumeQueueThread = new Thread(DBImporter::consumeQueue);
+        metricsServerThread.start();
+        consumeQueueThread.start();
         Thread.currentThread().join(); // sleep forever
     }
 
-    private static void setupMetricsServer() {
+    private static void setupMetricsServer()  {
         try {
             JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
 
@@ -55,7 +57,7 @@ public class DBImporter {
         }
     }
 
-    private static void consumeQueue() throws TimeoutException, SQLException {
+    private static void consumeQueue() {
         try (
             Channel channel = setupRabbitMQConnection();
             Connection dbConnection = setupDBConnection()) {
@@ -80,7 +82,7 @@ public class DBImporter {
             System.out.printf("Starting to consume %s%n", QUEUE_NAME);
             channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
         }
     }
