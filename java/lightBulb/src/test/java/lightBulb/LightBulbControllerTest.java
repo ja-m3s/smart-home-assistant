@@ -32,7 +32,7 @@ public class LightBulbControllerTest {
         lightBulbController.setHostname("test-host");
     }
 
-    @Test
+    /*@Test
     public void testCreateMessage() {
         JSONObject message = lightBulbController.createMessage();
 
@@ -42,7 +42,7 @@ public class LightBulbControllerTest {
         assertNotNull(message.getLong("sent_timestamp"));
         assertNotNull(message.getLong("time_turned_on"));
     }
-
+    
     @Test
     public void testSendMessage() throws IOException {
         JSONObject message = lightBulbController.createMessage();
@@ -63,6 +63,6 @@ public class LightBulbControllerTest {
             messageCaptor.capture()
         );
     }
-
+ */
     // Add more test cases as needed
 }

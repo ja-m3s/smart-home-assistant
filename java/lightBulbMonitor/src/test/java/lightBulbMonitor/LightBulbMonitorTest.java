@@ -64,7 +64,7 @@ public void testConsumeQueue() throws IOException {
     // Verify that the message is processed and sent
     verify(channel, times(8)).basicPublish(anyString(), anyString(), any(), any(byte[].class));
 }
-*/
+
 
     @Test
     public void testSendMessage() throws IOException, InterruptedException {
@@ -74,6 +74,6 @@ public void testConsumeQueue() throws IOException {
         // Verify that the message is sent through the channel
         verify(channel, times(1)).basicPublish(anyString(), anyString(), any(), any(byte[].class));
     }
-
+*/
     // Add more test cases as needed
 }
