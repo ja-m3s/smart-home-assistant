@@ -46,11 +46,11 @@ jobs:
           command: |
             docker build -t temp_build_lb java/lightBulb --target build
             docker create --name temp_container_lb temp_build_lb
-            docker cp temp_container_lb:/app/target/site/jacoco.zip /tmp/
+            docker cp temp_container_lb:/app/target/metrics.zip /tmp/
             docker rm temp_container_lb
       - store_artifacts:
-          path: /tmp/jacoco.zip
-          destination: jacoco-lightBulb.zip
+          path: /tmp/metrics.zip
+          destination: metrics-lightBulb.zip
       - run: 
           name: Build light-bulb
           command: |
@@ -67,11 +67,11 @@ jobs:
           command: |
             docker build -t temp_build_lbm java/lightBulbMonitor --target build
             docker create --name temp_container_lbm temp_build_lbm
-            docker cp temp_container_lbm:/app/target/site/jacoco.zip /tmp/
+            docker cp temp_container_lbm:/app/target/metrics.zip /tmp/
             docker rm temp_container_lbm
       - store_artifacts:
-          path: /tmp/jacoco.zip
-          destination: jacoco-lightBulbMonitor.zip
+          path: /tmp/metrics.zip
+          destination: metrics-lightBulbMonitor.zip
       - run: 
           name: Build light-bulb-monitor
           command: |
