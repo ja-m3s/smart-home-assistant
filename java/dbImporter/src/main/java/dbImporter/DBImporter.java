@@ -24,10 +24,14 @@ public class DBImporter {
     private static final int RETRY_MAX_ATTEMPTS = 0; // forever
     private static final int METRICS_SERVER_PORT = 9400;
     private static Counter receivedCounter;
+    private static Channel channel;
+    private static Connection dbConnection;
 
     public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException, IOException {
         System.out.printf("Starting DBImporter.%n");
         setupMetricServer();
+        setupRabbitMQConnection();
+        setupDBConnection();
         consumeQueue();
     }
 
@@ -61,39 +65,33 @@ public class DBImporter {
         serverThread.start();
     }
 
-    private static void consumeQueue() {
-        try (
-                Channel channel = setupRabbitMQConnection();
-                Connection dbConnection = setupDBConnection()) {
-            channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-            channel.queueBind(QUEUE_NAME, EXCHANGE, "");
+    private static void consumeQueue() throws IOException {
 
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String message = new String(delivery.getBody(), "UTF-8");
-                System.out.printf("Received Message: %s%n", message);
-                receivedCounter.labelValues("requests_received").inc();
-                try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
-                    preparedStatement.setString(1, message);
-                    preparedStatement.executeUpdate();
-                    System.out.printf("Inserted record into the database: %s from %s%n", message,
-                            retrieveEnvVariable("HOSTNAME"));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            };
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.printf("Received Message: %s%n", message);
+            receivedCounter.labelValues("requests_received").inc();
+            try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
+                preparedStatement.setString(1, message);
+                preparedStatement.executeUpdate();
+                System.out.printf("Inserted record into the database: %s from %s%n", message,
+                        retrieveEnvVariable("HOSTNAME"));
+            } catch (SQLException e) {
+                setupDBConnection();
+                e.printStackTrace();
+            }
+        };
 
-            System.out.printf("Starting to consume %s%n", QUEUE_NAME);
-            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
-            });
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
-        }
+        channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.queueBind(QUEUE_NAME, EXCHANGE, "");
+        System.out.printf("Starting to consume %s%n", QUEUE_NAME);
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+        });
     }
 
     @SuppressWarnings("all")
-    private static Channel setupRabbitMQConnection() {
+    private static void setupRabbitMQConnection() {
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
@@ -101,7 +99,8 @@ public class DBImporter {
                 factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
                 factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
                 factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
-                return factory.newConnection().createChannel();
+                channel = factory.newConnection().createChannel();
+                break;
             } catch (Exception e) {
                 System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
                 if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
@@ -114,14 +113,16 @@ public class DBImporter {
                 }
             }
         }
-        return null;
     }
 
     @SuppressWarnings("all")
-    private static Connection setupDBConnection() {
+    private static void setupDBConnection() {
 
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
+                if (dbConnection != null) {
+                    dbConnection.close();
+                }
                 String dbHost = retrieveEnvVariable("DB_HOST");
                 String dbPort = retrieveEnvVariable("DB_PORT");
                 String dbName = retrieveEnvVariable("DB_NAME");
@@ -129,7 +130,8 @@ public class DBImporter {
                 String dbPassword = retrieveEnvVariable("DB_PASSWORD");
 
                 String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
-                return DriverManager.getConnection(connectionString, dbUser, dbPassword);
+                dbConnection = DriverManager.getConnection(connectionString, dbUser, dbPassword);
+                break;
             } catch (SQLException e) {
                 System.out.printf("Failed to connect to database on attempt #%d. Retrying...%n", attempt);
                 if (RETRY_MAX_ATTEMPTS != 0 && attempt == RETRY_MAX_ATTEMPTS) {
@@ -142,6 +144,5 @@ public class DBImporter {
                 }
             }
         }
-        return null;
     }
 }
