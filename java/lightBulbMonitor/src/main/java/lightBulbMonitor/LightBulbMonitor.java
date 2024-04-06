@@ -1,8 +1,11 @@
 package lightBulbMonitor;
+
+import io.prometheus.metrics.core.metrics.Counter;
+import io.prometheus.metrics.exporter.httpserver.HTTPServer;
+import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
+
 import java.io.IOException;
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Counter;
-import io.prometheus.client.exporter.HTTPServer;
+
 import org.json.JSONObject;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
@@ -13,84 +16,62 @@ public class LightBulbMonitor {
     private static final String EXCHANGE = "messages";
     private static final String EXCHANGE_TYPE = "fanout";
     private static final String QUEUE_NAME = "LIGHTBULBMONITOR";
-    private static final int RETRY_DELAY_MILLIS = 1000;
     private static final long LIGHT_ON_LIMIT = 20_000; //20 seconds
     private static final String LIGHT_BULB_HOSTNAME_REGEX="light-bulb-\\d+";
-    private final Counter requestsReceivedTotal = Counter.build()
-    .name("lightbulbmonitor_requests_received_total")
-    .help("Total number of received requests.")
-    .register();
-    private final Counter requestsSentTotal = Counter.build()
-    .name("lightbulbmonitor_requests_sent_total")
-    .help("Total number of sent requests.")
-    .register();
-    public Channel channel;
-    private String hostname;
-
-    public LightBulbMonitor() {
-       // this.channel = setupRabbitMQConnection();
+    private static final int RETRY_DELAY_MILLIS = 1000;
+    private static final int RETRY_MAX_ATTEMPTS = 0; //forever
+    private static final int METRICS_SERVER_PORT= 9400;
+    private static Counter receivedCounter;
+    private static Channel mqchannel; 
+    private static String hostname;
+    public static void main(String[] args) throws InterruptedException, IOException {
+        System.out.printf("Starting LightBulbMonitor.%n");
+        hostname = retrieveEnvVariable("HOSTNAME");
+        setupMetricServer();
+        consumeQueue();
     }
 
-    public Channel setupRabbitMQConnection() {
-        int maxRetries = getMaxRetries();
-        for (int attempt = 1; maxRetries == 0 || attempt <= maxRetries; attempt++) {
-            try {
-                ConnectionFactory factory = new ConnectionFactory();
-                factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
-                factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
-                factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
-                factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
-                return factory.newConnection().createChannel();
-            } catch (Exception e) {
-                System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
-                if (maxRetries != 0 && attempt == maxRetries) {
-                    throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
-                }
-                try {
-                    Thread.sleep(RETRY_DELAY_MILLIS);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
-            }
+    protected static String retrieveEnvVariable(String variableName) {
+        String variableValue = System.getenv(variableName);
+        if (variableValue == null) {
+            throw new IllegalArgumentException(
+                    "Environment variable " + variableName + " not found. Please set in system environment");
         }
-        return null; // Unreachable code, added to satisfy compiler
+        return variableValue;
     }
 
-    private int getMaxRetries() {
-        String maxRetriesStr = System.getenv("MAX_CONNECTION_RETRIES");
-        if (maxRetriesStr != null) {
+    @SuppressWarnings("unused")
+    private static void setupMetricServer(){
+        JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
+        receivedCounter = Counter.builder().name("lightbulbmonitor_requests_received_total")
+            .help("Total number of received requests")
+            .labelNames("requests_received")
+            .register();
+        receivedCounter.labelValues("requests_received").inc();
+
+        Thread serverThread = new Thread(() -> {
             try {
-                return Integer.parseInt(maxRetriesStr);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid value for MAX_CONNECTION_RETRIES. Using default value.");
+                HTTPServer server = HTTPServer.builder()
+                .port(METRICS_SERVER_PORT)
+                .buildAndStart(); 
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
-        // Default to infinite retries if MAX_CONNECTION_RETRIES is not set or invalid
-        return 0;
+        });
+        serverThread.start();
     }
 
-    public JSONObject createTriggeredMessage(String target){
-        JSONObject msg = new JSONObject();
-        msg.put("hostname", hostname);
-        msg.put("bulb_state", "triggered");
-        msg.put("target", target);
-        msg.put("sent_timestamp", System.currentTimeMillis());
-        
-        System.out.println("JSON message: " + msg);
-
-        return msg;
-    }
-
-    public void consumeQueue() {
-        try {
-            channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-            channel.queueBind(QUEUE_NAME, EXCHANGE, "");
+    private static void consumeQueue() {
+        try{
+            mqchannel = setupRabbitMQConnection();
+            mqchannel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
+            mqchannel.queueDeclare(QUEUE_NAME, false, false, false, null);
+            mqchannel.queueBind(QUEUE_NAME, EXCHANGE, "");
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 System.out.printf("Received %s%n", message);
-                requestsReceivedTotal.inc();
+                receivedCounter.inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
@@ -123,49 +104,55 @@ public class LightBulbMonitor {
             };
 
             System.out.printf("Starting to consume %s%n", QUEUE_NAME);
-            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+            mqchannel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
         }
     }
 
-    public void sendMessage(JSONObject message) throws IOException, InterruptedException {
-        this.channel.basicPublish(EXCHANGE, "", null, message.toString().getBytes());
-        requestsSentTotal.inc();
+    private static void sendMessage(JSONObject message) throws IOException, InterruptedException {
+        mqchannel.basicPublish(EXCHANGE, "", null, message.toString().getBytes());
+        receivedCounter.labelValues("requests_received").inc();
         System.out.println("Sent '" + message + "'");
-}
+    }
 
-    private static String retrieveEnvVariable(String variableName) {
-        String variableValue = System.getenv(variableName);
-        if (variableValue == null) {
-            throw new IllegalArgumentException("Environment variable " + variableName + " not found. Please set in system environment");
+        @SuppressWarnings("all")
+        private static Channel setupRabbitMQConnection() {
+        for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
+            try {
+                ConnectionFactory factory = new ConnectionFactory();
+                factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
+                factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
+                factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
+                factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
+                return factory.newConnection().createChannel();
+            } catch (Exception e) {
+                System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
+                if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
+                    throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
+                }
+                try {
+                    Thread.sleep(RETRY_DELAY_MILLIS);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-        return variableValue;
+        return null;
     }
 
-    public static void main(String[] args) {
-        System.out.printf("Starting DBImporter.%n");
-        LightBulbMonitor monitor = new LightBulbMonitor();
-        try {
-            HTTPServer metrics_server = new HTTPServer(8080);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        monitor.setupRabbitMQConnection();
-        monitor.setHostname(retrieveEnvVariable("HOSTNAME"));
-        monitor.consumeQueue();
+
+    private static JSONObject createTriggeredMessage(String target){
+        JSONObject msg = new JSONObject();
+        msg.put("hostname", hostname);
+        msg.put("bulb_state", "triggered");
+        msg.put("target", target);
+        msg.put("sent_timestamp", System.currentTimeMillis());
+        
+        System.out.println("JSON message: " + msg);
+
+        return msg;
     }
 
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-    public void setHostname(String hostname){
-        this.hostname = hostname;
-    }
 }
-
-
-   

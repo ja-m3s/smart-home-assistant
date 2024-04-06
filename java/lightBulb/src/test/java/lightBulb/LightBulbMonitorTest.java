@@ -1,4 +1,4 @@
-package lightBulbMonitor;
+package lightBulb;
 
 import org.junit.Test;
 
@@ -14,7 +14,7 @@ public class LightBulbMonitorTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            LightBulbMonitor.retrieveEnvVariable(variableName);
+            LightBulbController.retrieveEnvVariable(variableName);
         });
     }
 

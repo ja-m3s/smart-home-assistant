@@ -31,6 +31,15 @@ public class DBImporter {
         consumeQueue();
     }
 
+    protected static String retrieveEnvVariable(String variableName) {
+        String variableValue = System.getenv(variableName);
+        if (variableValue == null) {
+            throw new IllegalArgumentException(
+                    "Environment variable " + variableName + " not found. Please set in system environment");
+        }
+        return variableValue;
+    }
+
     @SuppressWarnings("unused")
     private static void setupMetricServer(){
         JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
@@ -81,6 +90,7 @@ public class DBImporter {
             throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
         }
     }
+
         @SuppressWarnings("all")
         private static Channel setupRabbitMQConnection() {
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
@@ -132,14 +142,5 @@ public class DBImporter {
             }
         }
         return null;
-    }
-
-    protected static String retrieveEnvVariable(String variableName) {
-        String variableValue = System.getenv(variableName);
-        if (variableValue == null) {
-            throw new IllegalArgumentException(
-                    "Environment variable " + variableName + " not found. Please set in system environment");
-        }
-        return variableValue;
     }
 }

@@ -15,7 +15,7 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: "/metrics"
-        prometheus.io/port: "8080"
+        prometheus.io/port: "9400"
     spec:
       {{- if .Values.registryConf.registry }}
       imagePullSecrets:
@@ -27,7 +27,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
-            - containerPort: 8080
+            - containerPort: 9400
           env:
             - name: RABBITMQ_HOST
               value: {{ .Values.rabbitmq.host }}
