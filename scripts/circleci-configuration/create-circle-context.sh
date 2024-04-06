@@ -19,7 +19,6 @@ CONTEXT_ID=$(make_circleci_api_call "POST" \
 
 # Associative array for environment variables
 declare -A env_variables=(
-  ["CIRCLE_PROJECT_SLUG"]="$CIRCLE_PROJECT_SLUG"
   ["DOCKER_REPO_DB_IMPORTER"]=$DOCKER_REPO_DB_IMPORTER
   ["DOCKER_REPO_LIGHT_BULB"]=$DOCKER_REPO_LIGHT_BULB
   ["DOCKER_REPO_LIGHT_BULB_MONITOR"]=$DOCKER_REPO_LIGHT_BULB_MONITOR

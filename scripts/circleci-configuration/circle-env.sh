@@ -8,16 +8,14 @@
 # Default values
 ORG_ID_DEFAULT=$(pass circleci.com/ORG_ID)
 CIRCLE_API_TOKEN_DEFAULT=$(pass circleci.com/PERSONAL_API_TOKENS/UPDATE_CIRCLECI_FROM_TERRAFORM)
-CIRCLE_PROJECT_SLUG_DEFAULT=$(pass circleci.com/PROJECT_SLUG_SMART_HOME)
 
 # Override default values if provided as arguments
 ORG_ID="${1:-$ORG_ID_DEFAULT}"
 CIRCLE_API_TOKEN="${2:-$CIRCLE_API_TOKEN_DEFAULT}"
-CIRCLE_PROJECT_SLUG="${3:-$CIRCLE_PROJECT_SLUG_DEFAULT}"
 
-DOCKER_REPO_DB_IMPORTER=sma-db-importer
-DOCKER_REPO_LIGHT_BULB_MONITOR=sma-light-bulb-monitor
-DOCKER_REPO_LIGHT_BULB=sma-light-bulb
+DOCKER_REPO_DB_IMPORTER=dockerjam3s/sma-db-importer
+DOCKER_REPO_LIGHT_BULB_MONITOR=dockerjam3s/sma-light-bulb-monitor
+DOCKER_REPO_LIGHT_BULB=dockerjam3s/sma-light-bulb
 
 DOCKER_USER=$(pass hub.docker.com/username)
 DOCKER_PASSWORD=$(pass hub.docker.com/password)
