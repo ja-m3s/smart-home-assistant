@@ -12,3 +12,4 @@ RUN zip -r metrics.zip site
 FROM eclipse-temurin:22_36-jre-alpine as production
 COPY --from=build /app/target/dbImporter-0.0.1-SNAPSHOT-jar-with-dependencies.jar /opt/app/app.jar
 CMD ["java", "-jar", "/opt/app/app.jar"]
+
