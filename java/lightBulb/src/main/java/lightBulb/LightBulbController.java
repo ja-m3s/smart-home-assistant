@@ -56,7 +56,7 @@ public class LightBulbController {
     @SuppressWarnings("unused")
     private static void setupMetricServer(){
         JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
-        sentCounter = Counter.builder().name("lightbulb_requests_received_total")
+        sentCounter = Counter.builder().name("lightbulb_requests_sent_total")
             .help("Total number of sent requests")
             .labelNames("requests_sent")
             .register();
