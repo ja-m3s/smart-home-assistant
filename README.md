@@ -12,6 +12,8 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 - cockroachdb - database - stores messages in a database.
 - db_exporter - a simple java program which feeds from the event-bus and inserts records into the database.
 - cockroachdb-secure-client - automatic schema deployment.
+- grafana - visualizations
+- prometheus - metrics
 
 ## Project Layout
 
@@ -23,7 +25,7 @@ Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project descr
 
 ## Technology Stack
 
-- java,junit,jacoco,maven,docker, RabbitMQ, cockroachDB,SQL, kubernetes, helm3, circleci
+- java,junit,jacoco,maven,docker, RabbitMQ, cockroachDB,SQL, kubernetes, helm3, circleci, grafana, prometheus
 
 ## Configuration
 
@@ -41,7 +43,7 @@ All configuration can be found within the helm folder Values.yaml files, or the 
 2. ./build-images <<your registry>>
 3.  amend helm values.yaml and change registry to your <<your registry>> in Values.yaml
 4. point kubectl to K8S cluster
-5.  helm install "release-name" ../helm
+5.  helm install "release-name" helm
 
 ## Docker registry login
 
@@ -58,3 +60,5 @@ in .docker folder of your home directory.
 ## Jacoco
 
 - There are code coverage tools deployed in the Java projects, the output is visible when running mvn clean verify inside each Java project folder or in the Artifact section of circleci
+
+## Spotbugs
