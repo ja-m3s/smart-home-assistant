@@ -25,7 +25,7 @@ jobs:
           command: |
             docker build -t temp_build_dbi java/dbImporter --target build
             docker create --name temp_container_dbi temp_build_dbi
-            docker cp temp_container_dbi:/app/target/site/jacoco.zip /tmp/
+            docker cp temp_container_dbi:/app/target/metrics.zip /tmp/
             docker rm temp_container_dbi
       - run: 
           name: Build dbImporter
@@ -34,8 +34,8 @@ jobs:
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO}:db-importer-latest"
       - store_artifacts:
-          path: /tmp/jacoco.zip
-          destination: jacoco-dbImporter.zip
+          path: /tmp/metrics.zip
+          destination: metrics-dbImporter.zip
   build-light-bulb:
     machine:
       image: ubuntu-2204:current
