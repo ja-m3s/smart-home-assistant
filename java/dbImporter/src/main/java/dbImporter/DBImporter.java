@@ -22,7 +22,10 @@ public class DBImporter {
     private static final String QUEUE_NAME = "DBIMPORT";
     private static final int RETRY_DELAY_MILLIS = 1000;
 
-    private static Counter counter;
+    private static Counter counter = Counter.builder().name("dbimporter_requests_received_total")
+    .help("Total number of received requests")
+    .labelNames("requests_received")
+    .register();
 
     public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException {
         System.out.printf("Starting DBImporter.%n");
@@ -37,21 +40,11 @@ public class DBImporter {
         try {
             JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
 
-            counter = Counter.builder().name("dbimporter_requests_received_total")
-                    .help("Total number of received requests")
-                    .labelNames("requests_received")
-                    .register();
-
             HTTPServer server = HTTPServer.builder()
-                    .port(8080)
-                    .buildAndStart();
+                .port(8080)
+                .buildAndStart();
 
             System.out.println("HTTPServer listening on port http://localhost:" + server.getPort() + "/metrics");
-            try {
-                Thread.currentThread().join(); // Sleep forever
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
