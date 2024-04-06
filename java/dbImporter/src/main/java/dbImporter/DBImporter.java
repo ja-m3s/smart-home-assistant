@@ -5,10 +5,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Counter;
-import io.prometheus.client.exporter.HTTPServer;
-
+import io.prometheus.metrics.core.metrics.Counter;
+import io.prometheus.metrics.exporter.httpserver.HTTPServer;
+import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
@@ -20,12 +19,14 @@ public class DBImporter {
     static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
     private static final String QUEUE_NAME = "DBIMPORT";
     private static final int RETRY_DELAY_MILLIS = 1000;
-    private final Counter requestsReceivedTotal = Counter.build()
-    .name("dbimporter_requests_received_total")
-    .help("Total number of received requests.")
-    .register();
-    private HTTPServer metrics_server;
+    
+    Counter counter = Counter.builder()
+                .name("dbimporter_requests_received_total")
+                .help("Total number of received requests")
+                .labelNames("requests_received")
+                .register();
 
+    private HTTPServer metrics_server;
     private Channel channel;
     private Connection dbConnection;
 
@@ -109,7 +110,7 @@ public class DBImporter {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 System.out.printf("Received Message: %s%n", message);
-                requestsReceivedTotal.inc();
+                counter.labelValues("requests_received").inc();
                 try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
                     preparedStatement.setString(1, message);
                     preparedStatement.executeUpdate();
@@ -129,7 +130,14 @@ public class DBImporter {
 
     protected void setupMetricsServer(){
         try {
-            metrics_server = new HTTPServer(8080);
+            JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
+
+            HTTPServer server = HTTPServer.builder()
+            .port(8080)
+            .buildAndStart();
+
+            System.out.println("HTTPServer listening on port http://localhost:" + server.getPort() + "/metrics");
+
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -144,18 +152,18 @@ public class DBImporter {
         return variableValue;
     }
 
-    public static void main(String[] args) {
-        System.out.printf("Starting DBImporter.%n");
-        DBImporter importer = new DBImporter();
-        importer.setupMetricsServer();
-        importer.consumeQueue();
-    }
-
     public void setChannel(Channel channel) {
         this.channel = channel;
     }
 
     public void setDbConnection(Connection dbConnection) {
         this.dbConnection = dbConnection;
+    }
+
+    public static void main(String[] args) {
+        System.out.printf("Starting DBImporter.%n");
+        DBImporter importer = new DBImporter();
+        importer.setupMetricsServer();
+        importer.consumeQueue();
     }
 }
