@@ -2,14 +2,14 @@ package lightBulb;
 
 import java.io.IOException;
 import org.json.JSONObject;
-
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Counter;
+import io.prometheus.client.exporter.HTTPServer;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-
 import lightBulb.LightBulb.LightBulbState;
-
 import com.rabbitmq.client.AMQP;
 
 /**
@@ -24,6 +24,14 @@ public class LightBulbController {
     private final static Integer SEND_MESSAGE_POLL_TIME = 5000; // 5 seconds
     private static final Integer RABBITMQ_RETRY_INTERVAL = 1000; // 1 second
     protected static final String LIGHT_BULB_MONITOR_HOSTNAME_REGEX = "light-bulb-monitor-.+";;
+    private final Counter requestsReceivedTotal = Counter.build()
+    .name("lightbulb_requests_received_total")
+    .help("Total number of received requests.")
+    .register();
+    private final Counter requestsSentTotal = Counter.build()
+    .name("lightbulb_requests_sent_total")
+    .help("Total number of sent requests.")
+    .register();
 
     private LightBulb lightBulb;
     private ConnectionFactory connectionFactory;
@@ -89,6 +97,7 @@ public class LightBulbController {
         channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
         channel.queueBind(QUEUE_NAME, EXCHANGE, "");
         channel.basicPublish(EXCHANGE, QUEUE_NAME, null, message.toString().getBytes());
+        requestsSentTotal.inc();
         System.out.printf("Sent %s%n", message);
     }
 
@@ -140,6 +149,7 @@ public class LightBulbController {
                     byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 System.out.println("Received message: " + message);
+                requestsReceivedTotal.inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
@@ -180,6 +190,7 @@ public class LightBulbController {
         controller.setHostname(retrieveEnvVariable("HOSTNAME"));
         controller.connectToRabbitMQ();
         try {
+            HTTPServer metrics_server = new HTTPServer(8080);
             controller.channel.queueDeclare(QUEUE_NAME, false, false, false, null);
             controller.channel.queueBind(QUEUE_NAME, EXCHANGE, "");
             controller.receiveMessage();

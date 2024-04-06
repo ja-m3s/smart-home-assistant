@@ -87,6 +87,15 @@ data:
       - job_name: "rabbitmq"
         static_configs:
           - targets: ["rabbitmq.default.svc.cluster.local:15692"]
+      - job_name: "db-importer"
+        static_configs:
+          - targets: ["rabbitmq.default.svc.cluster.local:8080"]
+      - job_name: "light-bulb"
+        static_configs:
+          - targets: ["rabbitmq.default.svc.cluster.local:8080"]
+      - job_name: "light-bulb-monitor"
+        static_configs:
+          - targets: ["rabbitmq.default.svc.cluster.local:8080"]
       - job_name: 'node-exporter'
         kubernetes_sd_configs:
           - role: endpoints

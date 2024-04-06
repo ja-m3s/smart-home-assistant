@@ -5,6 +5,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Counter;
+import io.prometheus.client.exporter.HTTPServer;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
@@ -17,6 +20,10 @@ public class DBImporter {
     static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
     private static final String QUEUE_NAME = "DBIMPORT";
     private static final int RETRY_DELAY_MILLIS = 1000;
+    private final Counter requestsReceivedTotal = Counter.build()
+    .name("dbimporter_requests_received_total")
+    .help("Total number of received requests.")
+    .register();
 
     private Channel channel;
     private Connection dbConnection;
@@ -100,7 +107,7 @@ public class DBImporter {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 System.out.printf("Received Message: %s%n", message);
-
+                requestsReceivedTotal.inc();
                 try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
                     preparedStatement.setString(1, message);
                     preparedStatement.executeUpdate();
@@ -129,6 +136,12 @@ public class DBImporter {
     public static void main(String[] args) {
         System.out.printf("Starting DBImporter.%n");
         DBImporter importer = new DBImporter();
+        try {
+            HTTPServer metrics_server = new HTTPServer(8080);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         importer.consumeQueue();
     }
 

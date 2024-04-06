@@ -22,6 +22,7 @@ spec:
           image: "{{ default "localhost:32000" .Values.registryConf.registry }}/{{ .Values.lightBulbMonitor.image }}"
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
+            - containerPort: 8080
           env:
             - name: RABBITMQ_HOST
               value: {{ .Values.rabbitmq.host }}

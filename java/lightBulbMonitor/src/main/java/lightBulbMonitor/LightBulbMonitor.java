@@ -1,7 +1,8 @@
 package lightBulbMonitor;
-
 import java.io.IOException;
-
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Counter;
+import io.prometheus.client.exporter.HTTPServer;
 import org.json.JSONObject;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
@@ -15,7 +16,14 @@ public class LightBulbMonitor {
     private static final int RETRY_DELAY_MILLIS = 1000;
     private static final long LIGHT_ON_LIMIT = 20_000; //20 seconds
     private static final String LIGHT_BULB_HOSTNAME_REGEX="light-bulb-\\d+";
-
+    private final Counter requestsReceivedTotal = Counter.build()
+    .name("lightbulbmonitor_requests_received_total")
+    .help("Total number of received requests.")
+    .register();
+    private final Counter requestsSentTotal = Counter.build()
+    .name("lightbulbmonitor_requests_sent_total")
+    .help("Total number of sent requests.")
+    .register();
     public Channel channel;
     private String hostname;
 
@@ -82,7 +90,7 @@ public class LightBulbMonitor {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 System.out.printf("Received %s%n", message);
-       
+                requestsReceivedTotal.inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
@@ -124,6 +132,7 @@ public class LightBulbMonitor {
 
     public void sendMessage(JSONObject message) throws IOException, InterruptedException {
         this.channel.basicPublish(EXCHANGE, "", null, message.toString().getBytes());
+        requestsSentTotal.inc();
         System.out.println("Sent '" + message + "'");
 }
 
@@ -138,6 +147,12 @@ public class LightBulbMonitor {
     public static void main(String[] args) {
         System.out.printf("Starting DBImporter.%n");
         LightBulbMonitor monitor = new LightBulbMonitor();
+        try {
+            HTTPServer metrics_server = new HTTPServer(8080);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         monitor.setupRabbitMQConnection();
         monitor.setHostname(retrieveEnvVariable("HOSTNAME"));
         monitor.consumeQueue();
