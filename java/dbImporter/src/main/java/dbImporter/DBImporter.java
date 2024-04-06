@@ -18,22 +18,32 @@ import com.rabbitmq.client.DeliverCallback;
 public class DBImporter {
     private static final String EXCHANGE = "messages";
     private static final String EXCHANGE_TYPE = "fanout";
-    static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
+    private static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
     private static final String QUEUE_NAME = "DBIMPORT";
     private static final int RETRY_DELAY_MILLIS = 1000;
+    private static final int RETRY_MAX_ATTEMPTS = 0; //forever
 
-    private static Counter counter = Counter.builder().name("dbimporter_requests_received_total")
+    private static final Counter RECEIVED_COUNTER = Counter.builder().name("dbimporter_requests_received_total")
     .help("Total number of received requests")
     .labelNames("requests_received")
     .register();
 
-    public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException {
+    public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException, IOException {
         System.out.printf("Starting DBImporter.%n");
-        Thread metricsServerThread = new Thread(DBImporter::setupMetricsServer);
+
+        JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
+        Counter.builder().name("dbimporter_requests_received_total")
+            .help("Total number of received requests")
+            .labelNames("requests_received")
+            .register();
+        HTTPServer server = HTTPServer.builder()
+                .port(8080)
+                .buildAndStart();
+
+        //Thread metricsServerThread = new Thread(DBImporter::setupMetricsServer);
         Thread consumeQueueThread = new Thread(DBImporter::consumeQueue);
-        metricsServerThread.start();
+        //metricsServerThread.start();
         consumeQueueThread.start();
-        Thread.currentThread().join(); // sleep forever
     }
 
     private static void setupMetricsServer()  {
@@ -61,7 +71,7 @@ public class DBImporter {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 System.out.printf("Received Message: %s%n", message);
-                counter.labelValues("requests_received").inc();
+                RECEIVED_COUNTER.labelValues("requests_received").inc();
                 try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
                     preparedStatement.setString(1, message);
                     preparedStatement.executeUpdate();
@@ -79,10 +89,9 @@ public class DBImporter {
             throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
         }
     }
-
-    private static Channel setupRabbitMQConnection() {
-        int maxRetries = getMaxRetries();
-        for (int attempt = 1; maxRetries == 0 || attempt <= maxRetries; attempt++) {
+        @SuppressWarnings("all")
+        private static Channel setupRabbitMQConnection() {
+        for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
                 factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
@@ -92,7 +101,7 @@ public class DBImporter {
                 return factory.newConnection().createChannel();
             } catch (Exception e) {
                 System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
-                if (maxRetries != 0 && attempt == maxRetries) {
+                if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
                     throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
                 }
                 try {
@@ -105,9 +114,10 @@ public class DBImporter {
         return null;
     }
 
+    @SuppressWarnings("all")
     private static Connection setupDBConnection() {
-        int maxRetries = getMaxRetries();
-        for (int attempt = 1; maxRetries == 0 || attempt <= maxRetries; attempt++) {
+      
+        for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 String dbHost = retrieveEnvVariable("DB_HOST");
                 String dbPort = retrieveEnvVariable("DB_PORT");
@@ -119,7 +129,7 @@ public class DBImporter {
                 return DriverManager.getConnection(connectionString, dbUser, dbPassword);
             } catch (SQLException e) {
                 System.out.printf("Failed to connect to database on attempt #%d. Retrying...%n", attempt);
-                if (maxRetries != 0 && attempt == maxRetries) {
+                if (RETRY_MAX_ATTEMPTS != 0 && attempt == RETRY_MAX_ATTEMPTS) {
                     throw new RuntimeException("Failed to connect to database after multiple attempts.", e);
                 }
                 try {
@@ -130,19 +140,6 @@ public class DBImporter {
             }
         }
         return null;
-    }
-
-    private static int getMaxRetries() {
-        String maxRetriesStr = System.getenv("MAX_CONNECTION_RETRIES");
-        if (maxRetriesStr != null) {
-            try {
-                return Integer.parseInt(maxRetriesStr);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid value for MAX_CONNECTION_RETRIES. Using default value.");
-            }
-        }
-        // Default to infinite retries if MAX_CONNECTION_RETRIES is not set or invalid
-        return 0;
     }
 
     private static String retrieveEnvVariable(String variableName) {
