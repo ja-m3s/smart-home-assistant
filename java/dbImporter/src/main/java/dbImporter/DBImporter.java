@@ -33,7 +33,7 @@ public class DBImporter {
         this.channel = setupRabbitMQConnection();
         this.dbConnection = setupDBConnection();
         }
-    }
+    
 
     private Channel setupRabbitMQConnection() {
         int maxRetries = getMaxRetries();
@@ -133,6 +133,7 @@ public class DBImporter {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
     }
 
     private static String retrieveEnvVariable(String variableName) {
