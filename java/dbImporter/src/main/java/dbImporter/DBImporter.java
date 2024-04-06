@@ -137,7 +137,12 @@ public class DBImporter {
             .buildAndStart();
 
             System.out.println("HTTPServer listening on port http://localhost:" + server.getPort() + "/metrics");
-
+            try {
+                Thread.currentThread().join();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } // sleep forever
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
