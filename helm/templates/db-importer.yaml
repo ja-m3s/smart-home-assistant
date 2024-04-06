@@ -15,7 +15,7 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: "/metrics"
-        prometheus.io/port: "8080"
+        prometheus.io/port: "9400"
     spec:
       {{- if .Values.registryConf.registry }}
       imagePullSecrets:
@@ -24,6 +24,7 @@ spec:
       containers:
         - name: db-importer-container
           image: "{{ default "localhost:32000" .Values.registryConf.registry }}/{{ .Values.dbImporter.image }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
             - containerPort: 9400

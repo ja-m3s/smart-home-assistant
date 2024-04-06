@@ -30,9 +30,9 @@ jobs:
       - run: 
           name: Build dbImporter
           command: |
-            docker build -t "${DOCKER_REPO}:db-importer-latest" "java/dbImporter"
+            docker build -t "${DOCKER_REPO_DB_IMPORTER}:latest" "java/dbImporter"
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
-            docker push "${DOCKER_REPO}:db-importer-latest"
+            docker push "${DOCKER_REPO_DB_IMPORTER}:latest"
       - store_artifacts:
           path: /tmp/metrics.zip
           destination: metrics-dbImporter.zip
@@ -54,9 +54,9 @@ jobs:
       - run: 
           name: Build light-bulb
           command: |
-            docker build -t "${DOCKER_REPO}:light-bulb-latest" "java/lightBulb"
+            docker build -t "${DOCKER_REPO_LIGHT_BULB}:latest" "java/lightBulb"
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
-            docker push "${DOCKER_REPO}:light-bulb-latest"
+            docker push "${DOCKER_REPO_LIGHT_BULB}:latest"
   build-light-bulb-monitor:
     machine:
       image: ubuntu-2204:current
@@ -75,9 +75,9 @@ jobs:
       - run: 
           name: Build light-bulb-monitor
           command: |
-            docker build -t "${DOCKER_REPO}:light-bulb-monitor-latest" "java/lightBulbMonitor"
+            docker build -t "${DOCKER_REPO_LIGHT_BULB_MONITOR}:latest" "java/lightBulbMonitor"
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
-            docker push "${DOCKER_REPO}:light-bulb-monitor-latest"
+            docker push "${DOCKER_REPO_LIGHT_BULB_MONITOR}:latest"
 workflows:
   workflow-build-db-importer:
     when: << pipeline.parameters.param-build-db-importer >>

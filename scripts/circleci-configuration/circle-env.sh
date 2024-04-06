@@ -15,7 +15,10 @@ ORG_ID="${1:-$ORG_ID_DEFAULT}"
 CIRCLE_API_TOKEN="${2:-$CIRCLE_API_TOKEN_DEFAULT}"
 CIRCLE_PROJECT_SLUG="${3:-$CIRCLE_PROJECT_SLUG_DEFAULT}"
 
-DOCKER_REPO=$(pass hub.docker.com/repo)
+DOCKER_REPO_DB_IMPORTER=sma-db-importer
+DOCKER_REPO_LIGHT_BULB_MONITOR=sma-light-bulb-monitor
+DOCKER_REPO_LIGHT_BULB=sma-light-bulb
+
 DOCKER_USER=$(pass hub.docker.com/username)
 DOCKER_PASSWORD=$(pass hub.docker.com/password)
 CONTEXT_NAME=org-context-smart-home

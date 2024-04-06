@@ -23,16 +23,16 @@ eventBus:
 
 lightBulb:
   enabled: true
-  image: smart-home-assistant:light-bulb-latest
+  image: sma-light-bulb:latest
   numLights: 3
 
 lightBulbMonitor:
   enabled: true
-  image: smart-home-assistant:light-bulb-monitor-latest
+  image: sma-light-bulb-monitor:latest
 
 dbImporter:
   enabled: true
-  image: smart-home-assistant:db-importer-latest
+  image: sma-db-importer:latest
 
 cockroachClient:
   enabled: true

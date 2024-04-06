@@ -24,6 +24,7 @@ spec:
       containers:
         - name: light-bulb-monitor-container
           image: "{{ default "localhost:32000" .Values.registryConf.registry }}/{{ .Values.lightBulbMonitor.image }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
             - containerPort: 8080
