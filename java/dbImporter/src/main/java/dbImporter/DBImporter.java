@@ -24,6 +24,7 @@ public class DBImporter {
     .name("dbimporter_requests_received_total")
     .help("Total number of received requests.")
     .register();
+    private HTTPServer metrics_server;
 
     private Channel channel;
     private Connection dbConnection;
@@ -31,6 +32,7 @@ public class DBImporter {
     public DBImporter() {
         this.channel = setupRabbitMQConnection();
         this.dbConnection = setupDBConnection();
+        }
     }
 
     private Channel setupRabbitMQConnection() {
@@ -125,6 +127,14 @@ public class DBImporter {
         }
     }
 
+    protected void setupMetricsServer(){
+        try {
+            metrics_server = new HTTPServer(8080);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+    }
+
     private static String retrieveEnvVariable(String variableName) {
         String variableValue = System.getenv(variableName);
         if (variableValue == null) {
@@ -136,12 +146,7 @@ public class DBImporter {
     public static void main(String[] args) {
         System.out.printf("Starting DBImporter.%n");
         DBImporter importer = new DBImporter();
-        try {
-            HTTPServer metrics_server = new HTTPServer(8080);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        importer.setupMetricsServer();
         importer.consumeQueue();
     }
 
