@@ -4,7 +4,7 @@ RUN apt update && apt install -y zip
 COPY pom.xml ./
 RUN mvn dependency:resolve
 COPY src ./src
-RUN mvn package
+RUN mvn clean verify package site
 WORKDIR /app/target/
 RUN zip -r metrics.zip jacoco-reports
 RUN zip -r metrics.zip surefire-reports
