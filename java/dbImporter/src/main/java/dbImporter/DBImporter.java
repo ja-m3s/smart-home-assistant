@@ -21,8 +21,8 @@ public class DBImporter {
     private static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
     private static final String QUEUE_NAME = "DBIMPORT";
     private static final int RETRY_DELAY_MILLIS = 1000;
-    private static final int RETRY_MAX_ATTEMPTS = 0; //forever
-    private static final int METRICS_SERVER_PORT= 9400;
+    private static final int RETRY_MAX_ATTEMPTS = 0; // forever
+    private static final int METRICS_SERVER_PORT = 9400;
     private static Counter receivedCounter;
 
     public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException, IOException {
@@ -41,19 +41,19 @@ public class DBImporter {
     }
 
     @SuppressWarnings("unused")
-    private static void setupMetricServer(){
+    private static void setupMetricServer() {
         JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
         receivedCounter = Counter.builder().name("dbimporter_requests_received_total")
-            .help("Total number of received requests")
-            .labelNames("requests_received")
-            .register();
+                .help("Total number of received requests")
+                .labelNames("requests_received")
+                .register();
         receivedCounter.labelValues("requests_received").inc();
 
         Thread serverThread = new Thread(() -> {
             try {
                 HTTPServer server = HTTPServer.builder()
-                .port(METRICS_SERVER_PORT)
-                .buildAndStart(); 
+                        .port(METRICS_SERVER_PORT)
+                        .buildAndStart();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -63,8 +63,8 @@ public class DBImporter {
 
     private static void consumeQueue() {
         try (
-            Channel channel = setupRabbitMQConnection();
-            Connection dbConnection = setupDBConnection()) {
+                Channel channel = setupRabbitMQConnection();
+                Connection dbConnection = setupDBConnection()) {
             channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
             channel.queueDeclare(QUEUE_NAME, false, false, false, null);
             channel.queueBind(QUEUE_NAME, EXCHANGE, "");
@@ -84,15 +84,16 @@ public class DBImporter {
             };
 
             System.out.printf("Starting to consume %s%n", QUEUE_NAME);
-            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+            });
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
         }
     }
 
-        @SuppressWarnings("all")
-        private static Channel setupRabbitMQConnection() {
+    @SuppressWarnings("all")
+    private static Channel setupRabbitMQConnection() {
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
@@ -118,7 +119,7 @@ public class DBImporter {
 
     @SuppressWarnings("all")
     private static Connection setupDBConnection() {
-      
+
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 String dbHost = retrieveEnvVariable("DB_HOST");

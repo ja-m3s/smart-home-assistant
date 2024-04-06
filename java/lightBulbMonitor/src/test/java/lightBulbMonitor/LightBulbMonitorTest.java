@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThrows;
 
 public class LightBulbMonitorTest {
 
-
     @Test
     public void testRetrieveEnvVariable_VariableDoesNotExist_ThrowsException() {
         // Arrange

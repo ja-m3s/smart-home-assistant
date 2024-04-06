@@ -13,7 +13,7 @@ import lightBulb.LightBulb.LightBulbState;
 import com.rabbitmq.client.AMQP;
 
 /**
- * The LightBulbController class manages the communication with RabbitMQ 
+ * The LightBulbController class manages the communication with RabbitMQ
  * and controls the state of the light bulb.
  */
 public class LightBulbController {
@@ -24,7 +24,7 @@ public class LightBulbController {
     private final static Integer SEND_MESSAGE_POLL_TIME = 5000; // 5 seconds
     protected static final String LIGHT_BULB_MONITOR_HOSTNAME_REGEX = "light-bulb-monitor-.+";
     private static final int RETRY_DELAY_MILLIS = 1000;
-    private static final int RETRY_MAX_ATTEMPTS = 0; //forever
+    private static final int RETRY_MAX_ATTEMPTS = 0; // forever
     private static final int METRICS_SERVER_PORT = 9400;
     private static LightBulb lightBulb;
     private static Channel mqchannel;
@@ -36,8 +36,8 @@ public class LightBulbController {
      * The main method.
      * 
      * @param args The command-line arguments.
-     * @throws IOException 
-     * @throws InterruptedException 
+     * @throws IOException
+     * @throws InterruptedException
      */
     public static void main(String[] args) throws IOException, InterruptedException {
         System.out.println("Starting Light Bulb.");
@@ -51,28 +51,27 @@ public class LightBulbController {
             sendMessage(createMessage());
             Thread.sleep(SEND_MESSAGE_POLL_TIME); // Sleep for 5 seconds
         }
-        
+
     }
+
     @SuppressWarnings("unused")
-    private static void setupMetricServer(){
+    private static void setupMetricServer() {
         JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
         sentCounter = Counter.builder().name("lightbulb_requests_sent_total")
-            .help("Total number of sent requests")
-            .labelNames("requests_sent")
-            .register();
-        sentCounter.labelValues("requests_sent").inc();
+                .help("Total number of sent requests")
+                .labelNames("requests_sent")
+                .register();
 
         receivedCounter = Counter.builder().name("lightbulb_requests_received_total")
-        .help("Total number of received requests")
-        .labelNames("requests_received")
-        .register();
-        receivedCounter.labelValues("requests_received").inc();
+                .help("Total number of received requests")
+                .labelNames("requests_received")
+                .register();
 
         Thread serverThread = new Thread(() -> {
             try {
                 HTTPServer server = HTTPServer.builder()
-                .port(METRICS_SERVER_PORT)
-                .buildAndStart(); 
+                        .port(METRICS_SERVER_PORT)
+                        .buildAndStart();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -94,28 +93,28 @@ public class LightBulbController {
      */
     @SuppressWarnings("all")
     private static Channel setupRabbitMQConnection() {
-    for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
-        try {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
-            factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
-            factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
-            factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
-            return factory.newConnection().createChannel();
-        } catch (Exception e) {
-            System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
-            if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
-                throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
-            }
+        for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
-                Thread.sleep(RETRY_DELAY_MILLIS);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
+                ConnectionFactory factory = new ConnectionFactory();
+                factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
+                factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
+                factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
+                factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
+                return factory.newConnection().createChannel();
+            } catch (Exception e) {
+                System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
+                if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
+                    throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
+                }
+                try {
+                    Thread.sleep(RETRY_DELAY_MILLIS);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
+        return null;
     }
-    return null;
-}
 
     /**
      * Sends a message to RabbitMQ.
@@ -127,7 +126,7 @@ public class LightBulbController {
         mqchannel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
         mqchannel.queueBind(QUEUE_NAME, EXCHANGE, "");
         mqchannel.basicPublish(EXCHANGE, QUEUE_NAME, null, message.toString().getBytes());
-        receivedCounter.labelValues("requests_sent").inc();
+        sentCounter.labelValues("requests_sent").inc();
         System.out.printf("Sent %s%n", message);
     }
 
@@ -159,21 +158,21 @@ public class LightBulbController {
                     byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 System.out.println("Received message: " + message);
-                 receivedCounter.labelValues("requests_received").inc();
+                receivedCounter.labelValues("requests_received").inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
                 // Check message is from a lightbulb, if not, disregard it.
                 String origin_hostname = msg.getString("hostname");
                 System.out.printf("Message from: %s%n", origin_hostname);
-                if (! origin_hostname.matches(LIGHT_BULB_MONITOR_HOSTNAME_REGEX)) {
+                if (!origin_hostname.matches(LIGHT_BULB_MONITOR_HOSTNAME_REGEX)) {
                     System.out.println("origin_hostname is not a light bulb monitor. Disregarding message.");
                     return;
                 }
                 System.out.println("origin_hostname is a light bulb monitor. Processing.");
                 String target = msg.getString("target");
 
-                //is message for this light
+                // is message for this light
                 if (target.equals(hostname)) {
                     System.out.println("Switching off light");
                     lightBulb.setState(LightBulbState.OFF);

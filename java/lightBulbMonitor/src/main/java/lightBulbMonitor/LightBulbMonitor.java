@@ -16,15 +16,16 @@ public class LightBulbMonitor {
     private static final String EXCHANGE = "messages";
     private static final String EXCHANGE_TYPE = "fanout";
     private static final String QUEUE_NAME = "LIGHTBULBMONITOR";
-    private static final long LIGHT_ON_LIMIT = 20_000; //20 seconds
-    private static final String LIGHT_BULB_HOSTNAME_REGEX="light-bulb-\\d+";
+    private static final long LIGHT_ON_LIMIT = 20_000; // 20 seconds
+    private static final String LIGHT_BULB_HOSTNAME_REGEX = "light-bulb-\\d+";
     private static final int RETRY_DELAY_MILLIS = 1000;
-    private static final int RETRY_MAX_ATTEMPTS = 0; //forever
-    private static final int METRICS_SERVER_PORT= 9400;
+    private static final int RETRY_MAX_ATTEMPTS = 0; // forever
+    private static final int METRICS_SERVER_PORT = 9400;
     private static Counter receivedCounter;
     private static Counter sentCounter;
-    private static Channel mqchannel; 
+    private static Channel mqchannel;
     private static String hostname;
+
     public static void main(String[] args) throws InterruptedException, IOException {
         System.out.printf("Starting LightBulbMonitor.%n");
         hostname = retrieveEnvVariable("HOSTNAME");
@@ -42,25 +43,23 @@ public class LightBulbMonitor {
     }
 
     @SuppressWarnings("unused")
-    private static void setupMetricServer(){
+    private static void setupMetricServer() {
         JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
         receivedCounter = Counter.builder().name("lightbulbmonitor_requests_received_total")
-            .help("Total number of received requests")
-            .labelNames("requests_received")
-            .register();
-        receivedCounter.labelValues("requests_received").inc();
+                .help("Total number of received requests")
+                .labelNames("requests_received")
+                .register();
 
         sentCounter = Counter.builder().name("lightbulbmonitor_requests_sent_total")
-        .help("Total number of sent requests")
-        .labelNames("requests_sent")
-        .register();
-    receivedCounter.labelValues("requests_sent").inc();
+                .help("Total number of sent requests")
+                .labelNames("requests_sent")
+                .register();
 
         Thread serverThread = new Thread(() -> {
             try {
                 HTTPServer server = HTTPServer.builder()
-                .port(METRICS_SERVER_PORT)
-                .buildAndStart(); 
+                        .port(METRICS_SERVER_PORT)
+                        .buildAndStart();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -69,7 +68,7 @@ public class LightBulbMonitor {
     }
 
     private static void consumeQueue() {
-        try{
+        try {
             mqchannel = setupRabbitMQConnection();
             mqchannel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
             mqchannel.queueDeclare(QUEUE_NAME, false, false, false, null);
@@ -85,13 +84,13 @@ public class LightBulbMonitor {
                 // Check message is from a lightbulb, if not, disregard it.
                 String origin_hostname = msg.getString("hostname");
                 System.out.printf("Message from: %s%n", origin_hostname);
-                if (! origin_hostname.matches(LIGHT_BULB_HOSTNAME_REGEX)) {
+                if (!origin_hostname.matches(LIGHT_BULB_HOSTNAME_REGEX)) {
                     System.out.println("origin_hostname is not a light bulb. Disregarding message.");
                     return;
                 }
                 System.out.println("origin_hostname is a light bulb. Processing.");
-           
-                // Parse out the fields we need 
+
+                // Parse out the fields we need
                 String bulb_state = msg.getString("bulb_state");
                 long sent_timestamp = msg.getLong("time_turned_on");
                 long currentTimestamp = System.currentTimeMillis();
@@ -104,14 +103,15 @@ public class LightBulbMonitor {
                         sendMessage(trigger_message);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                    } 
+                    }
                 } else {
                     System.out.println("Not switching off light");
                 }
             };
 
             System.out.printf("Starting to consume %s%n", QUEUE_NAME);
-            mqchannel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+            mqchannel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+            });
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
@@ -120,12 +120,12 @@ public class LightBulbMonitor {
 
     private static void sendMessage(JSONObject message) throws IOException, InterruptedException {
         mqchannel.basicPublish(EXCHANGE, "", null, message.toString().getBytes());
-        receivedCounter.labelValues("requests_sent").inc();
+        sentCounter.labelValues("requests_sent").inc();
         System.out.println("Sent '" + message + "'");
     }
 
-        @SuppressWarnings("all")
-        private static Channel setupRabbitMQConnection() {
+    @SuppressWarnings("all")
+    private static Channel setupRabbitMQConnection() {
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
@@ -149,14 +149,13 @@ public class LightBulbMonitor {
         return null;
     }
 
-
-    private static JSONObject createTriggeredMessage(String target){
+    private static JSONObject createTriggeredMessage(String target) {
         JSONObject msg = new JSONObject();
         msg.put("hostname", hostname);
         msg.put("bulb_state", "triggered");
         msg.put("target", target);
         msg.put("sent_timestamp", System.currentTimeMillis());
-        
+
         System.out.println("JSON message: " + msg);
 
         return msg;
