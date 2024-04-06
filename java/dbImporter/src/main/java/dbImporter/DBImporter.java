@@ -23,41 +23,33 @@ public class DBImporter {
     private static final int RETRY_DELAY_MILLIS = 1000;
     private static final int RETRY_MAX_ATTEMPTS = 0; //forever
 
-    private static final Counter RECEIVED_COUNTER = Counter.builder().name("dbimporter_requests_received_total")
-    .help("Total number of received requests")
-    .labelNames("requests_received")
-    .register();
+    private static Counter receivedCounter;
 
     public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException, IOException {
         System.out.printf("Starting DBImporter.%n");
+        setupMetricServer();
+        consumeQueue();
+    }
 
+    @SuppressWarnings("unused")
+    private static void setupMetricServer(){
         JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
-        Counter.builder().name("dbimporter_requests_received_total")
+        receivedCounter = Counter.builder().name("dbimporter_requests_received_total")
             .help("Total number of received requests")
             .labelNames("requests_received")
             .register();
-        HTTPServer server = HTTPServer.builder()
+        receivedCounter.labelValues("requests_received").inc();
+
+        Thread serverThread = new Thread(() -> {
+            try {
+                HTTPServer server = HTTPServer.builder()
                 .port(8080)
-                .buildAndStart();
-
-        //Thread metricsServerThread = new Thread(DBImporter::setupMetricsServer);
-        Thread consumeQueueThread = new Thread(DBImporter::consumeQueue);
-        //metricsServerThread.start();
-        consumeQueueThread.start();
-    }
-
-    private static void setupMetricsServer()  {
-        try {
-            JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
-
-            HTTPServer server = HTTPServer.builder()
-                .port(8080)
-                .buildAndStart();
-
-            System.out.println("HTTPServer listening on port http://localhost:" + server.getPort() + "/metrics");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                .buildAndStart(); 
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        serverThread.start();
     }
 
     private static void consumeQueue() {
@@ -71,7 +63,7 @@ public class DBImporter {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
                 System.out.printf("Received Message: %s%n", message);
-                RECEIVED_COUNTER.labelValues("requests_received").inc();
+                receivedCounter.labelValues("requests_received").inc();
                 try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
                     preparedStatement.setString(1, message);
                     preparedStatement.executeUpdate();
@@ -142,7 +134,7 @@ public class DBImporter {
         return null;
     }
 
-    private static String retrieveEnvVariable(String variableName) {
+    protected static String retrieveEnvVariable(String variableName) {
         String variableValue = System.getenv(variableName);
         if (variableValue == null) {
             throw new IllegalArgumentException(
