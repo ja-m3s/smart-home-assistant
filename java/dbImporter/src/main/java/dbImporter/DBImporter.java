@@ -1,42 +1,91 @@
 package dbImporter;
 
+import io.prometheus.metrics.core.metrics.Counter;
+import io.prometheus.metrics.exporter.httpserver.HTTPServer;
+import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import io.prometheus.metrics.core.metrics.Counter;
-import io.prometheus.metrics.exporter.httpserver.HTTPServer;
-import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
+import java.util.concurrent.TimeoutException;
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 public class DBImporter {
-
     private static final String EXCHANGE = "messages";
     private static final String EXCHANGE_TYPE = "fanout";
     static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
     private static final String QUEUE_NAME = "DBIMPORT";
     private static final int RETRY_DELAY_MILLIS = 1000;
-    
-    Counter counter = Counter.builder()
-                .name("dbimporter_requests_received_total")
-                .help("Total number of received requests")
-                .labelNames("requests_received")
-                .register();
 
-    private HTTPServer metrics_server;
-    private Channel channel;
-    private Connection dbConnection;
+    private static Counter counter;
 
-    public DBImporter() {
-        this.channel = setupRabbitMQConnection();
-        this.dbConnection = setupDBConnection();
+    public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException {
+        System.out.printf("Starting DBImporter.%n");
+        setupMetricsServer();
+        consumeQueue();
+        Thread.currentThread().join(); // sleep forever
+    }
+
+    private static void setupMetricsServer() {
+        try {
+            JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
+
+            counter = Counter.builder().name("dbimporter_requests_received_total")
+                    .help("Total number of received requests")
+                    .labelNames("requests_received")
+                    .register();
+
+            HTTPServer server = HTTPServer.builder()
+                    .port(8080)
+                    .buildAndStart();
+
+            System.out.println("HTTPServer listening on port http://localhost:" + server.getPort() + "/metrics");
+            try {
+                Thread.currentThread().join(); // Sleep forever
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    
+    }
 
-    private Channel setupRabbitMQConnection() {
+    private static void consumeQueue() throws TimeoutException, SQLException {
+        try (
+            Channel channel = setupRabbitMQConnection();
+            Connection dbConnection = setupDBConnection()) {
+            channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
+            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+            channel.queueBind(QUEUE_NAME, EXCHANGE, "");
+
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                String message = new String(delivery.getBody(), "UTF-8");
+                System.out.printf("Received Message: %s%n", message);
+                counter.labelValues("requests_received").inc();
+                try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
+                    preparedStatement.setString(1, message);
+                    preparedStatement.executeUpdate();
+                    System.out.printf("Inserted record into the database: %s from %s%n", message,
+                            retrieveEnvVariable("HOSTNAME"));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            };
+
+            System.out.printf("Starting to consume %s%n", QUEUE_NAME);
+            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
+        }
+    }
+
+    private static Channel setupRabbitMQConnection() {
         int maxRetries = getMaxRetries();
         for (int attempt = 1; maxRetries == 0 || attempt <= maxRetries; attempt++) {
             try {
@@ -58,10 +107,10 @@ public class DBImporter {
                 }
             }
         }
-        return null; // Unreachable code, added to satisfy compiler
+        return null;
     }
 
-    private Connection setupDBConnection() {
+    private static Connection setupDBConnection() {
         int maxRetries = getMaxRetries();
         for (int attempt = 1; maxRetries == 0 || attempt <= maxRetries; attempt++) {
             try {
@@ -85,10 +134,10 @@ public class DBImporter {
                 }
             }
         }
-        return null; // Unreachable code, added to satisfy compiler
+        return null;
     }
 
-    private int getMaxRetries() {
+    private static int getMaxRetries() {
         String maxRetriesStr = System.getenv("MAX_CONNECTION_RETRIES");
         if (maxRetriesStr != null) {
             try {
@@ -101,74 +150,12 @@ public class DBImporter {
         return 0;
     }
 
-    public void consumeQueue() {
-        try {
-            channel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-            channel.queueBind(QUEUE_NAME, EXCHANGE, "");
-
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String message = new String(delivery.getBody(), "UTF-8");
-                System.out.printf("Received Message: %s%n", message);
-                counter.labelValues("requests_received").inc();
-                try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
-                    preparedStatement.setString(1, message);
-                    preparedStatement.executeUpdate();
-                    System.out.printf("Inserted record into the database: %s from %s%n", message, retrieveEnvVariable("HOSTNAME"));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            };
-
-            System.out.printf("Starting to consume %s%n", QUEUE_NAME);
-            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
-        }
-    }
-
-    protected void setupMetricsServer(){
-        try {
-            JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
-
-            HTTPServer server = HTTPServer.builder()
-            .port(8080)
-            .buildAndStart();
-
-            System.out.println("HTTPServer listening on port http://localhost:" + server.getPort() + "/metrics");
-            try {
-                Thread.currentThread().join();
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } // sleep forever
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
     private static String retrieveEnvVariable(String variableName) {
         String variableValue = System.getenv(variableName);
         if (variableValue == null) {
-            throw new IllegalArgumentException("Environment variable " + variableName + " not found. Please set in system environment");
+            throw new IllegalArgumentException(
+                    "Environment variable " + variableName + " not found. Please set in system environment");
         }
         return variableValue;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-    public void setDbConnection(Connection dbConnection) {
-        this.dbConnection = dbConnection;
-    }
-
-    public static void main(String[] args) {
-        System.out.printf("Starting DBImporter.%n");
-        DBImporter importer = new DBImporter();
-        importer.setupMetricsServer();
-        importer.consumeQueue();
     }
 }
