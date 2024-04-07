@@ -23,14 +23,14 @@ jobs:
       - run:
           name: Extract Code Coverage - db-importer
           command: |
-            docker build -t temp_build_dbi java/dbImporter --target build
+            docker build -t temp_build_dbi -f "java/dbImporter/Dockerfile" "java" --target build
             docker create --name temp_container_dbi temp_build_dbi
             docker cp temp_container_dbi:/app/target/metrics.zip /tmp/
             docker rm temp_container_dbi
       - run: 
           name: Build dbImporter
           command: |
-            docker build -t "${DOCKER_REPO_DB_IMPORTER}:latest" "java/dbImporter"
+            docker build -t "${DOCKER_REPO_DB_IMPORTER}:latest" -f "java/dbImporter/Dockerfile" "java"
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO_DB_IMPORTER}:latest"
       - store_artifacts:
@@ -44,7 +44,7 @@ jobs:
       - run:
           name: Extract Code Coverage - light-bulb
           command: |
-            docker build -t temp_build_lb java/lightBulb --target build
+            docker build -t temp_build_lb -f "java/lightBulb/Dockerfile" "java" --target build
             docker create --name temp_container_lb temp_build_lb
             docker cp temp_container_lb:/app/target/metrics.zip /tmp/
             docker rm temp_container_lb
@@ -54,7 +54,7 @@ jobs:
       - run: 
           name: Build light-bulb
           command: |
-            docker build -t "${DOCKER_REPO_LIGHT_BULB}:latest" "java/lightBulb"
+            docker build -t "${DOCKER_REPO_LIGHT_BULB}:latest" -f "java/lightBulb/Dockerfile" "java"
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO_LIGHT_BULB}:latest"
   build-light-bulb-monitor:
@@ -65,7 +65,7 @@ jobs:
       - run:
           name: Extract Code Coverage - light-bulb-monitor
           command: |
-            docker build -t temp_build_lbm java/lightBulbMonitor --target build
+            docker build -t temp_build_lbm -f "java/lightBulbMonitor/Dockerfile" "java" --target build
             docker create --name temp_container_lbm temp_build_lbm
             docker cp temp_container_lbm:/app/target/metrics.zip /tmp/
             docker rm temp_container_lbm
@@ -75,7 +75,7 @@ jobs:
       - run: 
           name: Build light-bulb-monitor
           command: |
-            docker build -t "${DOCKER_REPO_LIGHT_BULB_MONITOR}:latest" "java/lightBulbMonitor"
+            docker build -t "${DOCKER_REPO_LIGHT_BULB_MONITOR}:latest" -f "java/lightBulbMonitor/Dockerfile" "java"
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO_LIGHT_BULB_MONITOR}:latest"
 workflows:

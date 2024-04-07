@@ -18,19 +18,14 @@ if [ $# -eq 0 ]; then
     echo "You can pass a custom repository as an argument. Example: ./build-images.sh mycustomrepo:5000"
 fi
 
-#Might need to login if using remote repo.
-#docker login --username $DOCKER_USER --password $DOCKER_PASS
-
-# Build the python-custom image
-
 DB_IMPORTER_IMAGE="${REPO}/smart-home-assistant:db-importer-latest"
-docker build -t "${DB_IMPORTER_IMAGE}" "${SCRIPT_DIR}/../../java/lightBulb"
+docker build -t "${DB_IMPORTER_IMAGE}" -f "${SCRIPT_DIR}/../../java/dbImporter/Dockerfile" "${SCRIPT_DIR}/../../java/" 
 docker push "${DB_IMPORTER_IMAGE}"
 
 LIGHTBULB_IMAGE="${REPO}/smart-home-assistant:light-bulb-latest"
-docker build -t "${LIGHTBULB_IMAGE}" "${SCRIPT_DIR}/../../java/lightBulb"
+docker build -t "${DB_IMPORTER_IMAGE}" -f "${SCRIPT_DIR}/../../java/lightBulb/Dockerfile" "${SCRIPT_DIR}/../../java/" 
 docker push "${LIGHTBULB_IMAGE}"
 
 LIGHTBULB_MONITOR_IMAGE="${REPO}/smart-home-assistant:light-bulb-monitor-latest"
-docker build -t "${LIGHTBULB_MONITOR_IMAGE}" "${SCRIPT_DIR}/../../java/lightBulb"
+docker build -t "${DB_IMPORTER_IMAGE}" -f "${SCRIPT_DIR}/../../java/lightBulbMonitor/Dockerfile" "${SCRIPT_DIR}/../../java/" 
 docker push "${LIGHTBULB_MONITOR_IMAGE}"
