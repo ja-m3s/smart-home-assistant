@@ -10,7 +10,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import lightBulb.LightBulb.LightBulbState;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.rabbitmq.client.AMQP;
 
 /**
@@ -66,6 +67,7 @@ private static final String COUNTER_SENT_LABEL ="requests_sent";
 private static final String COUNTER_RECEIVED_NAME ="lightbulb_requests_received_total";
 private static final String COUNTER_RECEIVED_HELP ="Total Received Messages";
 private static final String COUNTER_RECEIVED_LABEL="requests_received";
+private static final Logger log = LoggerFactory.getLogger(LightBulbController.class);
 
     /**
      * The main method.
@@ -74,9 +76,9 @@ private static final String COUNTER_RECEIVED_LABEL="requests_received";
      * @throws InterruptedException if the thread is interrupted.
      */
     public static void main(String[] args) throws IOException, InterruptedException {
-        System.out.println("Starting Light Bulb.");
+        log.info("Starting Light Bulb.");
         lightBulb = new LightBulb();
-        System.out.println(lightBulb.toString());
+        log.info(lightBulb.toString());
         hostname = SharedUtils.getEnvVar("HOSTNAME");
         channel = SharedUtils.setupRabbitMQConnection();
         setupQueue();
@@ -112,7 +114,7 @@ private static final String COUNTER_RECEIVED_LABEL="requests_received";
         if (lightBulb.getState() == LightBulbState.ON) {
             channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null, message.toString().getBytes(StandardCharsets.UTF_8));
             sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
-            System.out.printf("Sent %s%n", message);
+            log.info("Sent %s%n", message);
         }
     }
 
@@ -127,7 +129,7 @@ private static final String COUNTER_RECEIVED_LABEL="requests_received";
         msg.put("sent_timestamp", System.currentTimeMillis());
         msg.put("time_turned_on", lightBulb.getTimeTurnedOn());
 
-        System.out.println("JSON message: " + msg);
+        log.info("JSON message: " + msg);
 
         return msg;
     }
@@ -142,30 +144,30 @@ private static final String COUNTER_RECEIVED_LABEL="requests_received";
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
                     byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
-                System.out.println("Received message: " + message);
+                log.info("Received message: " + message);
                 receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
                 // Check message is from a lightbulb, if not, disregard it.
                 String origin_hostname = msg.getString("hostname");
-                System.out.printf("Message from: %s%n", origin_hostname);
+                log.info("Message from: %s%n", origin_hostname);
                 if (!origin_hostname.matches(LIGHT_BULB_MONITOR_HOSTNAME_REGEX)) {
-                    System.out.println("origin_hostname is not a light bulb monitor. Disregarding message.");
+                    log.info("origin_hostname is not a light bulb monitor. Disregarding message.");
                     return;
                 }
-                System.out.println("origin_hostname is a light bulb monitor. Processing.");
+                log.info("origin_hostname is a light bulb monitor. Processing.");
                 String target = msg.getString("target");
 
                 // is message for this light
                 if (target.equals(hostname)) {
-                    System.out.println("Switching off light");
+                    log.info("Switching off light");
                     lightBulb.setState(LightBulbState.OFF);
                 }
             }
         };
 
-        System.out.println("Waiting for messages. To exit press Ctrl+C");
+        log.info("Waiting for messages. To exit press Ctrl+C");
 
         try {
             channel.basicConsume(QUEUE_NAME, true, consumer);

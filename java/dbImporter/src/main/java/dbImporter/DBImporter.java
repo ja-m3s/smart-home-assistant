@@ -9,7 +9,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 
@@ -59,6 +60,8 @@ private static final String COUNTER_RECEIVED_NAME ="dbimporter_requests_received
 private static final String COUNTER_RECEIVED_HELP ="Total Received Messages";
 private static final String COUNTER_RECEIVED_LABEL="requests_received";
 
+private static final Logger log = LoggerFactory.getLogger(DBImporter.class);
+
     /**
      * Main method to start the DBImporter.
      * @param args Command line arguments (not used)
@@ -68,7 +71,7 @@ private static final String COUNTER_RECEIVED_LABEL="requests_received";
      * @throws IOException if an I/O error occurs
      */
     public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException, IOException {
-        System.out.printf("Starting DBImporter.%n");
+        log.info("Starting DBImporter.");
         setupMetricServer();
         SharedUtils.startMetricsServer();
         channel = SharedUtils.setupRabbitMQConnection();
@@ -97,12 +100,12 @@ private static final String COUNTER_RECEIVED_LABEL="requests_received";
         // Callback for processing incoming messages
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");
-            System.out.printf("Received Message: %s%n", message);
+            log.info("Received Message: %s%n", message);
             receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
             try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
                 preparedStatement.setString(1, message);
                 preparedStatement.executeUpdate();
-                System.out.printf("Inserted record into the database: %s from %s%n", message,
+                log.info("Inserted record into the database: %s from %s%n", message,
                 SharedUtils.getEnvVar("HOSTNAME"));
             } catch (SQLException e) {
                 setupDBConnection();
@@ -110,7 +113,7 @@ private static final String COUNTER_RECEIVED_LABEL="requests_received";
             }
         };
 
-        System.out.printf("Starting to consume %s%n", QUEUE_NAME);
+        log.info("Starting to consume %s%n", QUEUE_NAME);
         channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
     }
 
@@ -137,7 +140,7 @@ private static final String COUNTER_RECEIVED_LABEL="requests_received";
                 dbConnection = DriverManager.getConnection(connectionString, dbUser, dbPassword);
                 break;
             } catch (SQLException e) {
-                System.out.printf("Failed to connect to database on attempt #%d. Retrying...%n", attempt);
+                log.info("Failed to connect to database on attempt #%d. Retrying...%n", attempt);
                 if (DATABASE_RETRY_MAX_ATTEMPTS != 0 && attempt == DATABASE_RETRY_MAX_ATTEMPTS) {
                     throw new RuntimeException("Failed to connect to database after multiple attempts.", e);
                 }

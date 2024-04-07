@@ -1,7 +1,8 @@
 package sharedUtils;
 
 import java.io.IOException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import io.prometheus.metrics.exporter.httpserver.HTTPServer;
@@ -37,6 +38,8 @@ private static final int RETRY_MAX_ATTEMPTS = 0; // forever
  */
 private static final int METRICS_SERVER_PORT = 9400;
 
+private static final Logger log = LoggerFactory.getLogger(SharedUtils.class);
+
     /**
      * Retrieves an environment variable.
      * @param variableName The name of the environment variable
@@ -67,7 +70,7 @@ private static final int METRICS_SERVER_PORT = 9400;
                 factory.setPassword(SharedUtils.getEnvVar("RABBITMQ_PASS"));
                 return factory.newConnection().createChannel();
             } catch (Exception e) {
-                System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
+                log.info("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
                 if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
                     throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
                 }
