@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import sharedUtils.SharedUtils;
 import org.json.JSONObject;
 import io.prometheus.metrics.core.metrics.Counter;
-import io.prometheus.metrics.exporter.httpserver.HTTPServer;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
@@ -21,17 +20,8 @@ import com.rabbitmq.client.AMQP;
 public class LightBulbController {
 
 /**
- * Represents the name of the exchange used in messaging.
- */
-private final static String EXCHANGE = "messages";
-
-/**
- * Represents the type of exchange used in messaging.
- */
-private final static String EXCHANGE_TYPE = "fanout";
-
-/**
  * Represents the name of the queue used in messaging.
+ * If it's "" it broadcasts to all queues on the exchange.
  */
 private final static String QUEUE_NAME = "";
 
@@ -46,11 +36,6 @@ private final static Integer SEND_MESSAGE_POLL_TIME = 5000; // 5 seconds
 protected static final String LIGHT_BULB_MONITOR_HOSTNAME_REGEX = "light-bulb-monitor-.+";
 
 /**
- * Represents the port number for the metrics server.
- */
-private static final int METRICS_SERVER_PORT = 9400;
-
-/**
  * Represents the current state of the light bulb.
  */
 private static LightBulb lightBulb;
@@ -58,7 +43,7 @@ private static LightBulb lightBulb;
 /**
  * Channel for communication with the message broker.
  */
-private static Channel mqchannel;
+private static Channel channel;
 
 /**
  * The hostname of the current environment.
@@ -75,6 +60,12 @@ private static Counter receivedCounter;
  */
 private static Counter sentCounter;
 
+private static final String COUNTER_SENT_NAME ="lightbulb_requests_sent_total";
+private static final String COUNTER_SENT_HELP ="Total Sent Messages";
+private static final String COUNTER_SENT_LABEL ="requests_sent";
+private static final String COUNTER_RECEIVED_NAME ="lightbulb_requests_received_total";
+private static final String COUNTER_RECEIVED_HELP ="Total Received Messages";
+private static final String COUNTER_RECEIVED_LABEL="requests_received";
 
     /**
      * The main method.
@@ -86,9 +77,11 @@ private static Counter sentCounter;
         System.out.println("Starting Light Bulb.");
         lightBulb = new LightBulb();
         System.out.println(lightBulb.toString());
-        hostname = (SharedUtils.retrieveEnvVariable("HOSTNAME"));
-        mqchannel = SharedUtils.setupRabbitMQConnection();
+        hostname = SharedUtils.getEnvVar("HOSTNAME");
+        channel = SharedUtils.setupRabbitMQConnection();
+        setupQueue();
         setupMetricServer();
+        SharedUtils.startMetricsServer();
         receiveMessage();
         while (true) {
             sendMessage(createMessage());
@@ -96,29 +89,17 @@ private static Counter sentCounter;
         }
     }
 
-    @SuppressWarnings("unused")
     private static void setupMetricServer() {
         JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
-        sentCounter = Counter.builder().name("lightbulb_requests_sent_total")
-                .help("Total number of sent requests")
-                .labelNames("requests_sent")
+        sentCounter = Counter.builder().name(COUNTER_SENT_NAME)
+                .help(COUNTER_SENT_HELP)
+                .labelNames(COUNTER_SENT_LABEL)
                 .register();
 
-        receivedCounter = Counter.builder().name("lightbulb_requests_received_total")
-                .help("Total number of received requests")
-                .labelNames("requests_received")
+        receivedCounter = Counter.builder().name(COUNTER_RECEIVED_NAME)
+                .help(COUNTER_RECEIVED_HELP)
+                .labelNames(COUNTER_RECEIVED_LABEL)
                 .register();
-
-        Thread serverThread = new Thread(() -> {
-            try {
-                HTTPServer server = HTTPServer.builder()
-                        .port(METRICS_SERVER_PORT)
-                        .buildAndStart();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        serverThread.start();
     }
 
     /**
@@ -127,13 +108,10 @@ private static Counter sentCounter;
      * @throws IOException if an I/O error occurs.
      */
     private static void sendMessage(JSONObject message) throws IOException {
-        mqchannel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
-        mqchannel.queueBind(QUEUE_NAME, EXCHANGE, ""); 
-
         // Only broadcast when lightbulb is on
         if (lightBulb.getState() == LightBulbState.ON) {
-            mqchannel.basicPublish(EXCHANGE, QUEUE_NAME, null, message.toString().getBytes(StandardCharsets.UTF_8));
-            sentCounter.labelValues("requests_sent").inc();
+            channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null, message.toString().getBytes(StandardCharsets.UTF_8));
+            sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
             System.out.printf("Sent %s%n", message);
         }
     }
@@ -159,13 +137,13 @@ private static Counter sentCounter;
      * @throws IOException if an I/O error occurs.
      */
     private static void receiveMessage() throws IOException {
-        DefaultConsumer consumer = new DefaultConsumer(mqchannel) {
+        DefaultConsumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
                     byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 System.out.println("Received message: " + message);
-                receivedCounter.labelValues("requests_received").inc();
+                receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
@@ -186,15 +164,19 @@ private static Counter sentCounter;
                 }
             }
         };
-        mqchannel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
-        mqchannel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        mqchannel.queueBind(QUEUE_NAME, EXCHANGE, "");
+
         System.out.println("Waiting for messages. To exit press Ctrl+C");
 
         try {
-            mqchannel.basicConsume(QUEUE_NAME, true, consumer);
+            channel.basicConsume(QUEUE_NAME, true, consumer);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void setupQueue() throws IOException{
+        channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.queueBind(QUEUE_NAME, SharedUtils.getExchangeName(), "");
     }
 }

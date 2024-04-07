@@ -1,14 +1,26 @@
 package sharedUtils;
 
+import java.io.IOException;
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
+import io.prometheus.metrics.exporter.httpserver.HTTPServer;
+
 
 /**
  * This class represents a DBImporter which consumes messages from RabbitMQ
  * and inserts them into a PostgreSQL database.
  */
 public class SharedUtils {
+    /**
+     * Represents the name of the exchange used in messaging.
+     */
+    private static final String EXCHANGE_NAME = "messages";
 
+    /**
+     * Represents the type of exchange used in messaging.
+     */
+    private static final String EXCHANGE_TYPE = "fanout";
 /**
  * Represents the delay (in milliseconds) for retrying operations.
  */
@@ -20,13 +32,18 @@ private static final int RETRY_DELAY_MILLIS = 1000;
  */
 private static final int RETRY_MAX_ATTEMPTS = 0; // forever
 
+/**
+ * Represents the port number for the metrics server.
+ */
+private static final int METRICS_SERVER_PORT = 9400;
+
     /**
      * Retrieves an environment variable.
      * @param variableName The name of the environment variable
      * @return The value of the environment variable
      * @throws IllegalArgumentException if the environment variable is not found
      */
-    public static String retrieveEnvVariable(String variableName) {
+    public static String getEnvVar(String variableName) {
         String variableValue = System.getenv(variableName);
         if (variableValue == null) {
             throw new IllegalArgumentException(
@@ -44,10 +61,10 @@ private static final int RETRY_MAX_ATTEMPTS = 0; // forever
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
-                factory.setHost(SharedUtils.retrieveEnvVariable("RABBITMQ_HOST"));
-                factory.setPort(Integer.parseInt(SharedUtils.retrieveEnvVariable("RABBITMQ_PORT")));
-                factory.setUsername(SharedUtils.retrieveEnvVariable("RABBITMQ_USER"));
-                factory.setPassword(SharedUtils.retrieveEnvVariable("RABBITMQ_PASS"));
+                factory.setHost(SharedUtils.getEnvVar("RABBITMQ_HOST"));
+                factory.setPort(Integer.parseInt(SharedUtils.getEnvVar("RABBITMQ_PORT")));
+                factory.setUsername(SharedUtils.getEnvVar("RABBITMQ_USER"));
+                factory.setPassword(SharedUtils.getEnvVar("RABBITMQ_PASS"));
                 return factory.newConnection().createChannel();
             } catch (Exception e) {
                 System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
@@ -64,4 +81,27 @@ private static final int RETRY_MAX_ATTEMPTS = 0; // forever
         return null;
     }
 
+    
+    public static void startMetricsServer(){
+            // Start HTTP server for Prometheus metrics
+            Thread serverThread = new Thread(() -> {
+                try {
+                    @SuppressWarnings("unused")
+                    HTTPServer server = HTTPServer.builder()
+                            .port(METRICS_SERVER_PORT)
+                            .buildAndStart();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            serverThread.start();
+    }
+    
+    public static String getExchangeName() {
+        return EXCHANGE_NAME ;
+    }
+
+    public static String getExchangeType() {
+        return EXCHANGE_TYPE ;
+    }
 }

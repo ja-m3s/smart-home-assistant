@@ -10,16 +10,16 @@ import static org.junit.Assert.assertThrows;
 public class SharedUtilsTest {
 
     /**
-     * Tests the retrieveEnvVariable method when the variable does not exist.
+     * Tests the getEnvVar method when the variable does not exist.
      */
     @Test
-    public void testRetrieveEnvVariable_VariableDoesNotExist_ThrowsException() {
+    public void testgetEnvVar_VariableDoesNotExist_ThrowsException() {
         // Arrange
         String variableName = "NON_EXISTENT_VARIABLE";
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            SharedUtils.retrieveEnvVariable(variableName);
+            SharedUtils.getEnvVar(variableName);
         });
     }
 

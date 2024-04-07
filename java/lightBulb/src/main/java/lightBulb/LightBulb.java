@@ -54,7 +54,7 @@ public class LightBulb {
      */
     @Override
     public String toString() {
-        return "LightBulb [state=" + state + "]";
+        return "LightBulb [state=" + state + "timeTurnedOn="+timeTurnedOn+"]";
     }
 
     /**
