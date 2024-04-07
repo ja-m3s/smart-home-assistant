@@ -1,57 +1,53 @@
 package lightBulb;
-
 import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.junit.Before;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-/**
- * The LightBulbTest class contains unit tests for the LightBulb class.
- */
+import org.junit.Before;
+import org.junit.Test;
+
+import lightBulb.LightBulb.LightBulbState;
+
 public class LightBulbTest {
 
     private LightBulb lightBulb;
 
-    /**
-     * Sets up the test fixture.
-     */
     @Before
     public void setUp() {
         lightBulb = new LightBulb();
     }
 
-    /**
-     * Tests the initial state of the light bulb.
-     */
     @Test
     public void testInitialState() {
-        assertEquals(LightBulb.LightBulbState.ON, lightBulb.getState());
+        assertNotNull(lightBulb);
+        assertEquals(LightBulbState.ON, lightBulb.getState());
     }
 
-    /**
-     * Tests the setState method.
-     */
     @Test
     public void testSetState() {
-        lightBulb.setState(LightBulb.LightBulbState.OFF);
-        assertEquals(LightBulb.LightBulbState.OFF, lightBulb.getState());
+        lightBulb.setState(LightBulbState.OFF);
+        assertEquals(LightBulbState.OFF, lightBulb.getState());
     }
 
-    /**
-     * Tests the toString method.
-     */
+    @Test
+    public void testGetTimeTurnedOn() {
+        long currentTime = System.currentTimeMillis();
+        long timeTurnedOn = lightBulb.getTimeTurnedOn();
+        // Allow for a small difference due to time taken by tests to execute
+        long timeDifference = currentTime - timeTurnedOn;
+        assertTrue(timeDifference >= 0 && timeDifference < 100);
+    }
+
+    @Test
+    public void testSetTimeTurnedOn() {
+        long newTime = System.currentTimeMillis() - 10000; // Subtract 10 seconds
+        lightBulb.setTimeTurnedOn(newTime);
+        assertEquals(newTime, lightBulb.getTimeTurnedOn());
+    }
+
     @Test
     public void testToString() {
-        String expectedString = "LightBulb [state=ON]";
+        String expectedString = "LightBulb [state=ON, timeTurnedOn=" + lightBulb.getTimeTurnedOn() + "]";
         assertEquals(expectedString, lightBulb.toString());
-    }
-
-    /**
-     * Tests the getTimeTurnedOn and setTimeTurnedOn methods.
-     */
-    @Test
-    public void testTimeTurnedOn() {
-        long currentTime = System.currentTimeMillis();
-        lightBulb.setTimeTurnedOn(currentTime);
-        assertEquals(currentTime, lightBulb.getTimeTurnedOn());
     }
 }
