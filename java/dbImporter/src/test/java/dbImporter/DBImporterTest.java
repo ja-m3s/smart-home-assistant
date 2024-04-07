@@ -1,7 +1,7 @@
 package dbImporter;
 
 import org.junit.Test;
-
+import sharedUtils.SharedUtils;
 import static org.junit.Assert.assertThrows;
 
 /**
@@ -19,7 +19,7 @@ public class DBImporterTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            DBImporter.retrieveEnvVariable(variableName);
+            SharedUtils.retrieveEnvVariable(variableName);
         });
     }
 

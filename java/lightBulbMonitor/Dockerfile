@@ -13,7 +13,7 @@ WORKDIR /app
 COPY lightBulbMonitor lightBulbMonitor
 WORKDIR /app/lightBulbMonitor
 COPY --from=utilsBuild /app/sharedUtils/target/sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
-RUN mvn install:install-file -Dfile=sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+RUN mvn install:install-file -Dfile=sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar -DgroupId=com.jam3s -DartifactId=sharedUtils -Dpackaging=jar -Dversion=0.0.1-SNAPSHOT
 #-DgroupId=com.example -DartifactId=utils -Dversion=1.0 -Dpackaging=jar
 RUN mvn dependency:resolve
 RUN mvn clean verify package site

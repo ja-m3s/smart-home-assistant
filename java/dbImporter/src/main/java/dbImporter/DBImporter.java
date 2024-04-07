@@ -3,7 +3,7 @@ package dbImporter;
 import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.exporter.httpserver.HTTPServer;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
-
+import sharedUtils.SharedUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -90,21 +90,6 @@ private static Connection dbConnection;
     }
 
     /**
-     * Retrieves an environment variable.
-     * @param variableName The name of the environment variable
-     * @return The value of the environment variable
-     * @throws IllegalArgumentException if the environment variable is not found
-     */
-    protected static String retrieveEnvVariable(String variableName) {
-        String variableValue = System.getenv(variableName);
-        if (variableValue == null) {
-            throw new IllegalArgumentException(
-                    "Environment variable " + variableName + " not found. Please set in system environment");
-        }
-        return variableValue;
-    }
-
-    /**
      * Sets up the Prometheus Metric Server.
      */
     @SuppressWarnings("unused")
@@ -144,7 +129,7 @@ private static Connection dbConnection;
                 preparedStatement.setString(1, message);
                 preparedStatement.executeUpdate();
                 System.out.printf("Inserted record into the database: %s from %s%n", message,
-                        retrieveEnvVariable("HOSTNAME"));
+                        SharedUtils.retrieveEnvVariable("HOSTNAME"));
             } catch (SQLException e) {
                 setupDBConnection();
                 e.printStackTrace();
@@ -167,10 +152,10 @@ private static Connection dbConnection;
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
-                factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
-                factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
-                factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
-                factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
+                factory.setHost(SharedUtils.retrieveEnvVariable("RABBITMQ_HOST"));
+                factory.setPort(Integer.parseInt(SharedUtils.retrieveEnvVariable("RABBITMQ_PORT")));
+                factory.setUsername(SharedUtils.retrieveEnvVariable("RABBITMQ_USER"));
+                factory.setPassword(SharedUtils.retrieveEnvVariable("RABBITMQ_PASS"));
                 channel = factory.newConnection().createChannel();
                 break;
             } catch (Exception e) {
@@ -199,11 +184,11 @@ private static Connection dbConnection;
                     dbConnection.close();
                 }
                 // Retrieve database connection parameters from environment variables
-                String dbHost = retrieveEnvVariable("DB_HOST");
-                String dbPort = retrieveEnvVariable("DB_PORT");
-                String dbName = retrieveEnvVariable("DB_NAME");
-                String dbUser = retrieveEnvVariable("DB_USER");
-                String dbPassword = retrieveEnvVariable("DB_PASSWORD");
+                String dbHost = SharedUtils.retrieveEnvVariable("DB_HOST");
+                String dbPort = SharedUtils.retrieveEnvVariable("DB_PORT");
+                String dbName = SharedUtils.retrieveEnvVariable("DB_NAME");
+                String dbUser = SharedUtils.retrieveEnvVariable("DB_USER");
+                String dbPassword = SharedUtils.retrieveEnvVariable("DB_PASSWORD");
 
                 // Construct JDBC connection string and establish connection
                 String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;

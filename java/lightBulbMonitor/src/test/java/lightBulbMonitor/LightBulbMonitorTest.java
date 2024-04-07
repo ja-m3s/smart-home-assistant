@@ -2,6 +2,8 @@ package lightBulbMonitor;
 
 import org.junit.Test;
 
+import sharedUtils.SharedUtils;
+
 import static org.junit.Assert.assertThrows;
 
 /**
@@ -19,7 +21,7 @@ public class LightBulbMonitorTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            LightBulbMonitor.retrieveEnvVariable(variableName);
+            SharedUtils.retrieveEnvVariable(variableName);
         });
     }
 

@@ -1,5 +1,5 @@
 package lightBulbMonitor;
-
+import sharedUtils.SharedUtils;
 import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.exporter.httpserver.HTTPServer;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
@@ -87,24 +87,9 @@ public class LightBulbMonitor {
      */
     public static void main(String[] args) throws InterruptedException, IOException {
         System.out.printf("Starting LightBulbMonitor.%n");
-        hostname = retrieveEnvVariable("HOSTNAME");
+        hostname = SharedUtils.retrieveEnvVariable("HOSTNAME");
         setupMetricServer();
         consumeQueue();
-    }
-
-    /**
-     * Retrieves an environment variable.
-     * @param variableName The name of the environment variable.
-     * @return The value of the environment variable.
-     * @throws IllegalArgumentException if the environment variable is not found.
-     */
-    protected static String retrieveEnvVariable(String variableName) {
-        String variableValue = System.getenv(variableName);
-        if (variableValue == null) {
-            throw new IllegalArgumentException(
-                    "Environment variable " + variableName + " not found. Please set in system environment");
-        }
-        return variableValue;
     }
 
     /**
@@ -210,10 +195,10 @@ public class LightBulbMonitor {
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
-                factory.setHost(retrieveEnvVariable("RABBITMQ_HOST"));
-                factory.setPort(Integer.parseInt(retrieveEnvVariable("RABBITMQ_PORT")));
-                factory.setUsername(retrieveEnvVariable("RABBITMQ_USER"));
-                factory.setPassword(retrieveEnvVariable("RABBITMQ_PASS"));
+                factory.setHost(SharedUtils.retrieveEnvVariable("RABBITMQ_HOST"));
+                factory.setPort(Integer.parseInt(SharedUtils.retrieveEnvVariable("RABBITMQ_PORT")));
+                factory.setUsername(SharedUtils.retrieveEnvVariable("RABBITMQ_USER"));
+                factory.setPassword(SharedUtils.retrieveEnvVariable("RABBITMQ_PASS"));
                 return factory.newConnection().createChannel();
             } catch (Exception e) {
                 System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);

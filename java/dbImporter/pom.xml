@@ -176,6 +176,10 @@
             <artifactId>prometheus-metrics-exporter-httpserver</artifactId>
             <version>1.0.0</version>
         </dependency>
-        
+        <dependency>
+            <groupId>com.jam3s</groupId>
+            <artifactId>sharedUtils</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
