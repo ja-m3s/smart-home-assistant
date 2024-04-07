@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThrows;
 /**
  * The LightBulbMonitorTest class contains unit tests for the LightBulbMonitor class.
  */
-public class LightBulbMonitorTest {
+public class LightBulbControllerTest {
 
     /**
      * Tests the getEnvVar method when the variable does not exist.
