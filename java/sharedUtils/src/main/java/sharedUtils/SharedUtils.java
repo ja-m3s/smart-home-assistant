@@ -7,7 +7,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
 import io.prometheus.metrics.exporter.httpserver.HTTPServer;
 
-
 /**
  * This class represents a DBImporter which consumes messages from RabbitMQ
  * and inserts them into a PostgreSQL database.
@@ -22,26 +21,27 @@ public class SharedUtils {
      * Represents the type of exchange used in messaging.
      */
     private static final String EXCHANGE_TYPE = "fanout";
-/**
- * Represents the delay (in milliseconds) for retrying operations.
- */
-private static final int RETRY_DELAY_MILLIS = 1000;
+    /**
+     * Represents the delay (in milliseconds) for retrying operations.
+     */
+    private static final int RETRY_DELAY_MILLIS = 1000;
 
-/**
- * Represents the maximum number of attempts for retrying operations. 
- * A value of 0 indicates infinite retry attempts.
- */
-private static final int RETRY_MAX_ATTEMPTS = 0; // forever
+    /**
+     * Represents the maximum number of attempts for retrying operations.
+     * A value of 0 indicates infinite retry attempts.
+     */
+    private static final int RETRY_MAX_ATTEMPTS = 0; // forever
 
-/**
- * Represents the port number for the metrics server.
- */
-private static final int METRICS_SERVER_PORT = 9400;
+    /**
+     * Represents the port number for the metrics server.
+     */
+    private static final int METRICS_SERVER_PORT = 9400;
 
-private static final Logger log = LoggerFactory.getLogger(SharedUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(SharedUtils.class);
 
     /**
      * Retrieves an environment variable.
+     * 
      * @param variableName The name of the environment variable
      * @return The value of the environment variable
      * @throws IllegalArgumentException if the environment variable is not found
@@ -55,8 +55,9 @@ private static final Logger log = LoggerFactory.getLogger(SharedUtils.class);
         return variableValue;
     }
 
-        /**
+    /**
      * Connects to RabbitMQ server.
+     * 
      * @return The channel.
      */
     @SuppressWarnings("all")
@@ -84,27 +85,26 @@ private static final Logger log = LoggerFactory.getLogger(SharedUtils.class);
         return null;
     }
 
-    
-    public static void startMetricsServer(){
-            // Start HTTP server for Prometheus metrics
-            Thread serverThread = new Thread(() -> {
-                try {
-                    @SuppressWarnings("unused")
-                    HTTPServer server = HTTPServer.builder()
-                            .port(METRICS_SERVER_PORT)
-                            .buildAndStart();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-            serverThread.start();
+    public static void startMetricsServer() {
+        // Start HTTP server for Prometheus metrics
+        Thread serverThread = new Thread(() -> {
+            try {
+                @SuppressWarnings("unused")
+                HTTPServer server = HTTPServer.builder()
+                        .port(METRICS_SERVER_PORT)
+                        .buildAndStart();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        serverThread.start();
     }
-    
+
     public static String getExchangeName() {
-        return EXCHANGE_NAME ;
+        return EXCHANGE_NAME;
     }
 
     public static String getExchangeType() {
-        return EXCHANGE_TYPE ;
+        return EXCHANGE_TYPE;
     }
 }

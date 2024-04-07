@@ -20,55 +20,56 @@ import com.rabbitmq.client.DeliverCallback;
  */
 public class DBImporter {
 
-/**
- * Represents the SQL query used for inserting messages into the database.
- */
-private static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
+    /**
+     * Represents the SQL query used for inserting messages into the database.
+     */
+    private static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
 
-/**
- * Represents the name of the queue used in RabbitMQ for database import.
- */
-private static final String QUEUE_NAME = "DBIMPORT";
+    /**
+     * Represents the name of the queue used in RabbitMQ for database import.
+     */
+    private static final String QUEUE_NAME = "DBIMPORT";
 
-/**
- * Represents the delay (in milliseconds) for retrying operations.
- */
-private static final int DATABASE_RETRY_DELAY = 1000;
+    /**
+     * Represents the delay (in milliseconds) for retrying operations.
+     */
+    private static final int DATABASE_RETRY_DELAY = 1000;
 
-/**
- * Represents the maximum number of attempts for retrying operations. 
- * A value of 0 indicates infinite retry attempts.
- */
-private static final int DATABASE_RETRY_MAX_ATTEMPTS = 0; // forever
+    /**
+     * Represents the maximum number of attempts for retrying operations.
+     * A value of 0 indicates infinite retry attempts.
+     */
+    private static final int DATABASE_RETRY_MAX_ATTEMPTS = 0; // forever
 
-/**
- * Counter for tracking the number of received requests.
- */
-private static Counter receivedCounter;
+    /**
+     * Counter for tracking the number of received requests.
+     */
+    private static Counter receivedCounter;
 
-/**
- * Channel for communication with RabbitMQ.
- */
-private static Channel channel;
+    /**
+     * Channel for communication with RabbitMQ.
+     */
+    private static Channel channel;
 
-/**
- * Connection to the database.
- */
-private static Connection dbConnection;
+    /**
+     * Connection to the database.
+     */
+    private static Connection dbConnection;
 
-private static final String COUNTER_RECEIVED_NAME ="dbimporter_requests_received_total";
-private static final String COUNTER_RECEIVED_HELP ="Total Received Messages";
-private static final String COUNTER_RECEIVED_LABEL="requests_received";
+    private static final String COUNTER_RECEIVED_NAME = "dbimporter_requests_received_total";
+    private static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
+    private static final String COUNTER_RECEIVED_LABEL = "requests_received";
 
-private static final Logger log = LoggerFactory.getLogger(DBImporter.class);
+    private static final Logger log = LoggerFactory.getLogger(DBImporter.class);
 
     /**
      * Main method to start the DBImporter.
+     * 
      * @param args Command line arguments (not used)
      * @throws InterruptedException if a thread is interrupted
-     * @throws TimeoutException if a timeout occurs
-     * @throws SQLException if a SQL error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws TimeoutException     if a timeout occurs
+     * @throws SQLException         if a SQL error occurs
+     * @throws IOException          if an I/O error occurs
      */
     public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException, IOException {
         log.info("Starting DBImporter.");
@@ -94,27 +95,29 @@ private static final Logger log = LoggerFactory.getLogger(DBImporter.class);
 
     /**
      * Consumes messages from RabbitMQ.
+     * 
      * @throws IOException if an I/O error occurs
      */
     private static void consumeQueue() throws IOException {
         // Callback for processing incoming messages
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");
-            log.info("Received Message: %s%n", message);
+            log.info("Received Message:" + message);
             receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
             try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
                 preparedStatement.setString(1, message);
                 preparedStatement.executeUpdate();
-                log.info("Inserted record into the database: %s from %s%n", message,
-                SharedUtils.getEnvVar("HOSTNAME"));
+                log.info("Inserted record into the database: " + message);
+                SharedUtils.getEnvVar("HOSTNAME");
             } catch (SQLException e) {
                 setupDBConnection();
                 e.printStackTrace();
             }
         };
 
-        log.info("Starting to consume %s%n", QUEUE_NAME);
-        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+        log.info("Starting to consume" + QUEUE_NAME);
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+        });
     }
 
     /**
@@ -140,7 +143,7 @@ private static final Logger log = LoggerFactory.getLogger(DBImporter.class);
                 dbConnection = DriverManager.getConnection(connectionString, dbUser, dbPassword);
                 break;
             } catch (SQLException e) {
-                log.info("Failed to connect to database on attempt #%d. Retrying...%n", attempt);
+                log.info("Failed to connect to database on attempt #" + attempt + ". Retrying...");
                 if (DATABASE_RETRY_MAX_ATTEMPTS != 0 && attempt == DATABASE_RETRY_MAX_ATTEMPTS) {
                     throw new RuntimeException("Failed to connect to database after multiple attempts.", e);
                 }
@@ -153,10 +156,10 @@ private static final Logger log = LoggerFactory.getLogger(DBImporter.class);
         }
     }
 
-    private static void setupQueue() throws IOException{
-         // Declare queue, bind to exchange, and start consuming messages
-         channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
-         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-         channel.queueBind(QUEUE_NAME, SharedUtils.getExchangeName(), "");
+    private static void setupQueue() throws IOException {
+        // Declare queue, bind to exchange, and start consuming messages
+        channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.queueBind(QUEUE_NAME, SharedUtils.getExchangeName(), "");
     }
 }

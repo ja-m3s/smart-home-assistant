@@ -22,5 +22,4 @@ public class DBImporterTest {
             SharedUtils.getEnvVar(variableName);
         });
     }
-
 }

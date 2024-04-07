@@ -7,7 +7,8 @@ import sharedUtils.SharedUtils;
 import static org.junit.Assert.assertThrows;
 
 /**
- * The LightBulbMonitorTest class contains unit tests for the LightBulbMonitor class.
+ * The LightBulbMonitorTest class contains unit tests for the LightBulbMonitor
+ * class.
  */
 public class LightBulbMonitorTest {
 

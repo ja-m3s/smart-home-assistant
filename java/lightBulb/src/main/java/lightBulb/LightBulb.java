@@ -21,6 +21,7 @@ public class LightBulb {
 
         /**
          * Gets the value of the state.
+         * 
          * @return The value of the state
          */
         public String getValue() {
@@ -38,9 +39,9 @@ public class LightBulb {
      */
     private long timeTurnedOn;
 
-
     /**
-     * Constructs a LightBulb object with initial state ON and current time as the time turned on.
+     * Constructs a LightBulb object with initial state ON and current time as the
+     * time turned on.
      */
     public LightBulb() {
         super();
@@ -50,15 +51,17 @@ public class LightBulb {
 
     /**
      * Returns a string representation of the LightBulb object.
+     * 
      * @return A string representation of the object
      */
     @Override
     public String toString() {
-        return "LightBulb [state=" + state + ", timeTurnedOn="+timeTurnedOn+"]";
+        return "LightBulb [state=" + state + ", timeTurnedOn=" + timeTurnedOn + "]";
     }
 
     /**
      * Gets the state of the light bulb.
+     * 
      * @return The state of the light bulb
      */
     public LightBulbState getState() {
@@ -67,6 +70,7 @@ public class LightBulb {
 
     /**
      * Sets the state of the light bulb.
+     * 
      * @param state The state to set
      */
     public void setState(LightBulbState state) {
@@ -75,6 +79,7 @@ public class LightBulb {
 
     /**
      * Gets the time when the light bulb was turned on.
+     * 
      * @return The time when the light bulb was turned on
      */
     public long getTimeTurnedOn() {
@@ -83,6 +88,7 @@ public class LightBulb {
 
     /**
      * Sets the time when the light bulb was turned on.
+     * 
      * @param timeTurnedOn The time when the light bulb was turned on
      */
     public void setTimeTurnedOn(long timeTurnedOn) {
