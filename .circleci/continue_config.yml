@@ -25,7 +25,7 @@ jobs:
           command: |
             docker build -t temp_build_dbi -f "java/dbImporter/Dockerfile" "java" --target build
             docker create --name temp_container_dbi temp_build_dbi
-            docker cp temp_container_dbi:/app/target/metrics.zip /tmp/
+            docker cp temp_container_dbi:/app/dbImporter/target/metrics.zip /tmp/
             docker rm temp_container_dbi
       - run: 
           name: Build dbImporter
@@ -46,7 +46,7 @@ jobs:
           command: |
             docker build -t temp_build_lb -f "java/lightBulb/Dockerfile" "java" --target build
             docker create --name temp_container_lb temp_build_lb
-            docker cp temp_container_lb:/app/target/metrics.zip /tmp/
+            docker cp temp_container_lb:/app/lightBulb/target/metrics.zip /tmp/
             docker rm temp_container_lb
       - store_artifacts:
           path: /tmp/metrics.zip
@@ -67,7 +67,7 @@ jobs:
           command: |
             docker build -t temp_build_lbm -f "java/lightBulbMonitor/Dockerfile" "java" --target build
             docker create --name temp_container_lbm temp_build_lbm
-            docker cp temp_container_lbm:/app/target/metrics.zip /tmp/
+            docker cp temp_container_lbm:/app/lightBulbMonitor/target/metrics.zip /tmp/
             docker rm temp_container_lbm
       - store_artifacts:
           path: /tmp/metrics.zip
