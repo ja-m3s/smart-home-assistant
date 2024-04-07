@@ -4,8 +4,14 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertThrows;
 
+/**
+ * The DBImporterTest class contains unit tests for the DBImporter class.
+ */
 public class DBImporterTest {
 
+    /**
+     * Tests the retrieveEnvVariable method when the variable does not exist.
+     */
     @Test
     public void testRetrieveEnvVariable_VariableDoesNotExist_ThrowsException() {
         // Arrange
