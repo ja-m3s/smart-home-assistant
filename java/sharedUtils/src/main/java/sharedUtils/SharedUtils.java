@@ -1,35 +1,13 @@
 package sharedUtils;
 
-import io.prometheus.metrics.core.metrics.Counter;
-import io.prometheus.metrics.exporter.httpserver.HTTPServer;
-import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
-
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.concurrent.TimeoutException;
-
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DeliverCallback;
 
 /**
  * This class represents a DBImporter which consumes messages from RabbitMQ
  * and inserts them into a PostgreSQL database.
  */
 public class SharedUtils {
-
-/**
- * Represents the name of the exchange used in RabbitMQ.
- */
-private static final String EXCHANGE = "messages";
-
-/**
- * Represents the type of exchange used in RabbitMQ.
- */
-private static final String EXCHANGE_TYPE = "fanout";
 
 /**
  * Represents the delay (in milliseconds) for retrying operations.
@@ -41,26 +19,6 @@ private static final int RETRY_DELAY_MILLIS = 1000;
  * A value of 0 indicates infinite retry attempts.
  */
 private static final int RETRY_MAX_ATTEMPTS = 0; // forever
-
-/**
- * Represents the port number for the metrics server.
- */
-private static final int METRICS_SERVER_PORT = 9400;
-
-/**
- * Counter for tracking the number of received requests.
- */
-private static Counter receivedCounter;
-
-/**
- * Channel for communication with RabbitMQ.
- */
-private static Channel channel;
-
-/**
- * Represents the name of the queue used in RabbitMQ for database import.
- */
-private static String QUEUE_NAME;
 
     /**
      * Retrieves an environment variable.
@@ -75,6 +33,35 @@ private static String QUEUE_NAME;
                     "Environment variable " + variableName + " not found. Please set in system environment");
         }
         return variableValue;
+    }
+
+        /**
+     * Connects to RabbitMQ server.
+     * @return The channel.
+     */
+    @SuppressWarnings("all")
+    public static Channel setupRabbitMQConnection() {
+        for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
+            try {
+                ConnectionFactory factory = new ConnectionFactory();
+                factory.setHost(SharedUtils.retrieveEnvVariable("RABBITMQ_HOST"));
+                factory.setPort(Integer.parseInt(SharedUtils.retrieveEnvVariable("RABBITMQ_PORT")));
+                factory.setUsername(SharedUtils.retrieveEnvVariable("RABBITMQ_USER"));
+                factory.setPassword(SharedUtils.retrieveEnvVariable("RABBITMQ_PASS"));
+                return factory.newConnection().createChannel();
+            } catch (Exception e) {
+                System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
+                if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
+                    throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
+                }
+                try {
+                    Thread.sleep(RETRY_DELAY_MILLIS);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+        return null;
     }
 
 }

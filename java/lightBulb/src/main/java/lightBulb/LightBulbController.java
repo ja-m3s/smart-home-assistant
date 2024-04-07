@@ -8,7 +8,6 @@ import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.exporter.httpserver.HTTPServer;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import lightBulb.LightBulb.LightBulbState;
@@ -45,17 +44,6 @@ private final static Integer SEND_MESSAGE_POLL_TIME = 5000; // 5 seconds
  * Regular expression pattern for matching hostnames of light bulb monitors.
  */
 protected static final String LIGHT_BULB_MONITOR_HOSTNAME_REGEX = "light-bulb-monitor-.+";
-
-/**
- * Represents the delay (in milliseconds) for retrying operations.
- */
-private static final int RETRY_DELAY_MILLIS = 1000;
-
-/**
- * Represents the maximum number of attempts for retrying operations. 
- * A value of 0 indicates infinite retry attempts.
- */
-private static final int RETRY_MAX_ATTEMPTS = 0; // forever
 
 /**
  * Represents the port number for the metrics server.
@@ -99,7 +87,7 @@ private static Counter sentCounter;
         lightBulb = new LightBulb();
         System.out.println(lightBulb.toString());
         hostname = (SharedUtils.retrieveEnvVariable("HOSTNAME"));
-        mqchannel = setupRabbitMQConnection();
+        mqchannel = SharedUtils.setupRabbitMQConnection();
         setupMetricServer();
         receiveMessage();
         while (true) {
@@ -131,35 +119,6 @@ private static Counter sentCounter;
             }
         });
         serverThread.start();
-    }
-
-    /**
-     * Connects to RabbitMQ server.
-     * @return The channel.
-     */
-    @SuppressWarnings("all")
-    private static Channel setupRabbitMQConnection() {
-        for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
-            try {
-                ConnectionFactory factory = new ConnectionFactory();
-                factory.setHost(SharedUtils.retrieveEnvVariable("RABBITMQ_HOST"));
-                factory.setPort(Integer.parseInt(SharedUtils.retrieveEnvVariable("RABBITMQ_PORT")));
-                factory.setUsername(SharedUtils.retrieveEnvVariable("RABBITMQ_USER"));
-                factory.setPassword(SharedUtils.retrieveEnvVariable("RABBITMQ_PASS"));
-                return factory.newConnection().createChannel();
-            } catch (Exception e) {
-                System.out.printf("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
-                if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
-                    throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
-                }
-                try {
-                    Thread.sleep(RETRY_DELAY_MILLIS);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
-        return null;
     }
 
     /**
@@ -227,7 +186,6 @@ private static Counter sentCounter;
                 }
             }
         };
-        mqchannel = setupRabbitMQConnection();
         mqchannel.exchangeDeclare(EXCHANGE, EXCHANGE_TYPE);
         mqchannel.queueDeclare(QUEUE_NAME, false, false, false, null);
         mqchannel.queueBind(QUEUE_NAME, EXCHANGE, "");
