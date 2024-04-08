@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <groupId>com.jam3s</groupId>
     <artifactId>dbImporter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>dbImporter</name>
-    
+
     <properties>
         <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -20,27 +20,26 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.3</version>    
+                <version>3.6.3</version>
             </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.3.1</version>
-            <reportSets>
-              <reportSet>
-                <reports>
-                  <report>checkstyle</report>
-                </reports>
-              </reportSet>
-            </reportSets>
-          </plugin>
-            <!-- Spotbugs report-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.8.2.0</version>
+                <version>4.8.3.0</version>
                 <configuration>
-                    <outputDirectory >${project.build.directory}/site/spotbugs</outputDirectory>
+                    <outputDirectory>${project.build.directory}/site/spotbugs</outputDirectory>
                     <jvmArgs>-Duser.language=en</jvmArgs>
                 </configuration>
             </plugin>
@@ -52,12 +51,12 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.8.2.0</version>
+                <version>4.8.3.0</version>
                 <configuration>
-                    <outputDirectory >${project.build.directory}/spotbugs</outputDirectory>
+                    <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>
                     <jvmArgs>-Duser.language=en</jvmArgs>
                 </configuration>
-                
+
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -85,6 +84,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -164,17 +164,17 @@
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>prometheus-metrics-core</artifactId>
-            <version>1.0.0</version>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>prometheus-metrics-instrumentation-jvm</artifactId>
-            <version>1.0.0</version>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>prometheus-metrics-exporter-httpserver</artifactId>
-            <version>1.0.0</version>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.jam3s</groupId>
