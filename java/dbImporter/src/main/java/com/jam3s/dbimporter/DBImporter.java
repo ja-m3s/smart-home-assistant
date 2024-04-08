@@ -1,4 +1,4 @@
-package dbImporter;
+package com.jam3s.dbimporter;
 
 import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;

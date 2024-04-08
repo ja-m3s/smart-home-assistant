@@ -1,4 +1,4 @@
-package dbImporter;
+package com.jam3s.dbimporter;
 
 import org.junit.Test;
 import sharedUtils.SharedUtils;

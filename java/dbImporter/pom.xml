@@ -53,7 +53,7 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.8.3.0</version>
                 <configuration>
-                    <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>
+                    <outputDirectory>${project.build.directory}/site/spotbugs</outputDirectory>
                     <jvmArgs>-Duser.language=en</jvmArgs>
                 </configuration>
 
@@ -94,7 +94,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>dbImporter.DBImporter</mainClass>
+                                    <mainClass>com.jam3s.dbimporter.DBImporter</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
