@@ -1,4 +1,4 @@
-package lightBulb;
+package com.jam3s.lightbulb;
 
 /**
  * This class represents a light bulb with its state and time turned on.

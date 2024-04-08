@@ -5,6 +5,7 @@
 
     <groupId>com.jam3s</groupId>
     <artifactId>lightBulb</artifactId>
+    <description>Light Bulb application</description>
     <version>0.0.1-SNAPSHOT</version>
     <name>lightBulb</name>
 
@@ -19,6 +20,11 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>3.3.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.6.3</version>
             </plugin>
@@ -26,6 +32,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.3.1</version>
+                <configuration>
+                    <configLocation>checkstyle-checker.xml</configLocation>
+                  </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -33,6 +42,11 @@
                         </reports>
                     </reportSet>
                 </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.5.0</version>
             </plugin>
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
@@ -53,7 +67,7 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.8.3.0</version>
                 <configuration>
-                    <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>
+                    <outputDirectory>${project.build.directory}/site/spotbugs</outputDirectory>
                     <jvmArgs>-Duser.language=en</jvmArgs>
                 </configuration>
 
@@ -94,7 +108,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>lightBulb.LightBulbController</mainClass>
+                                    <mainClass>com.jam3s.lightbulb.LightBulbController</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

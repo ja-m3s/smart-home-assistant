@@ -1,13 +1,16 @@
-package sharedUtils;
+package com.jam3s.lightbulb;
 
 import org.junit.Test;
+
+import com.jam3s.sharedutils.SharedUtils;
 
 import static org.junit.Assert.assertThrows;
 
 /**
- * The SharedUtilsTest class contains unit tests for the SharedUtils class.
+ * The LightBulbMonitorTest class contains unit tests for the LightBulbMonitor
+ * class.
  */
-public class SharedUtilsTest {
+public class LightBulbControllerTest {
 
     /**
      * Tests the getEnvVar method when the variable does not exist.

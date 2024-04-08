@@ -1,7 +1,9 @@
 package com.jam3s.dbimporter;
 
 import org.junit.Test;
-import sharedUtils.SharedUtils;
+
+import com.jam3s.sharedutils.SharedUtils;
+
 import static org.junit.Assert.assertThrows;
 
 /**

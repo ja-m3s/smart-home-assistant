@@ -2,7 +2,7 @@ package com.jam3s.dbimporter;
 
 import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
-import sharedUtils.SharedUtils;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.jam3s.sharedutils.SharedUtils;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 

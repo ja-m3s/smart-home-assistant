@@ -5,6 +5,7 @@
 
     <groupId>com.jam3s</groupId>
     <artifactId>dbImporter</artifactId>
+    <description>dbImporter holds the database import application</description>
     <version>0.0.1-SNAPSHOT</version>
     <name>dbImporter</name>
 

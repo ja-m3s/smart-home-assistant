@@ -1,4 +1,4 @@
-package sharedUtils;
+package com.jam3s.sharedutils;
 
 import java.io.IOException;
 import org.slf4j.Logger;

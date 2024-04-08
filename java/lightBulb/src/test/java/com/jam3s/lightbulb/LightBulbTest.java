@@ -1,4 +1,4 @@
-package lightBulb;
+package com.jam3s.lightbulb;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import lightBulb.LightBulb.LightBulbState;
+import com.jam3s.lightbulb.LightBulb.LightBulbState;
 
 public class LightBulbTest {
 

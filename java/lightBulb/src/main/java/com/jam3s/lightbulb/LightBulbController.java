@@ -1,17 +1,19 @@
-package lightBulb;
+package com.jam3s.lightbulb;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import sharedUtils.SharedUtils;
+
 import org.json.JSONObject;
 import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
-import lightBulb.LightBulb.LightBulbState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.jam3s.lightbulb.LightBulb.LightBulbState;
+import com.jam3s.sharedutils.SharedUtils;
 import com.rabbitmq.client.AMQP;
 
 /**

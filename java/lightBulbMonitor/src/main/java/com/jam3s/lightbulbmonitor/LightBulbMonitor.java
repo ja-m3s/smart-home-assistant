@@ -1,6 +1,5 @@
-package lightBulbMonitor;
+package com.jam3s.lightbulbmonitor;
 
-import sharedUtils.SharedUtils;
 import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 
@@ -9,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
+
+import com.jam3s.sharedutils.SharedUtils;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 
