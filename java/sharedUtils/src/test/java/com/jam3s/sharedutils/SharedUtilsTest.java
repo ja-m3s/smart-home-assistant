@@ -1,34 +1,52 @@
 package com.jam3s.sharedutils;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
 
-
-import static org.junit.Assert.assertThrows;
 
 /**
- * The SharedUtilsTest class contains unit tests for the SharedUtils class.
+ * Unit tests for the SharedUtils class.
  */
 public class SharedUtilsTest {
 
+    @Mock
+    private Logger loggerMock;
+
     /**
-     * Public Constructor
-     * To satisfy JavaDoc plugin
+     * Setup method to initialize mocks.
      */
-    public SharedUtilsTest(){
+    @Before
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     /**
-     * Tests the getEnvVar method when the variable does not exist.
+     * Test for the getExchangeName method.
+     * Expects the correct exchange name.
      */
     @Test
-    public void testgetEnvVar_VariableDoesNotExist_ThrowsException() {
-        // Arrange
-        String variableName = "NON_EXISTENT_VARIABLE";
+    public void testGetExchangeName() {
+        // Act
+        String exchangeName = SharedUtils.getExchangeName();
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            SharedUtils.getEnvVar(variableName);
-        });
+        // Assert
+        assertEquals("messages", exchangeName);
     }
 
+    /**
+     * Test for the getExchangeType method.
+     * Expects the correct exchange type.
+     */
+    @Test
+    public void testGetExchangeType() {
+        // Act
+        String exchangeType = SharedUtils.getExchangeType();
+
+        // Assert
+        assertEquals("fanout", exchangeType);
+    }
 }

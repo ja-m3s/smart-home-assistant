@@ -1,35 +1,41 @@
 package com.jam3s.lightbulbmonitor;
 
+import com.rabbitmq.client.Channel;
+import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.*;
 
-import com.jam3s.sharedutils.SharedUtils;
+import java.io.IOException;
 
-import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.*;
 
-/**
- * The LightBulbMonitorTest class contains unit tests for the LightBulbMonitor
- * class.
- */
 public class LightBulbMonitorTest {
 
-    /**
-     * Public Constructor
-     * To satisfy JavaDoc plugin
-     */
-    public LightBulbMonitorTest(){
+    @Mock
+    private Channel channelMock;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        LightBulbMonitor.channel = channelMock;
     }
-    /**
-     * Tests the getEnvVar method when the variable does not exist.
-     */
+
     @Test
-    public void testgetEnvVar_VariableDoesNotExist_ThrowsException() {
+    public void testSendMessage() throws IOException, InterruptedException {
         // Arrange
-        String variableName = "NON_EXISTENT_VARIABLE";
+        JSONObject message = new JSONObject()
+                .put("hostname", "light-bulb-1")
+                .put("bulb_state", "triggered")
+                .put("target", "test-target")
+                .put("sent_timestamp", System.currentTimeMillis());
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            SharedUtils.getEnvVar(variableName);
-        });
+        // Act
+        LightBulbMonitor.setupMetricServer();
+        LightBulbMonitor.sendMessage(message);
+
+        // Assert
+        // Verify that the message was sent
+        verify(channelMock).basicPublish(anyString(), eq(""), eq(null), any(byte[].class));
     }
-
 }

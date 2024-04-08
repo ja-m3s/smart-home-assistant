@@ -2,13 +2,11 @@ package com.jam3s.lightbulbmonitor;
 
 import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
-
 import com.jam3s.sharedutils.SharedUtils;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
@@ -22,74 +20,74 @@ public final class LightBulbMonitor {
     /**
      * Represents the name of the queue used for monitoring light bulbs.
      */
-    private static final String QUEUE_NAME = "LIGHTBULBMONITOR";
+    protected static final String QUEUE_NAME = "LIGHTBULBMONITOR";
 
     /**
      * Represents the time limit (in milliseconds) for the light bulb to remain on.
      */
-    private static final long LIGHT_ON_LIMIT = 20_000; // 20 seconds
+    protected static final long LIGHT_ON_LIMIT = 20_000; // 20 seconds
 
     /**
      * Regular expression pattern for matching hostnames of light bulbs.
      */
-    private static final String LIGHT_BULB_HOSTNAME_REGEX = "light-bulb-\\d+";
+    protected static final String LIGHT_BULB_HOSTNAME_REGEX = "light-bulb-\\d+";
 
     /**
      * Counter for tracking the number of received messages.
      */
-    private static Counter receivedCounter;
+    protected static Counter receivedCounter;
 
     /**
      * Counter for tracking the number of sent messages.
      */
-    private static Counter sentCounter;
+    protected static Counter sentCounter;
 
     /**
      * Channel for communication with the message broker.
      */
-    private static Channel channel;
+    protected static Channel channel;
 
     /**
      * The hostname of the current environment.
      */
-    private static String hostname;
+    protected static String hostname;
 
     /**
      * Counter name for sent messages.
      */
-    private static final String COUNTER_SENT_NAME = "lightbulbmonitor_requests_sent_total";
+    protected static final String COUNTER_SENT_NAME = "lightbulbmonitor_requests_sent_total";
 
     /**
      * Counter help message for sent messages.
      */   
-    private static final String COUNTER_SENT_HELP = "Total Sent Messages";
+    protected static final String COUNTER_SENT_HELP = "Total Sent Messages";
 
     /**
      * Counter label for received messages.
      */
-    private static final String COUNTER_SENT_LABEL = "requests_sent";
+    protected static final String COUNTER_SENT_LABEL = "requests_sent";
 
     /**
      * Counter name for received messages.
      */
-    private static final String COUNTER_RECEIVED_NAME = "lightbulbmonitor_requests_received_total";
+    protected static final String COUNTER_RECEIVED_NAME = "lightbulbmonitor_requests_received_total";
 
     /**
      * Counter help message for received messages.
      */   
-    private static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
+    protected static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
 
     /**
      * Counter label for received messages.
      */
-    private static final String COUNTER_RECEIVED_LABEL = "requests_received";
+    protected static final String COUNTER_RECEIVED_LABEL = "requests_received";
 
     /**
      * slf4j logger.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(LightBulbMonitor.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(LightBulbMonitor.class);
 
-    private LightBulbMonitor(){
+    protected LightBulbMonitor(){
     };
 
     /**
@@ -111,7 +109,7 @@ public final class LightBulbMonitor {
     /**
      * Sets up the metric server.
      */
-    private static void setupMetricServer() {
+    protected static void setupMetricServer() {
         JvmMetrics.builder().register(); // initialize the out-of-the-box JVM metrics
         receivedCounter = Counter.builder().name(COUNTER_RECEIVED_NAME)
                 .help(COUNTER_RECEIVED_HELP)
@@ -127,7 +125,7 @@ public final class LightBulbMonitor {
     /**
      * Consumes messages from the RabbitMQ queue.
      */
-    private static void consumeQueue() {
+    protected static void consumeQueue() {
         try {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
@@ -180,7 +178,7 @@ public final class LightBulbMonitor {
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if the thread is interrupted.
      */
-    private static void sendMessage(final JSONObject message) throws IOException, InterruptedException {
+    protected static void sendMessage(final JSONObject message) throws IOException, InterruptedException {
         channel.basicPublish(SharedUtils.getExchangeName(), "", null,
                 message.toString().getBytes(StandardCharsets.UTF_8));
         sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
@@ -193,7 +191,7 @@ public final class LightBulbMonitor {
      * @param target The target hostname.
      * @return The JSON message.
      */
-    private static JSONObject createTriggeredMessage(final String target) {
+    protected static JSONObject createTriggeredMessage(final String target) {
         JSONObject msg = new JSONObject();
         msg.put("hostname", hostname);
         msg.put("bulb_state", "triggered");
@@ -205,7 +203,7 @@ public final class LightBulbMonitor {
         return msg;
     }
 
-    private static void setupQueue() throws IOException {
+    protected static void setupQueue() throws IOException {
         channel = SharedUtils.setupRabbitMQConnection();
         channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
