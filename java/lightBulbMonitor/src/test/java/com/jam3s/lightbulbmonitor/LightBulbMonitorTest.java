@@ -1,7 +1,9 @@
 package com.jam3s.lightbulbmonitor;
 
 import org.junit.Test;
-import sharedUtils.SharedUtils;
+
+import com.jam3s.sharedutils.SharedUtils;
+
 import static org.junit.Assert.assertThrows;
 
 /**
@@ -9,7 +11,7 @@ import static org.junit.Assert.assertThrows;
  * class.
  */
 public class LightBulbMonitorTest {
-    
+
     /**
      * Public Constructor
      * To satisfy JavaDoc plugin

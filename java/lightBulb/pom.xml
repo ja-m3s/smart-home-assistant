@@ -34,7 +34,7 @@
                 <version>3.3.1</version>
                 <configuration>
                     <configLocation>checkstyle-checker.xml</configLocation>
-                  </configuration>
+                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -63,6 +63,10 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+            <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.8.3.0</version>
@@ -70,6 +74,29 @@
                     <outputDirectory>${project.build.directory}/site/spotbugs</outputDirectory>
                     <jvmArgs>-Duser.language=en</jvmArgs>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>com.jam3s.lightbulbmonitor.LightBulbMonitor</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -91,29 +118,6 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                    </execution>
-                </executions>
-             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.7.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <mainClass>com.jam3s.lightbulb.LightBulbController</mainClass>
-                                </manifest>
-                            </archive>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
