@@ -70,7 +70,6 @@
                     <outputDirectory>${project.build.directory}/site/spotbugs</outputDirectory>
                     <jvmArgs>-Duser.language=en</jvmArgs>
                 </configuration>
-
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

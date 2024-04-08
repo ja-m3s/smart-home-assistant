@@ -71,7 +71,8 @@ public class LightBulbController {
     private static final String COUNTER_RECEIVED_LABEL = "requests_received";
     private static final Logger LOG = LoggerFactory.getLogger(LightBulbController.class);
 
-    private LightBulbController(){};
+    private LightBulbController() {
+    };
 
     /**
      * The main method.
@@ -159,13 +160,13 @@ public class LightBulbController {
                 JSONObject msg = new JSONObject(message);
 
                 // Check message is from a lightbulb, if not, disregard it.
-                String origin_hostname = msg.getString("hostname");
-                LOG.info("Message from: %s%n", origin_hostname);
-                if (!origin_hostname.matches(LIGHT_BULB_MONITOR_HOSTNAME_REGEX)) {
-                    LOG.info("origin_hostname is not a light bulb monitor. Disregarding message.");
+                String originHostname = msg.getString("hostname");
+                LOG.info("Message from: %s%n", originHostname);
+                if (!originHostname.matches(LIGHT_BULB_MONITOR_HOSTNAME_REGEX)) {
+                    LOG.info("originHostname is not a light bulb monitor. Disregarding message.");
                     return;
                 }
-                LOG.info("origin_hostname is a light bulb monitor. Processing.");
+                LOG.info("originHostname is a light bulb monitor. Processing.");
                 String target = msg.getString("target");
 
                 // is message for this light

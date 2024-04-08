@@ -13,9 +13,16 @@ public class LightBulb {
         OFF("off"),
         TRIGGERED("triggered");
 
+        /**
+         * Holds light bulb state.
+         */
         private final String value;
 
-        LightBulbState(String value) {
+        /**
+         *
+         * @param value holds lightbulb state
+         */
+        LightBulbState(final String value) {
             this.value = value;
         }
 
@@ -51,7 +58,7 @@ public class LightBulb {
 
     /**
      * Returns a string representation of the LightBulb object.
-     * 
+     *
      * @return A string representation of the object
      */
     @Override
@@ -61,7 +68,7 @@ public class LightBulb {
 
     /**
      * Gets the state of the light bulb.
-     * 
+     *
      * @return The state of the light bulb
      */
     public LightBulbState getState() {
@@ -73,7 +80,7 @@ public class LightBulb {
      * 
      * @param state The state to set
      */
-    public void setState(LightBulbState state) {
+    public void setState(final LightBulbState state) {
         this.state = state;
     }
 
@@ -91,7 +98,7 @@ public class LightBulb {
      * 
      * @param timeTurnedOn The time when the light bulb was turned on
      */
-    public void setTimeTurnedOn(long timeTurnedOn) {
+    public void setTimeTurnedOn(final long timeTurnedOn) {
         this.timeTurnedOn = timeTurnedOn;
     }
 }
