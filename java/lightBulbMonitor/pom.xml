@@ -5,6 +5,7 @@
 
     <groupId>com.jam3s</groupId>
     <artifactId>lightBulbMonitor</artifactId>
+    <description>Light Bulb Monitor Application</description>
     <version>0.0.1-SNAPSHOT</version>
     <name>lightBulbMonitor</name>
     <properties>
