@@ -9,7 +9,13 @@ import static org.junit.Assert.assertThrows;
  * class.
  */
 public class LightBulbMonitorTest {
-
+    
+    /**
+     * Public Constructor
+     * To satisfy JavaDoc plugin
+     */
+    public LightBulbMonitorTest(){
+    }
     /**
      * Tests the getEnvVar method when the variable does not exist.
      */

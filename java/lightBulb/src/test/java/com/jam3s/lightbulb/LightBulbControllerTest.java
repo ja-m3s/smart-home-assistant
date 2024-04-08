@@ -13,6 +13,12 @@ import static org.junit.Assert.assertThrows;
 public class LightBulbControllerTest {
 
     /**
+     * Public Constructor
+     * To satisfy JavaDoc plugin
+     */
+    public LightBulbControllerTest(){
+    }
+    /**
      * Tests the getEnvVar method when the variable does not exist.
      */
     @Test

@@ -12,9 +12,10 @@ import static org.junit.Assert.assertThrows;
 public class DBImporterTest {
 
     /**
-     * Private Constructor
+     * Public Constructor
+     * To satisfy JavaDoc plugin
      */
-    private DBImporterTest(){
+    public DBImporterTest(){
     }
 
     /**
