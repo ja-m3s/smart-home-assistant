@@ -3,7 +3,6 @@ FROM maven:3.9.6-eclipse-temurin-22 as utilsBuild
 WORKDIR /app
 COPY sharedUtils sharedUtils
 WORKDIR /app/sharedUtils
-RUN ls -lah
 RUN mvn dependency:resolve
 RUN mvn clean verify package site
 

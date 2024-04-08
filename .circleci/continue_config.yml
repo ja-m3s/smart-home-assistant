@@ -5,6 +5,9 @@
 # Author: ja-m3s
 version: 2.1
 parameters:
+  param-build-shared-utils:
+    type: boolean
+    default: false
   param-build-db-importer:
     type: boolean
     default: false
@@ -15,6 +18,21 @@ parameters:
     type: boolean
     default: false
 jobs:
+  build-shared-utils:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run:
+          name: Extract Code Coverage - shared-utils
+          command: |
+            docker build -t temp_build_dbi -f "java/sharedUtils/Dockerfile" "java" --target build
+            docker create --name temp_container_dbi temp_build_dbi
+            docker cp temp_container_dbi:/app/sharedUtils/target/metrics.zip /tmp/
+            docker rm temp_container_dbi
+      - store_artifacts:
+          path: /tmp/metrics.zip
+          destination: metrics-dbImporter.zip
   build-db-importer:
     machine:
       image: ubuntu-2204:current

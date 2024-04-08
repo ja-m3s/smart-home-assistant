@@ -13,6 +13,10 @@ workflows:
     jobs:
       - path-filtering/filter:
           mapping: |
+            java/sharedUtils/.* param-build-shared-utils true
+            java/sharedUtils/.* param-build-db-importer true
+            java/sharedUtils/.* param-build-light-bulb true
+            java/sharedUtils/.* param-build-light-bulb-monitor true
             java/dbImporter/.* param-build-db-importer true
             java/lightBulb/.* param-build-light-bulb true
             java/lightBulbMonitor/.* param-build-light-bulb-monitor true
