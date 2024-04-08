@@ -4,7 +4,7 @@ WORKDIR /app
 COPY sharedUtils sharedUtils
 WORKDIR /app/sharedUtils
 RUN mvn dependency:resolve
-RUN mvn clean verify package site
+RUN mvn clean package
 
 #Then build the app
 FROM maven:3.9.6-eclipse-temurin-22 as build
@@ -15,7 +15,7 @@ COPY --from=utilsBuild /app/sharedUtils/target/sharedUtils-0.0.1-SNAPSHOT-jar-wi
 RUN mvn install:install-file -Dfile=sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar -DgroupId=com.jam3s -DartifactId=sharedUtils -Dpackaging=jar -Dversion=0.0.1-SNAPSHOT
 #-DgroupId=com.example -DartifactId=utils -Dversion=1.0 -Dpackaging=jar
 RUN mvn dependency:resolve
-RUN mvn clean verify package site
+RUN mvn clean verify test package site
 
 # Zip app metrics
 RUN apt update && apt install -y zip

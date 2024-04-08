@@ -97,6 +97,12 @@ jobs:
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO_LIGHT_BULB_MONITOR}:latest"
 workflows:
+  workflow-build-shared-utils:
+    when: << pipeline.parameters.param-build-shared-utils >>
+    jobs:
+      - build-shared-utils:
+          context:
+            - org-context-smart-home
   workflow-build-db-importer:
     when: << pipeline.parameters.param-build-db-importer >>
     jobs:

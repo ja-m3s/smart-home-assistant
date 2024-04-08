@@ -5,4 +5,4 @@ WORKDIR /app
 COPY sharedUtils sharedUtils
 WORKDIR /app/sharedUtils
 RUN mvn dependency:resolve
-RUN mvn clean verify package site
+RUN mvn clean verify test package site
