@@ -20,18 +20,18 @@ import com.rabbitmq.client.AMQP;
  * The LightBulbController class manages the communication with RabbitMQ
  * and controls the state of the light bulb.
  */
-public class LightBulbController {
+public final class LightBulbController {
 
     /**
      * Represents the name of the queue used in messaging.
      * If it's "" it broadcasts to all queues on the exchange.
      */
-    private final static String QUEUE_NAME = "";
+    private static final String QUEUE_NAME = "";
 
     /**
      * Represents the time interval (in milliseconds) for sending messages.
      */
-    private final static Integer SEND_MESSAGE_POLL_TIME = 5000; // 5 seconds
+    private static final Integer SEND_MESSAGE_POLL_TIME = 5000; // 5 seconds
 
     /**
      * Regular expression pattern for matching hostnames of light bulb monitors.
@@ -105,7 +105,7 @@ public class LightBulbController {
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if the thread is interrupted.
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(final String[] args) throws IOException, InterruptedException {
         LOG.info("Starting Light Bulb.");
         lightBulb = new LightBulb();
         LOG.info(lightBulb.toString());
@@ -140,7 +140,7 @@ public class LightBulbController {
      * @param message The message to be sent.
      * @throws IOException if an I/O error occurs.
      */
-    private static void sendMessage(JSONObject message) throws IOException {
+    private static void sendMessage(final JSONObject message) throws IOException {
         // Only broadcast when lightbulb is on
         if (lightBulb.getState() == LightBulbState.ON) {
             channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null,
