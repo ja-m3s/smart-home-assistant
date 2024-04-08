@@ -63,12 +63,36 @@ public class LightBulbController {
      */
     private static Counter sentCounter;
 
+        /**
+     * Counter name for sent messages.
+     */
     private static final String COUNTER_SENT_NAME = "lightbulb_requests_sent_total";
+
+    /**
+     * Counter help message for sent messages.
+     */   
     private static final String COUNTER_SENT_HELP = "Total Sent Messages";
+
+    /**
+     * Counter label for received messages.
+     */
     private static final String COUNTER_SENT_LABEL = "requests_sent";
+
+    /**
+     * Counter name for received messages.
+     */
     private static final String COUNTER_RECEIVED_NAME = "lightbulb_requests_received_total";
+
+    /**
+     * Counter help message for received messages.
+     */   
     private static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
+
+    /**
+     * Counter label for received messages.
+     */
     private static final String COUNTER_RECEIVED_LABEL = "requests_received";
+
     private static final Logger LOG = LoggerFactory.getLogger(LightBulbController.class);
 
     private LightBulbController() {
@@ -76,7 +100,7 @@ public class LightBulbController {
 
     /**
      * The main method.
-     * 
+     *
      * @param args The command-line arguments.
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if the thread is interrupted.
@@ -112,7 +136,7 @@ public class LightBulbController {
 
     /**
      * Sends a message to RabbitMQ.
-     * 
+     *
      * @param message The message to be sent.
      * @throws IOException if an I/O error occurs.
      */
@@ -128,7 +152,7 @@ public class LightBulbController {
 
     /**
      * Creates a JSON message containing information about the light bulb state.
-     * 
+     *
      * @return The JSON message.
      */
     private static JSONObject createMessage() {
@@ -145,7 +169,7 @@ public class LightBulbController {
 
     /**
      * Receives a message from RabbitMQ.
-     * 
+     *
      * @throws IOException if an I/O error occurs.
      */
     private static void receiveMessage() throws IOException {
