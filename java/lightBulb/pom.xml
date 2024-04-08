@@ -88,7 +88,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.jam3s.lightbulbmonitor.LightBulbMonitor</mainClass>
+                                    <mainClass>com.jam3s.lightbulb.LightBulbController</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
