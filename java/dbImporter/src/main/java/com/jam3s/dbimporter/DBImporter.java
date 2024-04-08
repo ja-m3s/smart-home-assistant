@@ -18,12 +18,14 @@ import com.rabbitmq.client.DeliverCallback;
  * This class represents a DBImporter which consumes messages from RabbitMQ
  * and inserts them into a PostgreSQL database.
  */
-public class DBImporter {
+public final class DBImporter {
+
 
     /**
      * Represents the SQL query used for inserting messages into the database.
      */
-    private static final String INSERT_QUERY = "INSERT INTO s_smart_home.messages (message) VALUES (?)";
+    private static final String INSERT_QUERY =
+        "INSERT INTO s_smart_home.messages (message) VALUES (?)";
 
     /**
      * Represents the name of the queue used in RabbitMQ for database import.
@@ -56,23 +58,48 @@ public class DBImporter {
      */
     private static Connection dbConnection;
 
-    private static final String COUNTER_RECEIVED_NAME = "dbimporter_requests_received_total";
-    private static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
-    private static final String COUNTER_RECEIVED_LABEL = "requests_received";
+    /**
+     * Counter name for received messages.
+     */
+    private static final String COUNTER_RECEIVED_NAME =
+        "dbimporter_requests_received_total";
+    /**
+     * Counter help message for received messages.
+     */
+    private static final String COUNTER_RECEIVED_HELP =
+            "Total Received Messages";
 
-    private static final Logger log = LoggerFactory.getLogger(DBImporter.class);
+    /**
+     * Counter label for received messages.
+     */
+    private static final String COUNTER_RECEIVED_LABEL =
+        "requests_received";
+
+    /**
+     * slf4j logger.
+     */
+    private static final Logger LOG =
+        LoggerFactory.getLogger(DBImporter.class);
+
+    private DBImporter() {
+    };
 
     /**
      * Main method to start the DBImporter.
-     * 
+     *
      * @param args Command line arguments (not used)
      * @throws InterruptedException if a thread is interrupted
      * @throws TimeoutException     if a timeout occurs
      * @throws SQLException         if a SQL error occurs
      * @throws IOException          if an I/O error occurs
      */
-    public static void main(String[] args) throws InterruptedException, TimeoutException, SQLException, IOException {
-        log.info("Starting DBImporter.");
+    public static void main(final String[] args)
+        throws InterruptedException,
+               TimeoutException,
+               SQLException,
+               IOException {
+
+        LOG.info("Starting DBImporter.");
         setupMetricServer();
         SharedUtils.startMetricsServer();
         channel = SharedUtils.setupRabbitMQConnection();
@@ -95,27 +122,29 @@ public class DBImporter {
 
     /**
      * Consumes messages from RabbitMQ.
-     * 
+     *
      * @throws IOException if an I/O error occurs
      */
     private static void consumeQueue() throws IOException {
         // Callback for processing incoming messages
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");
-            log.info("Received Message:" + message);
+            LOG.info("Received Message:" + message);
             receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
-            try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_QUERY)) {
-                preparedStatement.setString(1, message);
-                preparedStatement.executeUpdate();
-                log.info("Inserted record into the database: " + message);
-                SharedUtils.getEnvVar("HOSTNAME");
+            try (
+                PreparedStatement preparedStatement =
+                    dbConnection.prepareStatement(INSERT_QUERY)) {
+                    preparedStatement.setString(1, message);
+                    preparedStatement.executeUpdate();
+                    LOG.info("Inserted record into the database: " + message);
+                    SharedUtils.getEnvVar("HOSTNAME");
             } catch (SQLException e) {
                 setupDBConnection();
                 e.printStackTrace();
             }
         };
 
-        log.info("Starting to consume" + QUEUE_NAME);
+        LOG.info("Starting to consume" + QUEUE_NAME);
         channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
         });
     }
@@ -125,7 +154,8 @@ public class DBImporter {
      */
     @SuppressWarnings("all")
     private static void setupDBConnection() {
-        for (int attempt = 1; DATABASE_RETRY_MAX_ATTEMPTS == 0 || attempt <= DATABASE_RETRY_MAX_ATTEMPTS; attempt++) {
+        for (int attempt = 1; DATABASE_RETRY_MAX_ATTEMPTS == 0
+         || attempt <= DATABASE_RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 // Close previous connection if exists
                 if (dbConnection != null) {
@@ -139,13 +169,15 @@ public class DBImporter {
                 String dbPassword = SharedUtils.getEnvVar("DB_PASSWORD");
 
                 // Construct JDBC connection string and establish connection
-                String connectionString = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
+                String connectionString = "jdbc:postgresql://" + dbHost + ":"
+                    + dbPort + "/" + dbName;
                 dbConnection = DriverManager.getConnection(connectionString, dbUser, dbPassword);
                 break;
             } catch (SQLException e) {
-                log.info("Failed to connect to database on attempt #" + attempt + ". Retrying...");
+                LOG.info("Failed to connect to database on attempt #" + attempt + ". Retrying...");
                 if (DATABASE_RETRY_MAX_ATTEMPTS != 0 && attempt == DATABASE_RETRY_MAX_ATTEMPTS) {
-                    throw new RuntimeException("Failed to connect to database after multiple attempts.", e);
+                    throw new RuntimeException(
+                        "Failed to connect to database after multiple attempts.", e);
                 }
                 try {
                     Thread.sleep(DATABASE_RETRY_DELAY);

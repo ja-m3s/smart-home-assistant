@@ -67,7 +67,9 @@ public class LightBulbController {
     private static final String COUNTER_RECEIVED_NAME = "lightbulb_requests_received_total";
     private static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
     private static final String COUNTER_RECEIVED_LABEL = "requests_received";
-    private static final Logger log = LoggerFactory.getLogger(LightBulbController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LightBulbController.class);
+
+    private LightBulbController(){};
 
     /**
      * The main method.
@@ -77,9 +79,9 @@ public class LightBulbController {
      * @throws InterruptedException if the thread is interrupted.
      */
     public static void main(String[] args) throws IOException, InterruptedException {
-        log.info("Starting Light Bulb.");
+        LOG.info("Starting Light Bulb.");
         lightBulb = new LightBulb();
-        log.info(lightBulb.toString());
+        LOG.info(lightBulb.toString());
         hostname = SharedUtils.getEnvVar("HOSTNAME");
         channel = SharedUtils.setupRabbitMQConnection();
         setupQueue();
@@ -117,7 +119,7 @@ public class LightBulbController {
             channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null,
                     message.toString().getBytes(StandardCharsets.UTF_8));
             sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
-            log.info("Sent :" + message);
+            LOG.info("Sent :" + message);
         }
     }
 
@@ -133,7 +135,7 @@ public class LightBulbController {
         msg.put("sent_timestamp", System.currentTimeMillis());
         msg.put("time_turned_on", lightBulb.getTimeTurnedOn());
 
-        log.info("JSON message: " + msg);
+        LOG.info("JSON message: " + msg);
 
         return msg;
     }
@@ -149,30 +151,30 @@ public class LightBulbController {
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
                     byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
-                log.info("Received message: " + message);
+                LOG.info("Received message: " + message);
                 receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
                 // Check message is from a lightbulb, if not, disregard it.
                 String origin_hostname = msg.getString("hostname");
-                log.info("Message from: %s%n", origin_hostname);
+                LOG.info("Message from: %s%n", origin_hostname);
                 if (!origin_hostname.matches(LIGHT_BULB_MONITOR_HOSTNAME_REGEX)) {
-                    log.info("origin_hostname is not a light bulb monitor. Disregarding message.");
+                    LOG.info("origin_hostname is not a light bulb monitor. Disregarding message.");
                     return;
                 }
-                log.info("origin_hostname is a light bulb monitor. Processing.");
+                LOG.info("origin_hostname is a light bulb monitor. Processing.");
                 String target = msg.getString("target");
 
                 // is message for this light
                 if (target.equals(hostname)) {
-                    log.info("Switching off light");
+                    LOG.info("Switching off light");
                     lightBulb.setState(LightBulbState.OFF);
                 }
             }
         };
 
-        log.info("Waiting for messages. To exit press Ctrl+C");
+        LOG.info("Waiting for messages. To exit press Ctrl+C");
 
         try {
             channel.basicConsume(QUEUE_NAME, true, consumer);

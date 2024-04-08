@@ -37,7 +37,7 @@ public class SharedUtils {
      */
     private static final int METRICS_SERVER_PORT = 9400;
 
-    private static final Logger log = LoggerFactory.getLogger(SharedUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SharedUtils.class);
 
     /**
      * Retrieves an environment variable.
@@ -71,7 +71,7 @@ public class SharedUtils {
                 factory.setPassword(SharedUtils.getEnvVar("RABBITMQ_PASS"));
                 return factory.newConnection().createChannel();
             } catch (Exception e) {
-                log.info("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
+                LOG.info("Failed to connect to RabbitMQ on attempt #%d. Retrying...%n", attempt);
                 if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
                     throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
                 }

@@ -59,7 +59,9 @@ public class LightBulbMonitor {
     private static final String COUNTER_RECEIVED_NAME = "lightbulbmonitor_requests_received_total";
     private static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
     private static final String COUNTER_RECEIVED_LABEL = "requests_received";
-    private static final Logger log = LoggerFactory.getLogger(LightBulbMonitor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LightBulbMonitor.class);
+
+    private LightBulbMonitor(){};
 
     /**
      * The main method.
@@ -69,7 +71,7 @@ public class LightBulbMonitor {
      * @throws IOException          if an I/O error occurs.
      */
     public static void main(String[] args) throws InterruptedException, IOException {
-        log.info("Starting LightBulbMonitor.");
+        LOG.info("Starting LightBulbMonitor.");
         hostname = SharedUtils.getEnvVar("HOSTNAME");
         setupMetricServer();
         SharedUtils.startMetricsServer();
@@ -100,19 +102,19 @@ public class LightBulbMonitor {
         try {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
-                log.info("Received: " + message);
+                LOG.info("Received: " + message);
                 receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
                 // Check message is from a lightbulb, if not, disregard it.
                 String origin_hostname = msg.getString("hostname");
-                log.info("Message from: " + origin_hostname);
+                LOG.info("Message from: " + origin_hostname);
                 if (!origin_hostname.matches(LIGHT_BULB_HOSTNAME_REGEX)) {
-                    log.info("origin_hostname is not a light bulb. Disregarding message.");
+                    LOG.info("origin_hostname is not a light bulb. Disregarding message.");
                     return;
                 }
-                log.info("origin_hostname is a light bulb. Processing.");
+                LOG.info("origin_hostname is a light bulb. Processing.");
 
                 // Parse out the fields we need
                 String bulb_state = msg.getString("bulb_state");
@@ -121,7 +123,7 @@ public class LightBulbMonitor {
 
                 if (bulb_state.equals("ON") && sent_timestamp + LIGHT_ON_LIMIT <= currentTimestamp) {
                     // Timestamp is 20 seconds or more in the past
-                    log.info("Switching off light");
+                    LOG.info("Switching off light");
                     JSONObject trigger_message = createTriggeredMessage(origin_hostname);
                     try {
                         sendMessage(trigger_message);
@@ -129,11 +131,11 @@ public class LightBulbMonitor {
                         e.printStackTrace();
                     }
                 } else {
-                    log.info("Not switching off light");
+                    LOG.info("Not switching off light");
                 }
             };
 
-            log.info("Starting to consume: " + QUEUE_NAME);
+            LOG.info("Starting to consume: " + QUEUE_NAME);
             channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
             });
 
@@ -153,7 +155,7 @@ public class LightBulbMonitor {
         channel.basicPublish(SharedUtils.getExchangeName(), "", null,
                 message.toString().getBytes(StandardCharsets.UTF_8));
         sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
-        log.info("Sent '" + message + "'");
+        LOG.info("Sent '" + message + "'");
     }
 
     /**
@@ -169,7 +171,7 @@ public class LightBulbMonitor {
         msg.put("target", target);
         msg.put("sent_timestamp", System.currentTimeMillis());
 
-        log.info("JSON message: " + msg);
+        LOG.info("JSON message: " + msg);
 
         return msg;
     }

@@ -10,6 +10,12 @@ import static org.junit.Assert.assertThrows;
 public class DBImporterTest {
 
     /**
+     * Private Constructor
+     */
+    private DBImporterTest(){
+    }
+
+    /**
      * Tests the getEnvVar method when the variable does not exist.
      */
     @Test
