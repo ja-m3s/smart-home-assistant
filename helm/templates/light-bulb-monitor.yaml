@@ -37,4 +37,6 @@ spec:
               value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_PASS
               value: {{ .Values.rabbitmq.pass }}
+            - name: LIGHT_ON_LIMIT
+              value: {{ .Values.lightBulbMonitor.lightOnLimit }}
 {{- end }}

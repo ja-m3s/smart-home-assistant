@@ -23,11 +23,6 @@ public final class LightBulbMonitor {
     protected static final String QUEUE_NAME = "LIGHTBULBMONITOR";
 
     /**
-     * Represents the time limit (in milliseconds) for the light bulb to remain on.
-     */
-    protected static final long LIGHT_ON_LIMIT = 20_000; // 20 seconds
-
-    /**
      * Regular expression pattern for matching hostnames of light bulbs.
      */
     protected static final String LIGHT_BULB_HOSTNAME_REGEX = "light-bulb-\\d+";
@@ -87,6 +82,11 @@ public final class LightBulbMonitor {
      */
     protected static final Logger LOG = LoggerFactory.getLogger(LightBulbMonitor.class);
 
+      /**
+     * Represents the time limit (in milliseconds) for the light bulb to remain on.
+     */
+    protected static long lightTimeout;
+
     protected LightBulbMonitor(){
     };
 
@@ -99,6 +99,7 @@ public final class LightBulbMonitor {
      */
     public static void main(final String[] args) throws InterruptedException, IOException {
         LOG.info("Starting LightBulbMonitor.");
+        lightTimeout = Long.parseLong(SharedUtils.getEnvVar("LIGHT_ON_LIMIT"));
         hostname = SharedUtils.getEnvVar("HOSTNAME");
         setupMetricServer();
         SharedUtils.startMetricsServer();
@@ -148,7 +149,7 @@ public final class LightBulbMonitor {
                 long sentTimestamp = msg.getLong("time_turned_on");
                 long currentTimestamp = System.currentTimeMillis();
 
-                if (bulbState.equals("ON") && sentTimestamp + LIGHT_ON_LIMIT <= currentTimestamp) {
+                if (bulbState.equals("ON") && sentTimestamp + lightTimeout <= currentTimestamp) {
                     // Timestamp is 20 seconds or more in the past
                     LOG.info("Switching off light");
                     JSONObject triggerMsg = createTriggeredMessage(originHostname);

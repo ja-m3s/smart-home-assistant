@@ -28,6 +28,7 @@ lightBulb:
 lightBulbMonitor:
   enabled: true
   image: sma-light-bulb-monitor:latest
+  lightOnLimit: 20_000
 
 dbImporter:
   enabled: true
