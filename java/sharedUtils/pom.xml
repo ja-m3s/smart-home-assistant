@@ -10,6 +10,7 @@
     <name>sharedUtils</name>
 
     <properties>
+        <pmdVersion>7.0.0</pmdVersion>
         <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
