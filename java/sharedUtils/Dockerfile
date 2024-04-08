@@ -6,3 +6,9 @@ COPY sharedUtils sharedUtils
 WORKDIR /app/sharedUtils
 RUN mvn dependency:resolve
 RUN mvn clean verify test package site
+# Zip app metrics
+RUN apt update && apt install -y zip
+WORKDIR /app/sharedUtils/target/
+RUN zip -r metrics.zip jacoco-reports
+RUN zip -r metrics.zip surefire-reports
+RUN zip -r metrics.zip site
