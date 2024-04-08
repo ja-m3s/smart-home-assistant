@@ -54,12 +54,39 @@ public final class LightBulbMonitor {
      */
     private static String hostname;
 
+    /**
+     * Counter name for sent messages.
+     */
     private static final String COUNTER_SENT_NAME = "lightbulbmonitor_requests_sent_total";
+
+    /**
+     * Counter help message for sent messages.
+     */   
     private static final String COUNTER_SENT_HELP = "Total Sent Messages";
+
+    /**
+     * Counter label for received messages.
+     */
     private static final String COUNTER_SENT_LABEL = "requests_sent";
+
+    /**
+     * Counter name for received messages.
+     */
     private static final String COUNTER_RECEIVED_NAME = "lightbulbmonitor_requests_received_total";
+
+    /**
+     * Counter help message for received messages.
+     */   
     private static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
+
+    /**
+     * Counter label for received messages.
+     */
     private static final String COUNTER_RECEIVED_LABEL = "requests_received";
+
+    /**
+     * slf4j logger.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(LightBulbMonitor.class);
 
     private LightBulbMonitor(){
@@ -72,7 +99,7 @@ public final class LightBulbMonitor {
      * @throws InterruptedException if the thread is interrupted.
      * @throws IOException          if an I/O error occurs.
      */
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(final String[] args) throws InterruptedException, IOException {
         LOG.info("Starting LightBulbMonitor.");
         hostname = SharedUtils.getEnvVar("HOSTNAME");
         setupMetricServer();
@@ -119,11 +146,11 @@ public final class LightBulbMonitor {
                 LOG.info("originHostname is a light bulb. Processing.");
 
                 // Parse out the fields we need
-                String bulb_state = msg.getString("bulb_state");
-                long sent_timestamp = msg.getLong("time_turned_on");
+                String bulbState = msg.getString("bulb_state");
+                long sentTimestamp = msg.getLong("time_turned_on");
                 long currentTimestamp = System.currentTimeMillis();
 
-                if (bulb_state.equals("ON") && sent_timestamp + LIGHT_ON_LIMIT <= currentTimestamp) {
+                if (bulbState.equals("ON") && sentTimestamp + LIGHT_ON_LIMIT <= currentTimestamp) {
                     // Timestamp is 20 seconds or more in the past
                     LOG.info("Switching off light");
                     JSONObject triggerMsg = createTriggeredMessage(originHostname);
@@ -162,7 +189,7 @@ public final class LightBulbMonitor {
 
     /**
      * Creates a triggered message.
-     * 
+     *
      * @param target The target hostname.
      * @return The JSON message.
      */
