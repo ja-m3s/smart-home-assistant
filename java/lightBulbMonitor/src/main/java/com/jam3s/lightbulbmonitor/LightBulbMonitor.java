@@ -17,7 +17,7 @@ import com.rabbitmq.client.DeliverCallback;
  * The LightBulbMonitor class monitors the state of light bulbs and sends
  * triggered messages accordingly.
  */
-public class LightBulbMonitor {
+public final class LightBulbMonitor {
 
     /**
      * Represents the name of the queue used for monitoring light bulbs.
@@ -62,11 +62,12 @@ public class LightBulbMonitor {
     private static final String COUNTER_RECEIVED_LABEL = "requests_received";
     private static final Logger LOG = LoggerFactory.getLogger(LightBulbMonitor.class);
 
-    private LightBulbMonitor(){};
+    private LightBulbMonitor(){
+    };
 
     /**
      * The main method.
-     * 
+     *
      * @param args The command-line arguments.
      * @throws InterruptedException if the thread is interrupted.
      * @throws IOException          if an I/O error occurs.
@@ -109,13 +110,13 @@ public class LightBulbMonitor {
                 JSONObject msg = new JSONObject(message);
 
                 // Check message is from a lightbulb, if not, disregard it.
-                String origin_hostname = msg.getString("hostname");
-                LOG.info("Message from: " + origin_hostname);
-                if (!origin_hostname.matches(LIGHT_BULB_HOSTNAME_REGEX)) {
-                    LOG.info("origin_hostname is not a light bulb. Disregarding message.");
+                String originHostname = msg.getString("hostname");
+                LOG.info("Message from: " + originHostname);
+                if (!originHostname.matches(LIGHT_BULB_HOSTNAME_REGEX)) {
+                    LOG.info("originHostname is not a light bulb. Disregarding message.");
                     return;
                 }
-                LOG.info("origin_hostname is a light bulb. Processing.");
+                LOG.info("originHostname is a light bulb. Processing.");
 
                 // Parse out the fields we need
                 String bulb_state = msg.getString("bulb_state");
@@ -125,9 +126,9 @@ public class LightBulbMonitor {
                 if (bulb_state.equals("ON") && sent_timestamp + LIGHT_ON_LIMIT <= currentTimestamp) {
                     // Timestamp is 20 seconds or more in the past
                     LOG.info("Switching off light");
-                    JSONObject trigger_message = createTriggeredMessage(origin_hostname);
+                    JSONObject triggerMsg = createTriggeredMessage(originHostname);
                     try {
-                        sendMessage(trigger_message);
+                        sendMessage(triggerMsg);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -147,12 +148,12 @@ public class LightBulbMonitor {
 
     /**
      * Sends a message to RabbitMQ.
-     * 
+     *
      * @param message The message to be sent.
      * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if the thread is interrupted.
      */
-    private static void sendMessage(JSONObject message) throws IOException, InterruptedException {
+    private static void sendMessage(final JSONObject message) throws IOException, InterruptedException {
         channel.basicPublish(SharedUtils.getExchangeName(), "", null,
                 message.toString().getBytes(StandardCharsets.UTF_8));
         sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
@@ -165,7 +166,7 @@ public class LightBulbMonitor {
      * @param target The target hostname.
      * @return The JSON message.
      */
-    private static JSONObject createTriggeredMessage(String target) {
+    private static JSONObject createTriggeredMessage(final String target) {
         JSONObject msg = new JSONObject();
         msg.put("hostname", hostname);
         msg.put("bulb_state", "triggered");
