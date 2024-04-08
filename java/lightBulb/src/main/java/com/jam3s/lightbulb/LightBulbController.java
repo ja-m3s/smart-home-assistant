@@ -63,14 +63,14 @@ public final class LightBulbController {
      */
     private static Counter sentCounter;
 
-        /**
+    /**
      * Counter name for sent messages.
      */
     private static final String COUNTER_SENT_NAME = "lightbulb_requests_sent_total";
 
     /**
      * Counter help message for sent messages.
-     */   
+     */
     private static final String COUNTER_SENT_HELP = "Total Sent Messages";
 
     /**
@@ -93,6 +93,9 @@ public final class LightBulbController {
      */
     private static final String COUNTER_RECEIVED_LABEL = "requests_received";
 
+    /**
+     * slf4j logger.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(LightBulbController.class);
 
     private LightBulbController() {
@@ -175,7 +178,7 @@ public final class LightBulbController {
     private static void receiveMessage() throws IOException {
         DefaultConsumer consumer = new DefaultConsumer(channel) {
             @Override
-            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+            public void handleDelivery(final String consumerTag, final Envelope envelope, final AMQP.BasicProperties properties,
                     byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 LOG.info("Received message: " + message);
