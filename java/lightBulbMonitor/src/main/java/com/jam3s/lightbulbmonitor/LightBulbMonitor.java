@@ -73,11 +73,6 @@ public final class LightBulbMonitor {
     private static Counter sentCounter;
 
     /**
-     * Channel for communication with the message broker.
-     */
-    private static Channel channel;
-
-    /**
      * The hostname of the current environment.
      */
     private static String hostname;
@@ -101,9 +96,10 @@ public final class LightBulbMonitor {
         LOG.info("Starting LightBulbMonitor.");
         lightTimeout = Long.parseLong(SharedUtils.getEnvVar("LIGHT_ON_LIMIT"));
         hostname = SharedUtils.getEnvVar("HOSTNAME");
+        SharedUtils.setupRabbitMQConnection();
         setupMetricServer();
         SharedUtils.startMetricsServer();
-        setupQueue();
+        SharedUtils.setupQueue(QUEUE_NAME);
         consumeQueue();
     }
 
@@ -164,6 +160,7 @@ public final class LightBulbMonitor {
             };
 
             LOG.info("Starting to consume: " + QUEUE_NAME);
+            Channel channel = SharedUtils.getChannel();
             channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
             });
 
@@ -180,6 +177,7 @@ public final class LightBulbMonitor {
      * @throws InterruptedException if the thread is interrupted.
      */
     protected static void sendMessage(final JSONObject message) throws IOException, InterruptedException {
+        Channel channel = SharedUtils.getChannel();
         channel.basicPublish(SharedUtils.getExchangeName(), "", null,
                 message.toString().getBytes(StandardCharsets.UTF_8));
         sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
@@ -202,25 +200,5 @@ public final class LightBulbMonitor {
         LOG.info("JSON message: " + msg);
 
         return msg;
-    }
-
-    /**
-     * Sets up the RabbitMQ Queue.
-     *
-     */
-    protected static void setupQueue() throws IOException {
-        channel = SharedUtils.setupRabbitMQConnection();
-        channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        channel.queueBind(QUEUE_NAME, SharedUtils.getExchangeName(), "");
-    }
-
-    /**
-     * Sets channel.
-     *
-     * @param setChannel RabbitMQ Channel.
-     */
-    protected static void setChannel(final Channel setChannel) {
-        channel = setChannel;
     }
 }

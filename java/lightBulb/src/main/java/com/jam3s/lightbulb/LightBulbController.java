@@ -41,12 +41,7 @@ public final class LightBulbController {
     /**
      * Represents the current state of the light bulb.
      */
-    private static LightBulb lightBulb;
-
-    /**
-     * Channel for communication with the message broker.
-     */
-    private static Channel channel;
+    private static LightBulb lightBulb = new LightBulb();;
 
     /**
      * The hostname of the current environment.
@@ -110,11 +105,10 @@ public final class LightBulbController {
      */
     public static void main(final String[] args) throws IOException, InterruptedException {
         LOG.info("Starting Light Bulb.");
-        lightBulb = new LightBulb();
         LOG.info(lightBulb.toString());
         hostname = SharedUtils.getEnvVar("HOSTNAME");
-        channel = SharedUtils.setupRabbitMQConnection();
-        setupQueue();
+        SharedUtils.setupRabbitMQConnection();
+        SharedUtils.setupQueue(QUEUE_NAME);
         setupMetricServer();
         SharedUtils.startMetricsServer();
         receiveMessage();
@@ -145,6 +139,7 @@ public final class LightBulbController {
      */
     private static void sendMessage(final JSONObject message) throws IOException {
         // Only broadcast when lightbulb is on
+        Channel channel = SharedUtils.getChannel();
         if (lightBulb.getState() == LightBulbState.ON) {
             channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null,
                     message.toString().getBytes(StandardCharsets.UTF_8));
@@ -176,6 +171,8 @@ public final class LightBulbController {
      * @throws IOException if an I/O error occurs.
      */
     private static void receiveMessage() throws IOException {
+        Channel channel = SharedUtils.getChannel();
+
         DefaultConsumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(final String consumerTag,
@@ -215,12 +212,4 @@ public final class LightBulbController {
         }
     }
 
-    /*
-     * Sets up the RabbitMQ queue.
-     */
-    public static void setupQueue() throws IOException {
-        channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        channel.queueBind(QUEUE_NAME, SharedUtils.getExchangeName(), "");
-    }
 }

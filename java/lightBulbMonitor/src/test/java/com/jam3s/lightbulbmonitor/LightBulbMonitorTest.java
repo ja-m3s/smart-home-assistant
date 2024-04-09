@@ -1,5 +1,6 @@
 package com.jam3s.lightbulbmonitor;
 
+import com.jam3s.sharedutils.SharedUtils;
 import com.rabbitmq.client.Channel;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -18,7 +19,7 @@ public class LightBulbMonitorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        LightBulbMonitor.setChannel(channelMock);
+        SharedUtils.setChannel(channelMock);
     }
 
     @Test

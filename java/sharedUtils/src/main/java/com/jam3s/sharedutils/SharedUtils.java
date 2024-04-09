@@ -13,6 +13,11 @@ import io.prometheus.metrics.exporter.httpserver.HTTPServer;
  */
 public final class SharedUtils {
     /**
+     * Channel for communication with the message broker.
+     */
+    private static Channel channel;
+
+    /**
      * Represents the name of the exchange used in messaging.
      */
     private static final String EXCHANGE_NAME = "messages";
@@ -70,7 +75,7 @@ public final class SharedUtils {
      * @return The channel.
      */
     @SuppressWarnings("all")
-    public static Channel setupRabbitMQConnection() {
+    public static void setupRabbitMQConnection() {
         for (int attempt = 1; RETRY_MAX_ATTEMPTS == 0 || attempt <= RETRY_MAX_ATTEMPTS; attempt++) {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
@@ -78,7 +83,8 @@ public final class SharedUtils {
                 factory.setPort(Integer.parseInt(SharedUtils.getEnvVar("RABBITMQ_PORT")));
                 factory.setUsername(SharedUtils.getEnvVar("RABBITMQ_USER"));
                 factory.setPassword(SharedUtils.getEnvVar("RABBITMQ_PASS"));
-                return factory.newConnection().createChannel();
+                channel = factory.newConnection().createChannel();
+                break;
             } catch (Exception e) {
                 LOG.info("Failed to connect to RabbitMQ on attempt " + attempt + ". Retrying...");
                 if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
@@ -91,7 +97,15 @@ public final class SharedUtils {
                 }
             }
         }
-        return null;
+    }
+
+    /*
+     * Sets up the RabbitMQ queue.
+     */
+    public static void setupQueue(final String queueName) throws IOException {
+        channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
+        channel.queueDeclare(queueName, false, false, false, null);
+        channel.queueBind(queueName, SharedUtils.getExchangeName(), "");
     }
 
     /**
@@ -128,5 +142,22 @@ public final class SharedUtils {
      */
     public static String getExchangeType() {
         return EXCHANGE_TYPE;
+    }
+
+    /**
+     * Gets the RabbitMQ channel.
+     *
+     * @return the channel.
+     */
+    public static Channel getChannel() {
+        return channel;
+    }
+
+    /**
+     * Sets the RabbitMQ channel.
+     *
+     */
+    public static void setChannel(Channel newChannel) {
+        channel = newChannel;
     }
 }

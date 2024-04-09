@@ -51,11 +51,6 @@ public final class DBImporter {
     private static Counter receivedCounter;
 
     /**
-     * Channel for communication with RabbitMQ.
-     */
-    private static Channel channel;
-
-    /**
      * Connection to the database.
      */
     private static Connection dbConnection;
@@ -104,9 +99,9 @@ public final class DBImporter {
         LOG.info("Starting DBImporter.");
         setupMetricServer();
         SharedUtils.startMetricsServer();
-        channel = SharedUtils.setupRabbitMQConnection();
+        SharedUtils.setupRabbitMQConnection();
         setupDBConnection();
-        setupQueue();
+        SharedUtils.setupQueue(QUEUE_NAME);
         consumeQueue();
     }
 
@@ -147,6 +142,7 @@ public final class DBImporter {
         };
 
         LOG.info("Starting to consume" + QUEUE_NAME);
+        Channel channel = SharedUtils.getChannel();
         channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
         });
     }
@@ -190,10 +186,4 @@ public final class DBImporter {
         }
     }
 
-    private static void setupQueue() throws IOException {
-        // Declare queue, bind to exchange, and start consuming messages
-        channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        channel.queueBind(QUEUE_NAME, SharedUtils.getExchangeName(), "");
-    }
 }
