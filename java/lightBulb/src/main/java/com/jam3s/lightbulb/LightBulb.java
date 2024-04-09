@@ -86,7 +86,7 @@ public class LightBulb {
     /**
      * Sets the state of the light bulb.
      *
-     * @param state The state to set
+     * @param newState The state to set.
      */
     public void setState(final LightBulbState newState) {
         this.state = newState;
@@ -95,7 +95,7 @@ public class LightBulb {
     /**
      * Gets the time when the light bulb was turned on.
      *
-     * @return The time when the light bulb was turned on
+     * @return The time when the light bulb was turned on.
      */
     public long getTimeTurnedOn() {
         return timeTurnedOn;
@@ -104,7 +104,7 @@ public class LightBulb {
     /**
      * Sets the time when the light bulb was turned on.
      *
-     * @param timeTurnedOn The time when the light bulb was turned on
+     * @param newTimeTurnedOn The time when the light bulb was turned on.
      */
     public void setTimeTurnedOn(final long newTimeTurnedOn) {
         this.timeTurnedOn = newTimeTurnedOn;
