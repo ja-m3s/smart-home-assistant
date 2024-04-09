@@ -101,7 +101,7 @@ public final class SharedUtils {
     /**
      * Sets up the RabbitMQ queue.
      * @param queueName Name of queue to setup.
-     * @throws IOException if channel isn't setup. 
+     * @throws IOException if channel isn't setup.
      */
     public static void setupQueue(final String queueName) throws IOException {
         channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
@@ -159,7 +159,7 @@ public final class SharedUtils {
      *
      * @param newChannel a new channel.
      */
-    public static void setChannel(Channel newChannel) {
+    public static void setChannel(final Channel newChannel) {
         channel = newChannel;
     }
 }
