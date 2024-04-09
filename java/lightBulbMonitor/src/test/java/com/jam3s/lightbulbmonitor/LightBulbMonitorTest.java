@@ -18,7 +18,7 @@ public class LightBulbMonitorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        LightBulbMonitor.channel = channelMock;
+        LightBulbMonitor.setChannel(channelMock);
     }
 
     @Test

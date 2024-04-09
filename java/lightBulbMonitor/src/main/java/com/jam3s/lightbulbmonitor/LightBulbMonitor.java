@@ -28,33 +28,13 @@ public final class LightBulbMonitor {
     protected static final String LIGHT_BULB_HOSTNAME_REGEX = "light-bulb-\\d+";
 
     /**
-     * Counter for tracking the number of received messages.
-     */
-    protected static Counter receivedCounter;
-
-    /**
-     * Counter for tracking the number of sent messages.
-     */
-    protected static Counter sentCounter;
-
-    /**
-     * Channel for communication with the message broker.
-     */
-    protected static Channel channel;
-
-    /**
-     * The hostname of the current environment.
-     */
-    protected static String hostname;
-
-    /**
      * Counter name for sent messages.
      */
     protected static final String COUNTER_SENT_NAME = "lightbulbmonitor_requests_sent_total";
 
     /**
      * Counter help message for sent messages.
-     */   
+     */
     protected static final String COUNTER_SENT_HELP = "Total Sent Messages";
 
     /**
@@ -82,12 +62,32 @@ public final class LightBulbMonitor {
      */
     protected static final Logger LOG = LoggerFactory.getLogger(LightBulbMonitor.class);
 
-      /**
+        /**
+     * Counter for tracking the number of received messages.
+     */
+    private static Counter receivedCounter;
+
+    /**
+     * Counter for tracking the number of sent messages.
+     */
+    private static Counter sentCounter;
+
+    /**
+     * Channel for communication with the message broker.
+     */
+    private static Channel channel;
+
+    /**
+     * The hostname of the current environment.
+     */
+    private static String hostname;
+
+    /**
      * Represents the time limit (in milliseconds) for the light bulb to remain on.
      */
     protected static long lightTimeout;
 
-    protected LightBulbMonitor(){
+    private LightBulbMonitor() {
     };
 
     /**
@@ -204,10 +204,23 @@ public final class LightBulbMonitor {
         return msg;
     }
 
+    /**
+     * Sets up the RabbitMQ Queue.
+     *
+     */
     protected static void setupQueue() throws IOException {
         channel = SharedUtils.setupRabbitMQConnection();
         channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
         channel.queueBind(QUEUE_NAME, SharedUtils.getExchangeName(), "");
+    }
+
+    /**
+     * Sets channel
+     *
+     * @param setChannel - a RabbitMQ Channel.
+     */
+    public static void setChannel(Channel setChannel) {
+        channel = setChannel;
     }
 }
