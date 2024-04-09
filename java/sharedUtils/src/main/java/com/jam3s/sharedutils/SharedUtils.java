@@ -72,7 +72,6 @@ public final class SharedUtils {
     /**
      * Connects to RabbitMQ server.
      *
-     * @return The channel.
      */
     @SuppressWarnings("all")
     public static void setupRabbitMQConnection() {
