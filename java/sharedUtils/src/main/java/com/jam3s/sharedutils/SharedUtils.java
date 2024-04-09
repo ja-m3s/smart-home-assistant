@@ -11,7 +11,7 @@ import io.prometheus.metrics.exporter.httpserver.HTTPServer;
  * This class represents a DBImporter which consumes messages from RabbitMQ
  * and inserts them into a PostgreSQL database.
  */
-public class SharedUtils {
+public final class SharedUtils {
     /**
      * Represents the name of the exchange used in messaging.
      */
@@ -66,7 +66,7 @@ public class SharedUtils {
 
     /**
      * Connects to RabbitMQ server.
-     * 
+     *
      * @return The channel.
      */
     @SuppressWarnings("all")
@@ -94,6 +94,9 @@ public class SharedUtils {
         return null;
     }
 
+    /**
+     * Starts the metrics server.
+     */
     public static void startMetricsServer() {
         // Start HTTP server for Prometheus metrics
         Thread serverThread = new Thread(() -> {
