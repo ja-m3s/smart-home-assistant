@@ -28,7 +28,8 @@ lightBulb:
 lightBulbMonitor:
   enabled: true
   image: sma-light-bulb-monitor:latest
-  lightOnLimit: 20_000
+  #time a light can stay on in ms
+  lightOnLimit: "20000" 
 
 dbImporter:
   enabled: true
