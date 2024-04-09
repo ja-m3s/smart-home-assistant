@@ -9,8 +9,17 @@ public class LightBulb {
      * Enum representing the possible states of the light bulb.
      */
     public enum LightBulbState {
+        /**
+         * Bulb is on.
+         */
         ON("on"),
+        /**
+         * Bulb is off.
+         */
         OFF("off"),
+        /**
+         * Bulb is triggered by the light bulb monitor.
+         */
         TRIGGERED("triggered");
 
         /**
@@ -19,11 +28,10 @@ public class LightBulb {
         private final String value;
 
         /**
-         *
-         * @param value holds lightbulb state
+         * @param value holds lightbulb state.
          */
-        LightBulbState(final String value) {
-            this.value = value;
+        LightBulbState(final String newValue) {
+            this.value = newValue;
         }
 
         /**
@@ -69,7 +77,7 @@ public class LightBulb {
     /**
      * Gets the state of the light bulb.
      *
-     * @return The state of the light bulb
+     * @return The state of the light bulb.
      */
     public LightBulbState getState() {
         return this.state;
@@ -77,16 +85,16 @@ public class LightBulb {
 
     /**
      * Sets the state of the light bulb.
-     * 
+     *
      * @param state The state to set
      */
-    public void setState(final LightBulbState state) {
-        this.state = state;
+    public void setState(final LightBulbState newState) {
+        this.state = newState;
     }
 
     /**
      * Gets the time when the light bulb was turned on.
-     * 
+     *
      * @return The time when the light bulb was turned on
      */
     public long getTimeTurnedOn() {
@@ -95,10 +103,10 @@ public class LightBulb {
 
     /**
      * Sets the time when the light bulb was turned on.
-     * 
+     *
      * @param timeTurnedOn The time when the light bulb was turned on
      */
-    public void setTimeTurnedOn(final long timeTurnedOn) {
-        this.timeTurnedOn = timeTurnedOn;
+    public void setTimeTurnedOn(final long newTimeTurnedOn) {
+        this.timeTurnedOn = newTimeTurnedOn;
     }
 }

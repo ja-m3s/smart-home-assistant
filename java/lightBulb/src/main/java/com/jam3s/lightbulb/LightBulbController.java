@@ -85,7 +85,7 @@ public final class LightBulbController {
 
     /**
      * Counter help message for received messages.
-     */   
+     */
     private static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
 
     /**
@@ -178,8 +178,10 @@ public final class LightBulbController {
     private static void receiveMessage() throws IOException {
         DefaultConsumer consumer = new DefaultConsumer(channel) {
             @Override
-            public void handleDelivery(final String consumerTag, final Envelope envelope, final AMQP.BasicProperties properties,
-                    byte[] body) throws IOException {
+            public void handleDelivery(final String consumerTag,
+                                       final Envelope envelope, 
+                                       final AMQP.BasicProperties properties,
+                                       final byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 LOG.info("Received message: " + message);
                 receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
@@ -213,6 +215,9 @@ public final class LightBulbController {
         }
     }
 
+    /*
+     * Sets up the RabbitMQ queue.
+     */
     public static void setupQueue() throws IOException {
         channel.exchangeDeclare(SharedUtils.getExchangeName(), SharedUtils.getExchangeType());
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
