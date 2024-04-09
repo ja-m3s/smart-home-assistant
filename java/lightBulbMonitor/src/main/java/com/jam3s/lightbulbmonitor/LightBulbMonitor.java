@@ -220,7 +220,7 @@ public final class LightBulbMonitor {
      *
      * @param setChannel RabbitMQ Channel.
      */
-    public static void setChannel(final Channel setChannel) {
+    protected static void setChannel(final Channel setChannel) {
         channel = setChannel;
     }
 }
