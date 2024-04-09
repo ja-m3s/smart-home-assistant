@@ -37,16 +37,25 @@ public class SharedUtils {
      */
     private static final int METRICS_SERVER_PORT = 9400;
 
+    /**
+     * sl4f logger.
+     */
     protected static final Logger LOG = LoggerFactory.getLogger(SharedUtils.class);
 
     /**
+     * Private constructor.
+     */
+    private SharedUtils() {
+    }
+
+    /**
      * Retrieves an environment variable.
-     * 
+     *
      * @param variableName The name of the environment variable
      * @return The value of the environment variable
      * @throws IllegalArgumentException if the environment variable is not found
      */
-    public static String getEnvVar(String variableName) {
+    public static String getEnvVar(final String variableName) {
         String variableValue = System.getenv(variableName);
         if (variableValue == null) {
             throw new IllegalArgumentException(
@@ -71,7 +80,7 @@ public class SharedUtils {
                 factory.setPassword(SharedUtils.getEnvVar("RABBITMQ_PASS"));
                 return factory.newConnection().createChannel();
             } catch (Exception e) {
-                LOG.info("Failed to connect to RabbitMQ on attempt "+attempt+". Retrying...");
+                LOG.info("Failed to connect to RabbitMQ on attempt " + attempt + ". Retrying...");
                 if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
                     throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
                 }
@@ -100,10 +109,20 @@ public class SharedUtils {
         serverThread.start();
     }
 
+    /**
+     * Gets the exchange name.
+     *
+     * @return the name of the exchange.
+     */
     public static String getExchangeName() {
         return EXCHANGE_NAME;
     }
 
+    /**
+     * Gets the exchange type.
+     *
+     * @return the type of the exchange.
+     */
     public static String getExchangeType() {
         return EXCHANGE_TYPE;
     }
