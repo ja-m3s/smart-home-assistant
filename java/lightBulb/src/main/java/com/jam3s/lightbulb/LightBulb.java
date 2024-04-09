@@ -28,7 +28,7 @@ public class LightBulb {
         private final String value;
 
         /**
-         * @param value holds lightbulb state.
+         * @param newValue holds lightbulb state.
          */
         LightBulbState(final String newValue) {
             this.value = newValue;
@@ -36,7 +36,7 @@ public class LightBulb {
 
         /**
          * Gets the value of the state.
-         * 
+         *
          * @return The value of the state
          */
         public String getValue() {

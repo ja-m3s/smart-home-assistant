@@ -179,7 +179,7 @@ public final class LightBulbController {
         DefaultConsumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(final String consumerTag,
-                                       final Envelope envelope, 
+                                       final Envelope envelope,
                                        final AMQP.BasicProperties properties,
                                        final byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
@@ -215,7 +215,7 @@ public final class LightBulbController {
         }
     }
 
-    /*
+    /**
      * Sets up the RabbitMQ queue.
      */
     public static void setupQueue() throws IOException {
