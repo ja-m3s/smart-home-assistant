@@ -1,7 +1,5 @@
 # Smart Home Assistant 
 
-## Table of Contents
-
 ## Introduction
 
 The Smart Home Assistant is suite of applications which working together demonstrate a simple smart home IOT setup. Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project description. The suite is comparted into the following components:
