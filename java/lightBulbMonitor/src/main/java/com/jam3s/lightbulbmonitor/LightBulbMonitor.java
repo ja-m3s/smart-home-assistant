@@ -49,7 +49,7 @@ public final class LightBulbMonitor {
 
     /**
      * Counter help message for received messages.
-     */   
+     */
     protected static final String COUNTER_RECEIVED_HELP = "Total Received Messages";
 
     /**
@@ -62,7 +62,7 @@ public final class LightBulbMonitor {
      */
     protected static final Logger LOG = LoggerFactory.getLogger(LightBulbMonitor.class);
 
-        /**
+    /**
      * Counter for tracking the number of received messages.
      */
     private static Counter receivedCounter;
@@ -85,7 +85,7 @@ public final class LightBulbMonitor {
     /**
      * Represents the time limit (in milliseconds) for the light bulb to remain on.
      */
-    protected static long lightTimeout;
+    private static long lightTimeout;
 
     private LightBulbMonitor() {
     };
@@ -216,11 +216,11 @@ public final class LightBulbMonitor {
     }
 
     /**
-     * Sets channel
+     * Sets channel.
      *
-     * @param setChannel - a RabbitMQ Channel.
+     * @param setChannel RabbitMQ Channel.
      */
-    public static void setChannel(Channel setChannel) {
+    public static void setChannel(final Channel setChannel) {
         channel = setChannel;
     }
 }
