@@ -32,7 +32,7 @@ jobs:
             docker rm temp_container_dbi
       - store_artifacts:
           path: /tmp/metrics.zip
-          destination: metrics-dbImporter.zip
+          destination: metrics-sharedUtils.zip
   build-db-importer:
     machine:
       image: ubuntu-2204:current

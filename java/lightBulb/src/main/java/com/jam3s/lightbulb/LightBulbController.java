@@ -215,7 +215,7 @@ public final class LightBulbController {
         }
     }
 
-    /**
+    /*
      * Sets up the RabbitMQ queue.
      */
     public static void setupQueue() throws IOException {
