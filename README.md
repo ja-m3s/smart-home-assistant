@@ -1,35 +1,66 @@
 # Smart Home Assistant 
 
-## Project Description
+## Table of Contents
 
-Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project description.
+## Introduction
 
-## Components Description
+The Smart Home Assistant is suite of applications which working together demonstrate a simple smart home IOT setup. Please see [Smart Home Assistant Project brief](./Brief.pdf) for a project description. The suite is comparted into the following components:
 
-- event-bus - a RabbitMQ messaging queue bus
-- light-bulb - simple java program representing a light bulb
-- light-bulb-monitor - a simple java program representing a light bulb monitor, sends a message to a light when it's been on for longer than necessary.
-- cockroachdb - database - stores messages in a database.
-- db_exporter - a simple java program which feeds from the event-bus and inserts records into the database.
-- cockroachdb-secure-client - automatic schema deployment.
-- grafana - visualizations
-- prometheus - metrics
+### light-bulb
 
-## Project Layout
+The light-bulb java application aims to simulate a light bulb with auto-turnoff functionality.
+
+### light-bulb-monitor
+
+The light-bulb-monitor java application aims to simulate a monitor which turns off the light bulb after a set period of time.
+
+### db-importer
+
+The db-importer java application aims feeds messages from RabbitMQ into the CockroachDB database.
+
+### rabbitmq
+
+A scaleable, fault-tolerant event bus.
+
+### cockroachdb
+
+A scaleable, fault-tolerant database.
+
+### cockroachdb-secure-client
+
+An administration console for the database
+
+### Prometheus
+
+A logging and metrics gathering system.
+
+### Grafana
+
+A data visualization system.
+
+## Technology Stack
+
+- The java applications use the following technologies: Java, jUnit, Jacoco, Maven, Docker, SpotBugs, Checkstyle
+- The event bus uses RabbitMQ
+- The database uses cockroachDB
+- Deployment is done via helm3
+- CD Pipelines are creating using CircleCi
+- The infrastructure is Kubernetes
+- Data visualization is done via Grafana
+- Data metrics scraping is done via Prometheus
+
+## Project Source Layout
 
 - /helm - deployment configuration
 - /helm/raw-files - application configuration
 - /java - the java component project files
 - /scripts - helper scripts to aid with marshalling/unmarshalling/building the applications/admin
 - /test-plans - manual test plans for inspecting that the environment has been created correctly
-
-## Technology Stack
-
-- java,junit,jacoco,maven,docker, RabbitMQ, cockroachDB,SQL, kubernetes, helm3, circleci, grafana, prometheus
+- /docs - documentation
 
 ## Configuration
 
-All configuration can be found within the helm folder Values.yaml files, or the config maps associated with each component.
+All configuration can be found within the helm folder Values.yaml files, or the config maps associated with each component. In the cases of the Java programs, some configuration is performed in the source code.
 
 ## Setup
 
@@ -45,20 +76,6 @@ All configuration can be found within the helm folder Values.yaml files, or the 
 4. point kubectl to K8S cluster
 5.  helm install "release-name" helm
 
-## Docker registry login
+## Credits: 
 
-- The Java apps by default push to a private registy on Dockerhub. To configure this locally, run the script /scripts/manual-build-deploy/create-docker-secret to enable
-helm to pull from this reply - you will need to have configured your docker repo already
-in .docker folder of your home directory.
-
-## CircleCI
-
-- The project is configured to automatically build the java applications 
-- To configure this yourself there are some scripts in the /scripts/circleci-build folder
-- They may require some changes in order to pass in the required variables
-
-## Jacoco
-
-- There are code coverage tools deployed in the Java projects, the output is visible when running mvn clean verify inside each Java project folder or in the Artifact section of circleci
-
-## Spotbugs
+I'd like to acknowledge James Heggs for the design of the project brief and Roxy Stafford for coming to me with this opportunity to demonstrate my skill.
