@@ -54,7 +54,7 @@ standard JVM metrics and two bespoke metrics: sent messages and received message
 It uses the RabbitMQ client library to communicate with the event bus.
 
 The project is built with code metrics plugins to enable the creation of the site. These code metrics are: code coverage via Jacoco,
-style checks via Checkstyle and programming linting via Findbugs. These
+style checks via Checkstyle, programming linting via Findbugs and JavaDocs for documentation.
 
 ## Dependencies
 
