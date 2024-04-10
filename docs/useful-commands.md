@@ -33,7 +33,7 @@ Access the cockroachDB secure client for database administration:
 ./scripts/admin/database-admin-console.sh
 ```
 
-# RabbitMQ
+## RabbitMQ
 
 View cluster status
 ```
@@ -41,7 +41,7 @@ kubectl exec rabbitmq-0 -it -- bash
 rabbitmqctl get_cluster_info
 ```
 
-# Java Apps
+## Java Apps
 
 Get a light bulb's logs:
 ```
