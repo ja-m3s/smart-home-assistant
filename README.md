@@ -38,11 +38,11 @@ A data visualization system.
 
 ## Technology Stack
 
-- The java applications use the following technologies: Java, jUnit, Jacoco, Maven, Docker, SpotBugs, Checkstyle
+- The java applications use the following technologies: Java, jUnit, Jacoco, Maven, Docker, SpotBugs, Checkstyle and JavaDocs
 - The event bus uses RabbitMQ
 - The database uses cockroachDB
 - Deployment is done via helm3
-- CD Pipelines are creating using CircleCi
+- CD Pipelines are creating the java application images using CircleCi
 - The infrastructure is Kubernetes
 - Data visualization is done via Grafana
 - Data metrics scraping is done via Prometheus
