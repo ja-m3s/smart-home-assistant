@@ -1,6 +1,6 @@
 # Name: continue_config.yml
 # Description: Pipeline for circleci, continuing from config.yml
-# Extracts code coverage metrics, builds the image,
+# Extracts code coverage metrics, builds the image, adds docs to github
 # stores the image, stores the metrics as an artifact in circleci
 # Author: ja-m3s
 version: 2.1
