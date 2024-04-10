@@ -9,7 +9,7 @@ sending messages.
 ## How to build
 
 This is built as part of the CircleCI pipeline, which will build the application, and push the created image to the repository marked in
-your smart-home-org-context in CircleCI. A CircleCI artifact is also created as part of this prcess which contains code metrics.
+your smart-home-org-context in CircleCI. A CircleCI artifact is also created as part of this process which contains code metrics.
 
 It can also be build using the build script located in /scripts/build:
 ```
@@ -27,8 +27,7 @@ mvn clean test compile site
 
 ## How to run and debug locally
 
-Once you've added the sharedUtils.jar you can debug as with any other application. You will need to expose a light-bulb-monitor outside
-of K8S for it to start working as it usually would.
+Once you've added the sharedUtils.jar you can debug as with any other application. You will need to expose an event-bus outside of K8S for it to start working as it usually would.
 
 ## How to test
 
