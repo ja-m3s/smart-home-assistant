@@ -3,6 +3,9 @@
 # Description: Installs, Uninstalls and grants access to the microk8s dashboard.
 # Author: ja-m3s
 
+# Define script directory
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
 install() {
     # Docker
     sudo apt install docker.io
@@ -16,7 +19,7 @@ install() {
     sudo microk8s enable registry
     sudo microk8s enable dashboard
     microk8s start
-    microk8s kubectl apply -f dashboard-access.yaml
+    microk8s kubectl apply -f ${SCRIPT_DIR}/dashboard-access.yaml
     echo 'YOU WILL NEED THIS TO ACCESS THE DASHBOARD:'
     microk8s kubectl get secret admin-user -n kube-system -o jsonpath={".data.token"} | base64 -d
 }
