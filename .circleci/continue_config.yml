@@ -33,6 +33,13 @@ jobs:
       - store_artifacts:
           path: /tmp/metrics.zip
           destination: metrics-sharedUtils.zip
+      - run: 
+          name: Add metrics to git
+          command: |
+            mv /tmp/metrics.zip docs/
+            git add docs/metrics.zip
+            git commit -m 'added metrics'
+            git push
   build-db-importer:
     machine:
       image: ubuntu-2204:current
