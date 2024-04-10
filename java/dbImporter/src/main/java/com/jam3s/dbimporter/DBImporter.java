@@ -100,8 +100,8 @@ public final class DBImporter {
         setupMetricServer();
         SharedUtils.startMetricsServer();
         SharedUtils.setupRabbitMQConnection();
-        setupDBConnection();
         SharedUtils.setupQueue(QUEUE_NAME);
+        setupDBConnection();
         consumeQueue();
     }
 
