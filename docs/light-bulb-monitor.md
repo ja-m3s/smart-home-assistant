@@ -1,4 +1,4 @@
-# Light Bulb Application
+# Light Bulb Monitor Application
 
 ## Brief Overview
 
