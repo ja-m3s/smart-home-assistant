@@ -32,12 +32,12 @@ jobs:
             docker rm temp_container_dbi
       - store_artifacts:
           path: /tmp/metrics.zip
-          destination: metrics-sharedUtils.zip
+          destination: sharedUtils-metrics.zip
       - run: 
           name: Add metrics to git
           command: |
-            mv /tmp/metrics.zip docs/
-            git add docs/metrics.zip
+            mv /tmp/metrics.zip docs/sharedUtils-metrics.zip
+            git add docs/sharedUtils-metrics.zip
             git commit -m 'added metrics for shared utils'
             git push
   build-db-importer:
@@ -60,7 +60,14 @@ jobs:
             docker push "${DOCKER_REPO_DB_IMPORTER}:latest"
       - store_artifacts:
           path: /tmp/metrics.zip
-          destination: metrics-dbImporter.zip
+          destination: dbImporter-metrics.zip
+       - run: 
+          name: Add metrics to git
+          command: |
+            mv /tmp/metrics.zip docs/dbImporter-metrics.zip
+            git add docs/dbImporter-metrics.zip
+            git commit -m 'added metrics for dbImporter'
+            git push
   build-light-bulb:
     machine:
       image: ubuntu-2204:current
@@ -75,13 +82,20 @@ jobs:
             docker rm temp_container_lb
       - store_artifacts:
           path: /tmp/metrics.zip
-          destination: metrics-lightBulb.zip
+          destination: lightBulb-metrics.zip
       - run: 
           name: Build light-bulb
           command: |
             docker build -t "${DOCKER_REPO_LIGHT_BULB}:latest" -f "java/lightBulb/Dockerfile" "java"
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO_LIGHT_BULB}:latest"
+      - run: 
+          name: Add metrics to git
+          command: |
+            mv /tmp/metrics.zip docs/lightBulb-metrics.zip
+            git add docs/lightBulb-metrics.zip
+            git commit -m 'added metrics for lightBulb'
+            git push
   build-light-bulb-monitor:
     machine:
       image: ubuntu-2204:current
@@ -96,13 +110,20 @@ jobs:
             docker rm temp_container_lbm
       - store_artifacts:
           path: /tmp/metrics.zip
-          destination: metrics-lightBulbMonitor.zip
+          destination: lightBulbMonitor-metrics.zip
       - run: 
           name: Build light-bulb-monitor
           command: |
             docker build -t "${DOCKER_REPO_LIGHT_BULB_MONITOR}:latest" -f "java/lightBulbMonitor/Dockerfile" "java"
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "${DOCKER_REPO_LIGHT_BULB_MONITOR}:latest"
+      - run: 
+          name: Add metrics to git
+          command: |
+            mv /tmp/metrics.zip docs/lightBulbMonitor-metrics.zip
+            git add docs/lightBulbMonitor-metrics.zip
+            git commit -m 'added metrics for lightBulbMonitor'
+            git push
 workflows:
   workflow-build-shared-utils:
     when: << pipeline.parameters.param-build-shared-utils >>
