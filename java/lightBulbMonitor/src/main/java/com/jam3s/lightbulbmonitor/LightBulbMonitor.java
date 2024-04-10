@@ -194,7 +194,7 @@ public final class LightBulbMonitor {
                 message.toString().getBytes(StandardCharsets.UTF_8));           
                 break; // Exit the loop if basicPublish is successful
             } catch (IOException e) {
-                LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
+                LOG.error("Error occurred while publishing to the queue. Attempting to reconnect to RabbitMQ...");
                 SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
                 channel = SharedUtils.getChannel(); // Get a new channel
             }
