@@ -38,7 +38,7 @@ jobs:
           command: |
             mv /tmp/metrics.zip docs/
             git add docs/metrics.zip
-            git commit -m 'added metrics'
+            git commit -m 'added metrics for shared utils'
             git push
   build-db-importer:
     machine:
