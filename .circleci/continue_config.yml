@@ -62,7 +62,7 @@ jobs:
       - store_artifacts:
           path: /tmp/metrics.zip
           destination: dbImporter-metrics.zip
-       - run: 
+      - run: 
           name: Add metrics to git
           command: |
             git pull
