@@ -36,6 +36,7 @@ jobs:
       - run: 
           name: Add metrics to git
           command: |
+            git pull
             mv /tmp/metrics.zip docs/sharedUtils-metrics.zip
             git add docs/sharedUtils-metrics.zip
             git commit -m 'added metrics for shared utils'
@@ -64,6 +65,7 @@ jobs:
        - run: 
           name: Add metrics to git
           command: |
+            git pull
             mv /tmp/metrics.zip docs/dbImporter-metrics.zip
             git add docs/dbImporter-metrics.zip
             git commit -m 'added metrics for dbImporter'
@@ -92,6 +94,7 @@ jobs:
       - run: 
           name: Add metrics to git
           command: |
+            git pull
             mv /tmp/metrics.zip docs/lightBulb-metrics.zip
             git add docs/lightBulb-metrics.zip
             git commit -m 'added metrics for lightBulb'
@@ -120,6 +123,7 @@ jobs:
       - run: 
           name: Add metrics to git
           command: |
+            git pull
             mv /tmp/metrics.zip docs/lightBulbMonitor-metrics.zip
             git add docs/lightBulbMonitor-metrics.zip
             git commit -m 'added metrics for lightBulbMonitor'
