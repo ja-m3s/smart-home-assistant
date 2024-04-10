@@ -140,9 +140,19 @@ public final class LightBulbController {
     private static void sendMessage(final JSONObject message) throws IOException {
         // Only broadcast when lightbulb is on
         Channel channel = SharedUtils.getChannel();
+        
         if (lightBulb.getState() == LightBulbState.ON) {
-            channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null,
-                    message.toString().getBytes(StandardCharsets.UTF_8));
+            while (true) {
+                try {
+                    channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null,
+                    message.toString().getBytes(StandardCharsets.UTF_8));           
+                    break; // Exit the loop if basicPublish is successful
+                } catch (IOException e) {
+                    LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
+                    SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
+                    channel = SharedUtils.getChannel(); // Get a new channel
+                }
+            } 
             sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
             LOG.info("Sent :" + message);
         }
@@ -205,10 +215,15 @@ public final class LightBulbController {
 
         LOG.info("Waiting for messages. To exit press Ctrl+C");
 
-        try {
-            channel.basicConsume(QUEUE_NAME, true, consumer);
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (true) {
+            try {
+                channel.basicConsume(QUEUE_NAME, true, consumer);
+                break; // Exit the loop if basicConsume is successful
+            } catch (IOException e) {
+                LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
+                SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
+                channel = SharedUtils.getChannel(); // Get a new channel
+            }
         }
     }
 

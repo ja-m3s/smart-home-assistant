@@ -143,8 +143,17 @@ public final class DBImporter {
 
         LOG.info("Starting to consume" + QUEUE_NAME);
         Channel channel = SharedUtils.getChannel();
-        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
-        });
+
+        while (true) {
+            try {
+                channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+                break; // Exit the loop if basicConsume is successful
+            } catch (IOException e) {
+                LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
+                SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
+                channel = SharedUtils.getChannel(); // Get a new channel
+            }
+        }
     }
 
     /**

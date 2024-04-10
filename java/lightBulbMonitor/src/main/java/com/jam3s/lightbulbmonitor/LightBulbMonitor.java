@@ -161,8 +161,18 @@ public final class LightBulbMonitor {
 
             LOG.info("Starting to consume: " + QUEUE_NAME);
             Channel channel = SharedUtils.getChannel();
-            channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
-            });
+
+            while (true) {
+                try {
+                    channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+                    });
+                    break; // Exit the loop if basicConsume is successful
+                } catch (IOException e) {
+                    LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
+                    SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
+                    channel = SharedUtils.getChannel(); // Get a new channel
+                }
+            }
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to consume messages from RabbitMQ queue", e);
@@ -178,8 +188,17 @@ public final class LightBulbMonitor {
      */
     protected static void sendMessage(final JSONObject message) throws IOException, InterruptedException {
         Channel channel = SharedUtils.getChannel();
-        channel.basicPublish(SharedUtils.getExchangeName(), "", null,
-                message.toString().getBytes(StandardCharsets.UTF_8));
+        while (true) {
+            try {
+                channel.basicPublish(SharedUtils.getExchangeName(), "", null,
+                message.toString().getBytes(StandardCharsets.UTF_8));           
+                break; // Exit the loop if basicPublish is successful
+            } catch (IOException e) {
+                LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
+                SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
+                channel = SharedUtils.getChannel(); // Get a new channel
+            }
+        } 
         sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
         LOG.info("Sent '" + message + "'");
     }
