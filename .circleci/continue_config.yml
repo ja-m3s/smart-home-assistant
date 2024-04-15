@@ -167,7 +167,7 @@ workflows:
       - build-light-bulb-monitor:
           context:
             - org-context-smart-home
-    workflow-build-remote:
+  workflow-build-remote:
     when: << pipeline.parameters.param-build-remote >>
     jobs:
       - build-remote:
