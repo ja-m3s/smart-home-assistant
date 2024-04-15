@@ -1,0 +1,58 @@
+{{- if .Values.remote.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: remote
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: remote
+  template:
+    metadata:
+      labels:
+        app: remote
+      annotations:
+        prometheus.io/scrape: "false"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "9400"
+    spec:
+      {{- if .Values.registryConf.registry }}
+      imagePullSecrets:
+        - name: registry-credentials
+      {{- end }}
+      containers:
+        - name: remote-container
+          image: "{{ default "localhost:32000" .Values.registryConf.registry }}/{{ .Values.remote.image }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.rabbitmq.port }}
+            - containerPort: 9400
+            - containerPort: 8080
+          env:
+            - name: RABBITMQ_HOST
+              value: {{ .Values.rabbitmq.host }}
+            - name: RABBITMQ_PORT
+              value: "{{ .Values.rabbitmq.port }}"
+            - name: RABBITMQ_USER
+              value: {{ .Values.rabbitmq.user }}
+            - name: RABBITMQ_PASS
+              value: {{ .Values.rabbitmq.pass }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: remote
+  namespace: default
+spec:
+  selector: 
+    app: remote
+  type: NodePort  
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 32760
+
+{{- end }}

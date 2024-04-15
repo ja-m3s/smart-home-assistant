@@ -35,6 +35,10 @@ dbImporter:
   enabled: true
   image: sma-db-importer:latest
 
+remote:
+  enabled: true
+  image: sma-remote:latest
+
 cockroachClient:
   enabled: true
   image: cockroachdb/cockroach:v23.2.3

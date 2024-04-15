@@ -17,6 +17,9 @@ parameters:
   param-build-light-bulb-monitor:
     type: boolean
     default: false
+  param-build-remote:
+    type: boolean
+    default: false
 jobs:
   build-shared-utils:
     machine:
@@ -128,6 +131,17 @@ jobs:
             git add docs/lightBulbMonitor-metrics.zip
             git commit -m 'added metrics for lightBulbMonitor'
             git push
+  build-remote:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run: 
+          name: Build remote
+          command: |
+            docker build -t "${DOCKER_REPO_REMOTE}:latest" -f "java/remote/Dockerfile" "java"
+            docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
+            docker push "${DOCKER_REPO_REMOTE}:latest"
 workflows:
   workflow-build-shared-utils:
     when: << pipeline.parameters.param-build-shared-utils >>
@@ -151,5 +165,11 @@ workflows:
     when: << pipeline.parameters.param-build-light-bulb-monitor >>
     jobs:
       - build-light-bulb-monitor:
+          context:
+            - org-context-smart-home
+    workflow-build-remote:
+    when: << pipeline.parameters.param-build-remote >>
+    jobs:
+      - build-remote:
           context:
             - org-context-smart-home
