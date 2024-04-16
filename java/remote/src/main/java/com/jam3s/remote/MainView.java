@@ -33,7 +33,7 @@ public class MainView extends HorizontalLayout {
         getLightBulbStatus.addClickShortcut(Key.ENTER);
 
         setMargin(true);
-        setVerticalComponentAlignment(Alignment.END, name, getLightBulbStatus);
+        setVerticalComponentAlignment(Alignment.END, getLightBulbStatus);
 
         add(getLightBulbStatus);
     }
