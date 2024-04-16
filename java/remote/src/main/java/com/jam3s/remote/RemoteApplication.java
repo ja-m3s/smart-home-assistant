@@ -1,6 +1,8 @@
 package com.jam3s.remote;
 
 import com.jam3s.sharedutils.SharedUtils;
+
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import io.prometheus.metrics.core.metrics.Counter;
@@ -16,7 +18,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 
 @SpringBootApplication
-public class RemoteApplication {
+public class RemoteApplication implements CommandLineRunner {
 
 	protected static HashMap<String, JSONObject> lightBulbHashMap = new HashMap<>();
 	
@@ -82,19 +84,7 @@ public class RemoteApplication {
 
 
 	public static void main(String[] args) {
-		SharedUtils.setupRabbitMQConnection();
-		hostname = SharedUtils.getEnvVar("HOSTNAME");
-		System.out.println(hostname);
-        setupMetricServer();
-        SharedUtils.startMetricsServer();
-		try {
-			SharedUtils.setupQueue(QUEUE_NAME);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        consumeQueue();
 		SpringApplication.run(RemoteApplication.class, args);
-
 	}
 
 	    /**
@@ -203,4 +193,18 @@ public class RemoteApplication {
 		return lightBulbHashMap;
 	}
 
+    @Override
+    public void run(String... args) throws Exception {
+        SharedUtils.setupRabbitMQConnection();
+		hostname = SharedUtils.getEnvVar("HOSTNAME");
+		System.out.println(hostname);
+        setupMetricServer();
+        SharedUtils.startMetricsServer();
+		try {
+			SharedUtils.setupQueue(QUEUE_NAME);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        consumeQueue();
+    }
 }

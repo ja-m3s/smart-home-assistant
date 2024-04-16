@@ -2,6 +2,8 @@ package com.jam3s.remote;
 
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -26,7 +28,7 @@ public class MainView extends HorizontalLayout {
         getLightBulbStatus = new Button("Light bulb status");
         getLightBulbStatus.addClickListener(e -> {
             Notification.show("Getting light bulb status...");
-            TextField lightBulbStatus = new TextField(RemoteApplication.getLightBulbStatus().toString());
+            Paragraph lightBulbStatus = new Paragraph(RemoteApplication.getLightBulbStatus().toString());
             add (lightBulbStatus);
         });
         getLightBulbStatus.addClickShortcut(Key.ENTER);
