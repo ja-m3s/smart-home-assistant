@@ -12,9 +12,8 @@ WORKDIR /app
 COPY remote remote
 WORKDIR /app/remote
 COPY --from=utilsBuild /app/sharedUtils/target/sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
-#RUN mvn install:install-file -Dfile=sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar -DgroupId=com.jam3s -DartifactId=sharedUtils -Dpackaging=jar -Dversion=0.0.1-SNAPSHOT
 RUN ./gradlew :war
 
 # Create production image
 FROM tomcat:jre21-temurin-jammy as production
-COPY --from=build /app/remote/build/libs/remote-0.0.1-SNAPSHOT-plain.war /usr/local/tomcat/webapps/
+COPY --from=build /app/remote/build/libs/remote-0.0.1-SNAPSHOT-plain.war /usr/local/tomcat/webapps/remote.war

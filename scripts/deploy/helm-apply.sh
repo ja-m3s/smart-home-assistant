@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Name: helm-deploy.sh
+# Name: helm-apply.sh
 # Description: Deploys system via helm
 # Author: ja-m3s
 

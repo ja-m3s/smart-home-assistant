@@ -13,7 +13,7 @@ This is not a built application.
 
 Deployment is via helm3 along with the other applications. This can be achieved by running:
 ```
-./scripts/deploy/./helm-deploy.sh
+./scripts/deploy/./helm-apply.sh
 ```
 ## Technologies
 

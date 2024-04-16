@@ -65,7 +65,7 @@ All configuration can be found within the helm folder Values.yaml files, or the 
 ### Local Cluster Deployment on Ubuntu
 1. cd scripts && ./microk8s.sh install -- this installs a development kubernetes
 2. ./build-images.sh -- build images and add to the repository
-3. ./helm-deploy.sh -- deploy into K8S
+3. ./helm-apply.sh -- deploy into K8S
 
 ### Remote Cluster Deployment
 1. cd scripts

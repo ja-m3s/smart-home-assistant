@@ -46,7 +46,7 @@ cd scripts
 10. Deploy the applications to K8S via helm: 
 ```
 cd smart-home-assistant/scripts/manual-build-deploy
-./helm-deploy.sh
+./helm-apply.sh
 ```
 11. Verify the installation has been successful, it may take upto 10 minutes to fully deploy. All pods should be running/complete.
 ```

@@ -10,5 +10,10 @@ Please note as of 10/04/24, this application is not currently implemented.
 
 Deployment is via helm3 along with the other applications. This can be achieved by running:
 ```
-./scripts/deploy/helm-deploy.sh
+./scripts/deploy/helm-apply.sh
 ```
+
+## Access via browser
+
+http://localhost:32760/remote-0.0.1-SNAPSHOT-plain/
+
