@@ -207,7 +207,7 @@ public final class LightBulbController {
                 LOG.info("originHostname is a light bulb monitor or remote. Processing.");
                 String target = msg.getString("target");
 
-                // is message for this light
+                // is message for this light?
                 if (!target.equals(hostname)) {
                   return;
                 }
