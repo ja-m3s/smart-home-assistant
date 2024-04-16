@@ -84,12 +84,9 @@ public class RemoteApplication {
 
 	public static void main(String[] args) {
 		SharedUtils.setupRabbitMQConnection();
-
 		hostname = SharedUtils.getEnvVar("HOSTNAME");
-        SharedUtils.setupRabbitMQConnection();
         setupMetricServer();
         SharedUtils.startMetricsServer();
-        consumeQueue();
 		try {
 			SharedUtils.setupQueue(QUEUE_NAME);
 		} catch (IOException e) {
