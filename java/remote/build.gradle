@@ -13,6 +13,10 @@ java {
 	sourceCompatibility = '21'
 }
 
+vaadin {
+    productionMode = true // Enable production mode
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
