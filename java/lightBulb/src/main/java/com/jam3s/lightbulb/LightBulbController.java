@@ -141,7 +141,7 @@ public final class LightBulbController {
         // Only broadcast when lightbulb is on
         Channel channel = SharedUtils.getChannel();
         
-        if (lightBulb.getState() == LightBulbState.ON) {
+        //if (lightBulb.getState() == LightBulbState.ON) {
             while (true) {
                 try {
                     channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null,
@@ -155,7 +155,7 @@ public final class LightBulbController {
             } 
             sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
             LOG.info("Sent :" + message);
-        }
+        //}
     }
 
     /**
