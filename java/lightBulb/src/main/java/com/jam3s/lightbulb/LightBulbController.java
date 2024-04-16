@@ -217,6 +217,7 @@ public final class LightBulbController {
                     lightBulb.setState(LightBulbState.OFF);
                 } else {
                     lightBulb.setState(LightBulbState.ON);
+                    lightBulb.setTimeTurnedOn(System.currentTimeMillis());
                 }
             }
         };
