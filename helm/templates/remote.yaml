@@ -13,7 +13,7 @@ spec:
       labels:
         app: remote
       annotations:
-        prometheus.io/scrape: "false"
+        prometheus.io/scrape: "true"
         prometheus.io/path: "/metrics"
         prometheus.io/port: "9400"
     spec:

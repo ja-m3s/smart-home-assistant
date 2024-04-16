@@ -15,5 +15,5 @@ Deployment is via helm3 along with the other applications. This can be achieved 
 
 ## Access via browser
 
-http://localhost:32760/remote-0.0.1-SNAPSHOT-plain/
+http://localhost:32760/remote/
 
