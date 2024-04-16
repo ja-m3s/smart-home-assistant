@@ -48,7 +48,7 @@ public class MainView extends HorizontalLayout {
                         e1.printStackTrace();
                     }
                 });
-                // Add the Label and TextArea to a HorizontalLayout
+                // Add the Label and TextArea and Button to a HorizontalLayout
                 HorizontalLayout entryLayout = new HorizontalLayout(keyLabel, valueTextArea,toggleState);
                 lightBulbStatusParagraph.add(entryLayout); // Add the HorizontalLayout to the VerticalLayout
             });
