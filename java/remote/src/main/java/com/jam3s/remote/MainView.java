@@ -12,8 +12,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "")
 public class MainView extends HorizontalLayout {
 
-    private TextField name;
-    private Button cycleBulbState;
+    private Button getLightBulbStatus;
 
     /* add a couple of things
      * - connect to rabbitmq
@@ -24,7 +23,7 @@ public class MainView extends HorizontalLayout {
      * ./gradlew :bootRun to run it
      */
     public MainView() {
-        Button getLightBulbStatus = new Button("Light bulb status");
+        getLightBulbStatus = new Button("Light bulb status");
         getLightBulbStatus.addClickListener(e -> {
             Notification.show("Getting light bulb status...");
             TextField lightBulbStatus = new TextField(RemoteApplication.getLightBulbStatus().toString());

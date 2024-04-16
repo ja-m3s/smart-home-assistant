@@ -8,7 +8,6 @@ import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
@@ -85,6 +84,7 @@ public class RemoteApplication {
 	public static void main(String[] args) {
 		SharedUtils.setupRabbitMQConnection();
 		hostname = SharedUtils.getEnvVar("HOSTNAME");
+		System.out.println(hostname);
         setupMetricServer();
         SharedUtils.startMetricsServer();
 		try {
