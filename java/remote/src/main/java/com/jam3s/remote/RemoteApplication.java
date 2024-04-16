@@ -7,6 +7,8 @@ import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
@@ -17,7 +19,9 @@ import com.rabbitmq.client.DeliverCallback;
 @SpringBootApplication
 public class RemoteApplication {
 
-	 /**
+	protected static HashMap<String, JSONObject> lightBulbHashMap = new HashMap<>();
+	
+	/**
      * Represents the name of the queue used for monitoring light bulbs.
      */
     protected static final String QUEUE_NAME = "REMOTE";
@@ -116,11 +120,7 @@ public class RemoteApplication {
                 }
                 LOG.info("originHostname is a light bulb. Processing.");
 
-                // Parse out the fields we need
-                String bulbState = msg.getString("bulb_state");
-                long sentTimestamp = msg.getLong("time_turned_on");
-                long currentTimestamp = System.currentTimeMillis();
-
+                lightBulbHashMap.put(originHostname, msg);
             };
 
             LOG.info("Starting to consume: " + QUEUE_NAME);
@@ -200,5 +200,9 @@ public class RemoteApplication {
 
         return msg;
     }
+
+	protected static HashMap<String, JSONObject> getLightBulbStatus() {
+		return lightBulbHashMap;
+	}
 
 }

@@ -24,20 +24,18 @@ public class MainView extends HorizontalLayout {
      * ./gradlew :bootRun to run it
      */
     public MainView() {
-        name = new TextField("Lightbulb");
-        cycleBulbState = new Button("Cycle");
-        cycleBulbState.addClickListener(e -> {
-            Notification.show("Cycling " + name.getValue());
-            //Rabbit mq - send a message
-            TextField lightbulb = new TextField("A lighty bulby");
-            add (lightbulb);
+        Button getLightBulbStatus = new Button("Light bulb status");
+        getLightBulbStatus.addClickListener(e -> {
+            Notification.show("Getting light bulb status...");
+            TextField lightBulbStatus = new TextField(RemoteApplication.getLightBulbStatus().toString());
+            add (lightBulbStatus);
         });
-        cycleBulbState.addClickShortcut(Key.ENTER);
+        getLightBulbStatus.addClickShortcut(Key.ENTER);
 
         setMargin(true);
-        setVerticalComponentAlignment(Alignment.END, name, cycleBulbState);
+        setVerticalComponentAlignment(Alignment.END, name, getLightBulbStatus);
 
-        add(name, cycleBulbState);
+        add(getLightBulbStatus);
     }
 
 }
