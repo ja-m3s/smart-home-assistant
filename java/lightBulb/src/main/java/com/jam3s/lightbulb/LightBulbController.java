@@ -93,6 +93,8 @@ public final class LightBulbController {
      */
     private static final Logger LOG = LoggerFactory.getLogger(LightBulbController.class);
 
+    protected static final String REMOTE_HOSTNAME_REGEX = "remote-.+";
+
     private LightBulbController() {
     };
 
@@ -198,17 +200,23 @@ public final class LightBulbController {
                 // Check message is from a lightbulb, if not, disregard it.
                 String originHostname = msg.getString("hostname");
                 LOG.info("Message from: %s%n", originHostname);
-                if (!originHostname.matches(LIGHT_BULB_MONITOR_HOSTNAME_REGEX)) {
+                if (!originHostname.matches(LIGHT_BULB_MONITOR_HOSTNAME_REGEX) || !originHostname.matches(REMOTE_HOSTNAME_REGEX)) {
                     LOG.info("originHostname is not a light bulb monitor. Disregarding message.");
                     return;
                 }
-                LOG.info("originHostname is a light bulb monitor. Processing.");
+                LOG.info("originHostname is a light bulb monitor or remote. Processing.");
                 String target = msg.getString("target");
 
                 // is message for this light
-                if (target.equals(hostname)) {
-                    LOG.info("Switching off light");
+                if (!target.equals(hostname)) {
+                  return;
+                }
+
+                LOG.info("Toggling light");
+                if(lightBulb.getState() == LightBulbState.ON) {
                     lightBulb.setState(LightBulbState.OFF);
+                } else {
+                    lightBulb.setState(LightBulbState.ON);
                 }
             }
         };

@@ -1,5 +1,7 @@
 package com.jam3s.remote;
 
+import java.io.IOException;
+
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.NativeLabel;
@@ -33,8 +35,21 @@ public class MainView extends HorizontalLayout {
                 TextArea valueTextArea = new TextArea(); // Create a TextArea to display the message
                 valueTextArea.setValue(value.toString()); // Set the value of the TextArea
                 valueTextArea.setReadOnly(true); // Make the TextArea read-only
+                Button toggleState = new Button("Toggle On/Off");
+                toggleState.addClickListener(d -> {
+                    Notification.show("Toggling light bulb...");
+                    try {
+                        RemoteApplication.sendMessage(RemoteApplication.createTurnOnMessage(key));
+                    } catch (IOException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    } catch (InterruptedException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                });
                 // Add the Label and TextArea to a HorizontalLayout
-                HorizontalLayout entryLayout = new HorizontalLayout(keyLabel, valueTextArea);
+                HorizontalLayout entryLayout = new HorizontalLayout(keyLabel, valueTextArea,toggleState);
                 lightBulbStatusParagraph.add(entryLayout); // Add the HorizontalLayout to the VerticalLayout
             });
         });
