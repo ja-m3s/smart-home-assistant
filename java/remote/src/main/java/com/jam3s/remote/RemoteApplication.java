@@ -77,10 +77,6 @@ public class RemoteApplication {
      */
     private static String hostname;
 
-   
-
-    private RemoteApplication() {
-    };
 
 	public static void main(String[] args) {
 		SpringApplication.run(RemoteApplication.class, args);
