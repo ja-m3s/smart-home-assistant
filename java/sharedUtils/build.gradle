@@ -5,6 +5,7 @@
  */
 
 plugins {
+    id 'java'
     id 'java-library'
     id 'maven-publish'
     id 'checkstyle'
@@ -60,13 +61,4 @@ tasks.withType(Javadoc) {
 spotbugs {
     ignoreFailures = true // Ignore failures, let the build continue
     reportsDir = file("$buildDir/reports/spotbugs")
-}
-
-shadowJar {
-  minimize()
-}
-
-tasks.withType(AbstractArchiveTask) {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
 }

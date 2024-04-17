@@ -69,12 +69,3 @@ tasks.withType(com.github.spotbugs.SpotBugsTask) {
         html.enabled = true // Enable HTML report if needed
     }
 }
-
-shadowJar {
-  minimize()
-}
-
-tasks.withType(AbstractArchiveTask) {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
-}
