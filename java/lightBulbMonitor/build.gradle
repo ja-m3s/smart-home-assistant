@@ -16,13 +16,7 @@ repositories {
 }
 
 dependencies {
-    api libs.com.rabbitmq.amqp.client
-    api libs.org.slf4j.slf4j.api
-    api libs.org.slf4j.slf4j.simple
     api libs.org.json.json
-    api libs.io.prometheus.prometheus.metrics.core
-    api libs.io.prometheus.prometheus.metrics.instrumentation.jvm
-    api libs.io.prometheus.prometheus.metrics.exporter.httpserver
     testImplementation libs.junit.junit
     testImplementation libs.org.mockito.mockito.core
     implementation files('sharedUtils-0.0.1-SNAPSHOT-all.jar')
