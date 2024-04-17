@@ -1,5 +1,5 @@
 #Build the utility package
-FROM gradle:jdk-jammy as build
+FROM gradle:jdk-jammy as utilsBuild
 WORKDIR /app
 COPY sharedUtils sharedUtils
 WORKDIR /app/sharedUtils
