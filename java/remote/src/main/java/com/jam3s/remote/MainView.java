@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.Date;
-
-import org.json.JSONObject;
+import java.time.Instant;
 
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
@@ -43,26 +41,30 @@ public class MainView extends HorizontalLayout {
     
         // Iterate over the entries in the HashMap
         RemoteApplication.getLightBulbStatus().forEach((key, value) -> {
-            
-            //Get the value of the hashmap and put it into a JSONObject for easy parsing.
-            JSONObject msg = new JSONObject(value);
 
-            //Create some Textfields to hold our values
+            // Extracting values from JSON
+            String bulbStatus = value.optString("bulb_status");
+            long timeTurnedOnMillis = value.optLong("time_turned_on");
+            Instant timeTurnedOn = Instant.ofEpochMilli(timeTurnedOnMillis);
+
+            // Create TextFields
             TextField lightBulbNameTextField = new TextField(key);
-            TextField bulbStatusTextField = new TextField(msg.get("bulb_status").toString());
-            Date timeTurnedOn = new Date(Long.parseLong(msg.get("time_turned_on").toString()));
+            TextField bulbStatusTextField = new TextField(bulbStatus);
             TextField timeTurnedOnTextField = new TextField(timeTurnedOn.toString());
 
-            // Make the TextField read-only
+            // Make the TextFields read-only
             bulbStatusTextField.setReadOnly(true); 
             timeTurnedOnTextField.setReadOnly(true);
             
             // Add a button to turn lights on/off.
             Button toggleState = new Button("Toggle On/Off");
             toggleState.addClickListener(d -> handleToggleState(key));
-            // Add the Label and TextField and Button to a HorizontalLayout
-            HorizontalLayout entryLayout = new HorizontalLayout(lightBulbNameTextField, bulbStatusTextField,timeTurnedOnTextField, toggleState);
-            lightBulbDisplayVLayout.add(entryLayout); // Add the HorizontalLayout to the VerticalLayout
+            
+            // Add the items to a HorizontalLayout
+            HorizontalLayout entryLayout = new HorizontalLayout(lightBulbNameTextField, bulbStatusTextField, timeTurnedOnTextField, toggleState);
+            
+            // Add the HorizontalLayout to the VerticalLayout
+            lightBulbDisplayVLayout.add(entryLayout); 
         });
     }
 
@@ -71,7 +73,7 @@ public class MainView extends HorizontalLayout {
         try {
             RemoteApplication.sendMessage(RemoteApplication.createTurnOnMessage(key));
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            Notification.show("Failed to toggle light bulb: " + e.getMessage());
         }
     }
 
