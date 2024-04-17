@@ -32,12 +32,28 @@ commands:
         type: string
     steps:
       - run:
+          name: 'Add Metrics to git'
           command: |
             git pull
             mv /tmp/metrics.zip << parameters.doc-location >><< parameters.file-name >>
             git add << parameters.doc-location >><< parameters.file-name >>
             git commit -m "added << parameters.doc-location >><< parameters.file-name >>"
-            git push
+
+  extract-code-coverage:
+    description: "Extract Code Coverage from the build"
+    parameters:
+      docker-file-location:
+        type: string
+      path-to-metrics:
+        type: string
+    steps:
+      - run:
+          name: 'Extract code coverage'
+          command: |
+            docker build -t temp_build -f " << parameters.docker-file-location >>" "java" --target build
+            docker create --name temp_container temp_build
+            docker cp temp_container: << parameters.path-to-metrics >> /tmp/
+            docker rm temp_container
 
 jobs:
   build-shared-utils:
@@ -45,13 +61,9 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run:
-          name: Extract Code Coverage - shared-utils
-          command: |
-            docker build -t temp_build_dbi -f "java/sharedUtils/Dockerfile" "java" --target build
-            docker create --name temp_container_dbi temp_build_dbi
-            docker cp temp_container_dbi:/app/sharedUtils/target/metrics.zip /tmp/
-            docker rm temp_container_dbi
+      - extract-code-coverage:
+          docker-file-location: "java/sharedUtils/Dockerfile" 
+          path-to-metrics: /app/sharedUtils/target/metrics.zip
       - store_artifacts:
           path: /tmp/metrics.zip
           destination: sharedUtils-metrics.zip
@@ -63,13 +75,9 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run:
-          name: Extract Code Coverage - db-importer
-          command: |
-            docker build -t temp_build_dbi -f "java/dbImporter/Dockerfile" "java" --target build
-            docker create --name temp_container_dbi temp_build_dbi
-            docker cp temp_container_dbi:/app/dbImporter/target/metrics.zip /tmp/
-            docker rm temp_container_dbi
+      - extract-code-coverage:
+          docker-file-location: "java/dbImporter/Dockerfile" 
+          path-to-metrics: /app/dbImporter/target/metrics.zip
       - run: 
           name: Build dbImporter
           command: |
@@ -87,13 +95,9 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run:
-          name: Extract Code Coverage - light-bulb
-          command: |
-            docker build -t temp_build_lb -f "java/lightBulb/Dockerfile" "java" --target build
-            docker create --name temp_container_lb temp_build_lb
-            docker cp temp_container_lb:/app/lightBulb/target/metrics.zip /tmp/
-            docker rm temp_container_lb
+      - extract-code-coverage:
+          docker-file-location: "java/lightBulb/Dockerfile" 
+          path-to-metrics: /app/lightBulb/target/metrics.zip
       - store_artifacts:
           path: /tmp/metrics.zip
           destination: lightBulb-metrics.zip
@@ -111,13 +115,9 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run:
-          name: Extract Code Coverage - light-bulb-monitor
-          command: |
-            docker build -t temp_build_lbm -f "java/lightBulbMonitor/Dockerfile" "java" --target build
-            docker create --name temp_container_lbm temp_build_lbm
-            docker cp temp_container_lbm:/app/lightBulbMonitor/target/metrics.zip /tmp/
-            docker rm temp_container_lbm
+      - extract-code-coverage:
+          docker-file-location: "java/lightBulbMonitor/Dockerfile" 
+          path-to-metrics: /app/lightBulbMonitor/target/metrics.zip      
       - store_artifacts:
           path: /tmp/metrics.zip
           destination: lightBulbMonitor-metrics.zip
@@ -129,7 +129,7 @@ jobs:
             docker push "${DOCKER_REPO_LIGHT_BULB_MONITOR}:latest"
       - push-metrics-to-git:
           file-name: "lightBulbMonitor-metrics.zip"
-          
+
   build-remote:
     machine:
       image: ubuntu-2204:current
