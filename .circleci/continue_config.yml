@@ -102,7 +102,7 @@ jobs:
       - checkout
       - extract-code-coverage:
           docker-file-location: "java/dbImporter/Dockerfile" 
-          path-to-metrics: /app/dbImporter/target/metrics.zip
+          path-to-metrics: /app/dbImporter/build/metrics.zip
       - build-docker:
           docker-repo: ${DOCKER_REPO_DB_IMPORTER}
           docker-file-location: "java/dbImporter/Dockerfile"
@@ -121,7 +121,7 @@ jobs:
       - checkout
       - extract-code-coverage:
           docker-file-location: "java/lightBulb/Dockerfile" 
-          path-to-metrics: /app/lightBulb/target/metrics.zip
+          path-to-metrics: /app/lightBulb/build/metrics.zip
       - store_artifacts:
           path: /tmp/metrics.zip
           destination: lightBulb-metrics.zip
@@ -140,7 +140,7 @@ jobs:
       - checkout
       - extract-code-coverage:
           docker-file-location: "java/lightBulbMonitor/Dockerfile" 
-          path-to-metrics: /app/lightBulbMonitor/target/metrics.zip      
+          path-to-metrics: /app/lightBulbMonitor/build/metrics.zip      
       - store_artifacts:
           path: /tmp/metrics.zip
           destination: lightBulbMonitor-metrics.zip
