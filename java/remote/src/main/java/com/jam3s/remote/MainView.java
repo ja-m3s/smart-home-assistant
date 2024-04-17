@@ -1,16 +1,12 @@
 package com.jam3s.remote;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -23,22 +19,21 @@ import com.vaadin.flow.router.Route;
 @Route(value = "")
 public class MainView extends HorizontalLayout {
 
+    private VerticalLayout refreshButtonDisplayVLayout = new VerticalLayout();
     private VerticalLayout lightBulbDisplayVLayout = new VerticalLayout();
-    private ScheduledExecutorService executorService;
     protected static final Logger LOG = LoggerFactory.getLogger(MainView.class);
 
-
     public MainView() {
-        executorService = Executors.newScheduledThreadPool(1);
 
         setMargin(true);
 
-        Runnable task = this::handleGetLightBulbStatus;
+        // Add a button to turn lights on/off.
+        Button refreshLightBulbList = new Button("Refresh");
+        refreshLightBulbList.addClickListener(d -> handleGetLightBulbStatus());
+        refreshButtonDisplayVLayout.add(refreshLightBulbList);
+        add(refreshButtonDisplayVLayout);
 
-        // Schedule the task to execute every 1 second
-        executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
-    
-        //Add the layout
+        //Add the layout where the light bulbs will go
         add(lightBulbDisplayVLayout);
     }
 
@@ -84,12 +79,5 @@ public class MainView extends HorizontalLayout {
         } catch (IOException | InterruptedException e) {
             Notification.show("Failed to toggle light bulb: " + e.getMessage());
         }
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        super.onDetach(detachEvent);
-        // Shutdown the executor service when the UI is detached
-        executorService.shutdown();
     }
 }
