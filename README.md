@@ -76,4 +76,4 @@ All configuration can be found within the helm folder Values.yaml files, or the 
 
 ## Credits: 
 
-I'd like to acknowledge James Heggs for the design of the project brief and Roxy Stafford for coming to me with this opportunity to demonstrate my skills.
+I'd like to acknowledge James Heggs for the Northcoders Cloud course and Roxy Stafford for coming to me with this opportunity to demonstrate my skills and RMing.
