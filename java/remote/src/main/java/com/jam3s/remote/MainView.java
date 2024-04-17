@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -47,25 +47,21 @@ public class MainView extends HorizontalLayout {
         RemoteApplication.getLightBulbStatus().forEach((key, value) -> {
 
             // Extracting values from JSON
-            String bulbStatus = value.optString("bulb_status");
+            String bulbStatus = value.optString("bulb_state");
             long timeTurnedOnMillis = value.optLong("time_turned_on");
             Instant timeTurnedOn = Instant.ofEpochMilli(timeTurnedOnMillis);
 
-            // Create TextFields
-            TextField lightBulbNameTextField = new TextField(key);
-            TextField bulbStatusTextField = new TextField(bulbStatus);
-            TextField timeTurnedOnTextField = new TextField(timeTurnedOn.toString());
-
-            // Make the TextFields read-only
-            bulbStatusTextField.setReadOnly(true); 
-            timeTurnedOnTextField.setReadOnly(true);
+            // Create NativeLabels
+            NativeLabel lightBulbNameNativeLabel = new NativeLabel(key);
+            NativeLabel bulbStatusNativeLabel = new NativeLabel(bulbStatus);
+            NativeLabel timeTurnedOnNativeLabel = new NativeLabel(timeTurnedOn.toString());
             
             // Add a button to turn lights on/off.
             Button toggleState = new Button("Toggle On/Off");
             toggleState.addClickListener(d -> handleToggleState(key));
             
             // Add the items to a HorizontalLayout
-            HorizontalLayout entryLayout = new HorizontalLayout(lightBulbNameTextField, bulbStatusTextField, timeTurnedOnTextField, toggleState);
+            HorizontalLayout entryLayout = new HorizontalLayout(lightBulbNameNativeLabel, bulbStatusNativeLabel, timeTurnedOnNativeLabel, toggleState);
             
             // Add the HorizontalLayout to the VerticalLayout
             lightBulbDisplayVLayout.add(entryLayout); 
