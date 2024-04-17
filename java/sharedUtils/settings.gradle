@@ -1,5 +1,1 @@
-pluginManagement {
-
-}
-
 rootProject.name = 'sharedUtils'

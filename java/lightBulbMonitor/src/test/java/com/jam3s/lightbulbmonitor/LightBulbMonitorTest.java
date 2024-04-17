@@ -5,7 +5,8 @@ import com.rabbitmq.client.Channel;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 
@@ -13,15 +14,26 @@ import static org.mockito.Mockito.*;
 
 public class LightBulbMonitorTest {
 
+    /**
+     * Mocked channel.
+     */
     @Mock
     private Channel channelMock;
 
+    /**
+     * Test setup.
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         SharedUtils.setChannel(channelMock);
     }
 
+    /**
+     * Test sendMessage
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @Test
     public void testSendMessage() throws IOException, InterruptedException {
         // Arrange

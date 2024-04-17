@@ -191,14 +191,14 @@ public final class LightBulbMonitor {
         while (true) {
             try {
                 channel.basicPublish(SharedUtils.getExchangeName(), "", null,
-                message.toString().getBytes(StandardCharsets.UTF_8));           
+                message.toString().getBytes(StandardCharsets.UTF_8));
                 break; // Exit the loop if basicPublish is successful
             } catch (IOException e) {
                 LOG.error("Error occurred while publishing to the queue. Attempting to reconnect to RabbitMQ...");
                 SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
                 channel = SharedUtils.getChannel(); // Get a new channel
             }
-        } 
+        }
         sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
         LOG.info("Sent '" + message + "'");
     }
