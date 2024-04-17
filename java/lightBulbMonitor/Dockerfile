@@ -1,18 +1,17 @@
 #Build the utility package
-FROM maven:3.9.6-eclipse-temurin-22 as utilsBuild
+FROM gradle:jdk-jammy as utilsBuild
 WORKDIR /app
 COPY sharedUtils sharedUtils
 WORKDIR /app/sharedUtils
-RUN mvn dependency:resolve
-RUN mvn clean package
+RUN ./gradlew :shadowJar
 
 #Then build the app
 FROM maven:3.9.6-eclipse-temurin-22 as build
 WORKDIR /app
 COPY lightBulbMonitor lightBulbMonitor
 WORKDIR /app/lightBulbMonitor
-COPY --from=utilsBuild /app/sharedUtils/target/sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
-RUN mvn install:install-file -Dfile=sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar -DgroupId=com.jam3s -DartifactId=sharedUtils -Dpackaging=jar -Dversion=0.0.1-SNAPSHOT
+COPY --from=utilsBuild /app/sharedUtils/build/libs/sharedUtils-0.0.1-SNAPSHOT-all.jar .
+RUN mvn install:install-file -Dfile=sharedUtils-0.0.1-SNAPSHOT-all.jar -DgroupId=com.jam3s -DartifactId=sharedUtils -Dpackaging=jar -Dversion=0.0.1-SNAPSHOT
 RUN mvn dependency:resolve
 RUN mvn clean verify test package site
 
