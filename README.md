@@ -69,8 +69,8 @@ All configuration can be found within the helm folder Values.yaml files, or the 
 
 ### Remote Cluster Deployment
 1. cd scripts
-2. ./build-images <<your registry>>
-3.  amend helm values.yaml and change registry to your <<your registry>> in Values.yaml
+2. ./build-images 'your registry'
+3.  amend helm values.yaml and change registry to your 'your registry' in Values.yaml
 4. point kubectl to K8S cluster
 5.  helm install "release-name" helm
 
