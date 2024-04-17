@@ -15,11 +15,11 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@PageTitle("Main")
+@PageTitle("Remote")
 @Route(value = "")
 public class MainView extends HorizontalLayout {
 
-    private VerticalLayout lightBulbDisplayVLayout; // Reference to the paragraph
+    private VerticalLayout lightBulbDisplayVLayout = new VerticalLayout();
     private ScheduledExecutorService executorService;
 
     public MainView() {
@@ -27,16 +27,15 @@ public class MainView extends HorizontalLayout {
 
         setMargin(true);
 
+        add(lightBulbDisplayVLayout);
+
         // Schedule the task to execute every 1 second
         executorService.scheduleAtFixedRate(this::handleGetLightBulbStatus, 0, 1, TimeUnit.SECONDS);
     }
 
     private void handleGetLightBulbStatus() {
         Notification.show("Getting light bulb status...");
-        if (lightBulbDisplayVLayout == null) {
-            lightBulbDisplayVLayout = new VerticalLayout(); // Use VerticalLayout to stack components vertically
-            add(lightBulbDisplayVLayout);
-        }
+        
         lightBulbDisplayVLayout.removeAll(); // Remove existing content before adding new content
     
         // Iterate over the entries in the HashMap
