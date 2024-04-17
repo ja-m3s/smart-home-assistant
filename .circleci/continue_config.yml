@@ -52,7 +52,7 @@ commands:
           command: |
             docker build -t temp_build -f " << parameters.docker-file-location >>" "java" --target build
             docker create --name temp_container temp_build
-            docker cp temp_container: << parameters.path-to-metrics >> /tmp/
+            docker cp temp_container:<< parameters.path-to-metrics >> /tmp/
             docker rm temp_container
 
 jobs:
