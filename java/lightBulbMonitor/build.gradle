@@ -39,6 +39,7 @@ description = 'lightBulbMonitor'
 
 java {
 	sourceCompatibility = '21'
+    targetCompatibility = '21'
 }
 
 publishing {
