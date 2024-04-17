@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Instant;
 
 import com.vaadin.flow.component.DetachEvent;
@@ -21,19 +25,25 @@ public class MainView extends HorizontalLayout {
 
     private VerticalLayout lightBulbDisplayVLayout = new VerticalLayout();
     private ScheduledExecutorService executorService;
+    protected static final Logger LOG = LoggerFactory.getLogger(MainView.class);
+
 
     public MainView() {
         executorService = Executors.newScheduledThreadPool(1);
 
         setMargin(true);
 
-        add(lightBulbDisplayVLayout);
+        Runnable task = this::handleGetLightBulbStatus;
 
         // Schedule the task to execute every 1 second
-        executorService.scheduleAtFixedRate(this::handleGetLightBulbStatus, 0, 1, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+    
+        //Add the layout
+        add(lightBulbDisplayVLayout);
     }
 
     private void handleGetLightBulbStatus() {
+        LOG.info("Getting light bulb status");
         Notification.show("Getting light bulb status...");
         
         lightBulbDisplayVLayout.removeAll(); // Remove existing content before adding new content
