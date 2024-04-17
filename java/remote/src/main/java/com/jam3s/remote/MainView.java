@@ -1,7 +1,9 @@
-package com.jam3s.remote;
-
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.NativeLabel;
@@ -16,49 +18,53 @@ import com.vaadin.flow.router.Route;
 @Route(value = "")
 public class MainView extends HorizontalLayout {
 
-    private Button getLightBulbStatus;
-    private VerticalLayout lightBulbStatusParagraph; // Reference to the paragraph
+    private VerticalLayout lightBulbDisplayVLayout; // Reference to the paragraph
+    private ScheduledExecutorService executorService;
 
     public MainView() {
-        getLightBulbStatus = new Button("Light bulb status");
-        getLightBulbStatus.addClickListener(e -> {
-            Notification.show("Getting light bulb status...");
-            if (lightBulbStatusParagraph == null) {
-                lightBulbStatusParagraph = new VerticalLayout(); // Use VerticalLayout to stack components vertically
-                add(lightBulbStatusParagraph);
-            }
-            lightBulbStatusParagraph.removeAll(); // Remove existing content before adding new content
-        
-            // Iterate over the entries in the HashMap
-            RemoteApplication.getLightBulbStatus().forEach((key, value) -> {
-                NativeLabel keyLabel = new NativeLabel(key); // Create a Label with the key
-                TextArea valueTextArea = new TextArea(); // Create a TextArea to display the message
-                valueTextArea.setValue(value.toString()); // Set the value of the TextArea
-                valueTextArea.setReadOnly(true); // Make the TextArea read-only
-                Button toggleState = new Button("Toggle On/Off");
-                toggleState.addClickListener(d -> {
-                    Notification.show("Toggling light bulb...");
-                    try {
-                        RemoteApplication.sendMessage(RemoteApplication.createTurnOnMessage(key));
-                    } catch (IOException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    } catch (InterruptedException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
-                });
-                // Add the Label and TextArea and Button to a HorizontalLayout
-                HorizontalLayout entryLayout = new HorizontalLayout(keyLabel, valueTextArea,toggleState);
-                lightBulbStatusParagraph.add(entryLayout); // Add the HorizontalLayout to the VerticalLayout
-            });
-        });
-        getLightBulbStatus.addClickShortcut(Key.ENTER);
+        executorService = Executors.newScheduledThreadPool(1);
 
         setMargin(true);
-        setVerticalComponentAlignment(Alignment.END, getLightBulbStatus);
 
-        add(getLightBulbStatus);
+        // Schedule the task to execute every 1 second
+        executorService.scheduleAtFixedRate(this::handleGetLightBulbStatus, 0, 1, TimeUnit.SECONDS);
     }
 
+    private void handleGetLightBulbStatus() {
+        Notification.show("Getting light bulb status...");
+        if (lightBulbDisplayVLayout == null) {
+            lightBulbDisplayVLayout = new VerticalLayout(); // Use VerticalLayout to stack components vertically
+            add(lightBulbDisplayVLayout);
+        }
+        lightBulbDisplayVLayout.removeAll(); // Remove existing content before adding new content
+    
+        // Iterate over the entries in the HashMap
+        RemoteApplication.getLightBulbStatus().forEach((key, value) -> {
+            NativeLabel keyLabel = new NativeLabel(key); // Create a Label with the key
+            TextArea valueTextArea = new TextArea(); // Create a TextArea to display the message
+            valueTextArea.setValue(value.toString()); // Set the value of the TextArea
+            valueTextArea.setReadOnly(true); // Make the TextArea read-only
+            Button toggleState = new Button("Toggle On/Off");
+            toggleState.addClickListener(d -> handleToggleState(key));
+            // Add the Label and TextArea and Button to a HorizontalLayout
+            HorizontalLayout entryLayout = new HorizontalLayout(keyLabel, valueTextArea, toggleState);
+            lightBulbDisplayVLayout.add(entryLayout); // Add the HorizontalLayout to the VerticalLayout
+        });
+    }
+
+    private void handleToggleState(String key) {
+        Notification.show("Toggling light bulb...");
+        try {
+            RemoteApplication.sendMessage(RemoteApplication.createTurnOnMessage(key));
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        super.onDetach(detachEvent);
+        // Shutdown the executor service when the UI is detached
+        executorService.shutdown();
+    }
 }
