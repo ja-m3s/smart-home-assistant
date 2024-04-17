@@ -13,6 +13,9 @@ import org.slf4j.Logger;
  */
 public class SharedUtilsTest {
 
+    /**
+     * Mocked logger.
+     */
     @Mock
     private Logger loggerMock;
 

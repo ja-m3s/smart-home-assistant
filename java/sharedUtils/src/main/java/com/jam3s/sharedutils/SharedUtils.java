@@ -8,8 +8,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import io.prometheus.metrics.exporter.httpserver.HTTPServer;
 
 /**
- * This class represents a DBImporter which consumes messages from RabbitMQ
- * and inserts them into a PostgreSQL database.
+ * This class represents a selection of common functions used by the Java apps.
  */
 public final class SharedUtils {
     /**

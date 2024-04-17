@@ -3,15 +3,14 @@ FROM maven:3.9.6-eclipse-temurin-22 as utilsBuild
 WORKDIR /app
 COPY sharedUtils sharedUtils
 WORKDIR /app/sharedUtils
-RUN mvn dependency:resolve
-RUN mvn clean package
+RUN ./gradlew :jar
 
 #Then build the app
 FROM gradle:jdk-jammy as build
 WORKDIR /app
 COPY remote remote
 WORKDIR /app/remote
-COPY --from=utilsBuild /app/sharedUtils/target/sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar .
+COPY --from=utilsBuild /app/sharedUtils/build/libs/sharedUtils-0.0.1-SNAPSHOT.jar .
 RUN ./gradlew :war
 
 # Create production image
