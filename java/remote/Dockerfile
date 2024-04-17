@@ -1,5 +1,5 @@
 #Build the utility package
-FROM maven:3.9.6-eclipse-temurin-22 as utilsBuild
+FROM gradle:jdk-jammy as build
 WORKDIR /app
 COPY sharedUtils sharedUtils
 WORKDIR /app/sharedUtils
