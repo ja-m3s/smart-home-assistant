@@ -4,7 +4,7 @@ FROM gradle:jdk-jammy as build
 WORKDIR /app
 COPY sharedUtils sharedUtils
 WORKDIR /app/sharedUtils
-RUN ./gradlew :clean :check :javadoc :jar
+RUN ./gradlew :check :javadoc
 # Zip app metrics
 RUN apt update && apt install -y zip
 WORKDIR /app/sharedUtils/build/
