@@ -8,6 +8,8 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'checkstyle'
+    id 'jacoco'
+    id "com.github.spotbugs" version "6.0.12"
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
@@ -38,7 +40,6 @@ java {
 	sourceCompatibility = '21'
 }
 
-
 publishing {
     publications {
         maven(MavenPublication) {
@@ -53,4 +54,18 @@ tasks.withType(JavaCompile) {
 
 tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
+}
+
+spotbugs {
+    ignoreFailures = true // Ignore failures, let the build continue
+    reportsDir = file("$buildDir/reports/spotbugs")
+}
+
+shadowJar {
+  minimize()
+}
+
+tasks.withType(AbstractArchiveTask) {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
 }
