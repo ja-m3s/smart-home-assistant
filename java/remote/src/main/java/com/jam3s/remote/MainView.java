@@ -17,7 +17,7 @@ import com.vaadin.flow.router.Route;
 
 @PageTitle("Remote")
 @Route(value = "")
-public class MainView extends HorizontalLayout {
+public class MainView extends VerticalLayout {
 
     private VerticalLayout refreshButtonDisplayVLayout = new VerticalLayout();
     private VerticalLayout lightBulbDisplayVLayout = new VerticalLayout();
@@ -31,10 +31,9 @@ public class MainView extends HorizontalLayout {
         Button refreshLightBulbList = new Button("Refresh");
         refreshLightBulbList.addClickListener(d -> handleGetLightBulbStatus());
         refreshButtonDisplayVLayout.add(refreshLightBulbList);
-        add(refreshButtonDisplayVLayout);
 
-        //Add the layout where the light bulbs will go
-        add(lightBulbDisplayVLayout);
+        add(refreshButtonDisplayVLayout,lightBulbDisplayVLayout);
+
     }
 
     private void handleGetLightBulbStatus() {
