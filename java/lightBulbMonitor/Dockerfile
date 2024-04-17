@@ -17,5 +17,5 @@ RUN zip -r metrics.zip docs
 
 # Create production image
 FROM eclipse-temurin:22_36-jre-alpine as production
-COPY --from=build /app/lightBulbMonitor/build/lightBulbMonitor-0.0.1-SNAPSHOT-all.jar /opt/app/app.jar
+COPY --from=build /app/lightBulbMonitor/build/libs/lightBulbMonitor-0.0.1-SNAPSHOT-all.jar /opt/app/app.jar
 CMD ["java", "-jar", "/opt/app/app.jar"]
