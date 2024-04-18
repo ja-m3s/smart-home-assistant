@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
+
 import org.json.JSONObject;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
@@ -64,7 +65,7 @@ public class RemoteApplication implements CommandLineRunner {
     /**
      * Logger.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(RemoteApplication.class);
+    //private static final Logger LOG = LoggerFactory.getLogger(RemoteApplication.class);
 
     /**
      * Counter for tracking the number of received messages.
@@ -98,24 +99,24 @@ public class RemoteApplication implements CommandLineRunner {
         try {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-                LOG.info("Received: {}", message);
+                //LOG.info("Received: {}", message);
                 receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
                 // Check message is from a lightbulb, if not, disregard it.
                 String originHostname = msg.getString("hostname");
-                LOG.info("Message from: {}", originHostname);
+                //LOG.info("Message from: {}", originHostname);
                 if (!originHostname.matches(LIGHT_BULB_HOSTNAME_REGEX)) {
-                    LOG.info("originHostname is not a light bulb. Disregarding message.");
+                    //LOG.info("originHostname is not a light bulb. Disregarding message.");
                     return;
                 }
-                LOG.info("originHostname is a light bulb. Processing.");
+                //LOG.info("originHostname is a light bulb. Processing.");
 
                 LIGHT_BULB_HASH_MAP.put(originHostname, msg);
             };
 
-            LOG.info("Starting to consume: " + QUEUE_NAME);
+           // LOG.info("Starting to consume: " + QUEUE_NAME);
             Channel channel = SharedUtils.getChannel();
 
             while (true) {
@@ -124,7 +125,7 @@ public class RemoteApplication implements CommandLineRunner {
                     });
                     break; // Exit the loop if basicConsume is successful
                 } catch (IOException e) {
-                    LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
+                  //  LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
                     SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
                     channel = SharedUtils.getChannel(); // Get a new channel
                 }
@@ -148,13 +149,13 @@ public class RemoteApplication implements CommandLineRunner {
                         message.toString().getBytes(StandardCharsets.UTF_8));
                 break; // Exit the loop if basicPublish is successful
             } catch (IOException e) {
-                LOG.error("Error occurred while publishing to the queue. Attempting to reconnect to RabbitMQ...");
+                //LOG.error("Error occurred while publishing to the queue. Attempting to reconnect to RabbitMQ...");
                 SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
                 channel = SharedUtils.getChannel(); // Get a new channel
             }
         }
         sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
-        LOG.info("Sent '{}'", message);
+        //LOG.info("Sent '{}'", message);
     }
 
     /**
@@ -186,7 +187,7 @@ public class RemoteApplication implements CommandLineRunner {
         msg.put("target", target);
         msg.put("sent_timestamp", System.currentTimeMillis());
 
-        LOG.info("JSON message: {}", msg);
+        //LOG.info("JSON message: {}", msg);
 
         return msg;
     }
@@ -204,7 +205,7 @@ public class RemoteApplication implements CommandLineRunner {
         try {
             SharedUtils.setupQueue(QUEUE_NAME);
         } catch (IOException e) {
-            LOG.info(e.toString());
+            //LOG.info(e.toString());
         }
         consumeQueue();
     }

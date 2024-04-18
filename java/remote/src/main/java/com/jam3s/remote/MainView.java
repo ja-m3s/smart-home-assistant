@@ -19,11 +19,6 @@ public class MainView extends VerticalLayout {
     private final VerticalLayout lightBulbDisplayVLayout = new VerticalLayout();
 
     /**
-     * Logger.
-     */
-    protected static final Logger LOG = LoggerFactory.getLogger(MainView.class);
-
-    /**
      * Main View.
      */
     public MainView() {
@@ -41,7 +36,7 @@ public class MainView extends VerticalLayout {
     }
 
     private void handleGetLightBulbStatus() {
-        LOG.info("Getting light bulb status");
+        //LOG.info("Getting light bulb status");
         Notification.show("Getting light bulb status...");
         lightBulbDisplayVLayout.removeAll(); // Remove existing content before adding new content
         // Iterate over the entries in the HashMap

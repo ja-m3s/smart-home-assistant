@@ -20,6 +20,10 @@ configurations {
 	}
 }
 
+configurations.implementation {
+	exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+}
+
 repositories {
 	maven { url = "https://maven.vaadin.com/vaadin-addons" }
 }
