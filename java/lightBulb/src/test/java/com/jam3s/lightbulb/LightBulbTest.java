@@ -1,20 +1,19 @@
 package com.jam3s.lightbulb;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.jam3s.lightbulb.LightBulb.LightBulbState;
 
 public class LightBulbTest {
 
-    private LightBulb lightBulb;
+    private static LightBulb lightBulb;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         lightBulb = new LightBulb();
     }
 

@@ -1,10 +1,9 @@
 package com.jam3s.lightbulb;
 
-import org.junit.Test;
-
 import com.jam3s.sharedutils.SharedUtils;
 
-import static org.junit.Assert.assertThrows;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * The LightBulbMonitorTest class contains unit tests for the LightBulbMonitor
