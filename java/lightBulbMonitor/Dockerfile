@@ -5,6 +5,7 @@ COPY sharedUtils sharedUtils
 COPY lightBulbMonitor lightBulbMonitor
 COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
+COPY config config
 RUN gradle sharedUtils:shadowJar
 RUN gradle lightBulbMonitor:check test shadowJar jacocoReport javadoc
 

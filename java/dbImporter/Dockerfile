@@ -5,6 +5,7 @@ COPY sharedUtils sharedUtils
 COPY dbImporter dbImporter
 COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
+COPY config config
 
 RUN gradle sharedUtils:shadowJar dbImporter:check test shadowJar jacocoReport javadoc
 

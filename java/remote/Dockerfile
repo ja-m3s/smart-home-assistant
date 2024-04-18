@@ -6,7 +6,7 @@ COPY sharedUtils sharedUtils
 COPY remote remote
 COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
-
+COPY config config
 RUN gradle sharedUtils:shadowJar
 RUN gradle remote:check test shadowJar jacocoReport javadoc
 

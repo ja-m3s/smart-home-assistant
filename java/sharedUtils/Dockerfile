@@ -2,7 +2,10 @@
 #This is only used to extract the metrics in circleci
 FROM gradle:jdk-jammy as build
 WORKDIR /app
-COPY . .
+COPY sharedUtils sharedUtils
+COPY buildSrc buildSrc
+COPY config config
+COPY settings.gradle settings.gradle
 RUN gradle sharedUtils:check test shadowJar jacocoReport javadoc
 # Zip app metrics
 RUN apt update && apt install -y zip
