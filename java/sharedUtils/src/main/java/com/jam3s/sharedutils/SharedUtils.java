@@ -163,7 +163,14 @@ public final class SharedUtils {
      * @return the channel.
      */
     public static Channel getChannel() {
-        return channel;
+        // Assuming Channel implements Cloneable interface
+        try {
+            return (Channel) channel.clone(); // Clone the existing channel object
+        } catch (CloneNotSupportedException e) {
+            // Handle the exception appropriately
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
