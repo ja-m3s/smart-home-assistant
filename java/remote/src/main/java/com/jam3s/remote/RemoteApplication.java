@@ -197,7 +197,7 @@ public final class RemoteApplication implements CommandLineRunner {
     }
 
     @Override
-    public static void run(final String... args) {
+    public void run(final String... args) {
         SharedUtils.setupRabbitMQConnection();
         hostname = SharedUtils.getEnvVar("HOSTNAME");
         System.out.println(hostname);
