@@ -203,6 +203,7 @@ public final class RemoteApplication implements CommandLineRunner {
         System.out.println(hostname);
         setupMetricServer();
         SharedUtils.startMetricsServer();
+
         try {
             SharedUtils.setupQueue(QUEUE_NAME);
         } catch (IOException e) {
