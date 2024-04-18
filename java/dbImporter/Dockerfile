@@ -6,14 +6,15 @@ COPY dbImporter dbImporter
 COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
 COPY config config
-
-RUN gradle sharedUtils:shadowJar dbImporter:check test shadowJar jacocoReport javadoc
+RUN gradle sharedUtils:check test shadowJar jacocoReport javadoc
+RUN gradle dbImporter:check test shadowJar jacocoReport javadoc
 
 # Zip app metrics
 RUN apt update && apt install -y zip
-WORKDIR /app/dbImporter/build/
-RUN zip -r metrics.zip reports
-RUN zip -r metrics.zip docs
+RUN zip -r metrics.zip sharedUtils/build/reports
+RUN zip -r metrics.zip sharedUtils/build/docs
+RUN zip -r metrics.zip dbImporter/build/reports
+RUN zip -r metrics.zip dbImporter/build/docs
 
 # Create production image
 FROM eclipse-temurin:22_36-jre-alpine as production

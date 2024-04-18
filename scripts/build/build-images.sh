@@ -22,7 +22,6 @@ REMOTE_IMAGE="${REPO}/sma-remote:latest"
 docker build -t "${REMOTE_IMAGE}" -f "${SCRIPT_DIR}/../../java/remote/Dockerfile" "${SCRIPT_DIR}/../../java/" 
 docker push "${REMOTE_IMAGE}"
 
-exit
 DB_IMPORTER_IMAGE="${REPO}/sma-db-importer:latest"
 docker build -t "${DB_IMPORTER_IMAGE}" -f "${SCRIPT_DIR}/../../java/dbImporter/Dockerfile" "${SCRIPT_DIR}/../../java/" 
 docker push "${DB_IMPORTER_IMAGE}"
