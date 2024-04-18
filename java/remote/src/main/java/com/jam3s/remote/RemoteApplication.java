@@ -10,8 +10,6 @@ import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
 
 import com.rabbitmq.client.Channel;
@@ -20,7 +18,7 @@ import com.rabbitmq.client.DeliverCallback;
 @SpringBootApplication
 public class RemoteApplication implements CommandLineRunner {
 
-	protected static HashMap<String, JSONObject> lightBulbHashMap = new HashMap<>();
+	protected static final HashMap<String, JSONObject> lightBulbHashMap = new HashMap<>();
 	
 	/**
      * Represents the name of the queue used for monitoring light bulbs.
@@ -87,13 +85,13 @@ public class RemoteApplication implements CommandLineRunner {
 		SpringApplication.run(RemoteApplication.class, args);
 	}
 
-	    /**
+    /**
      * Consumes messages from the RabbitMQ queue.
      */
     protected static void consumeQueue() {
         try {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String message = new String(delivery.getBody(), "UTF-8");
+                String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
                 LOG.info("Received: {}", message);
                 receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
                 // Make json object from message
@@ -135,10 +133,9 @@ public class RemoteApplication implements CommandLineRunner {
      * Sends a message to RabbitMQ.
      *
      * @param message The message to be sent.
-     * @throws IOException          if an I/O error occurs.
      * @throws InterruptedException if the thread is interrupted.
      */
-    protected static void sendMessage(final JSONObject message) throws IOException, InterruptedException {
+    protected static void sendMessage(final JSONObject message) {
         Channel channel = SharedUtils.getChannel();
         while (true) {
             try {
@@ -194,7 +191,7 @@ public class RemoteApplication implements CommandLineRunner {
 	}
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         SharedUtils.setupRabbitMQConnection();
 		hostname = SharedUtils.getEnvVar("HOSTNAME");
 		System.out.println(hostname);
