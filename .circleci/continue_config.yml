@@ -83,6 +83,9 @@ commands:
 
 jobs:
   build-shared-utils:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
     steps:
       - checkout
       - extract-code-coverage:
@@ -97,6 +100,7 @@ jobs:
   build-db-importer:
     machine:
       image: ubuntu-2204:current
+      docker_layer_caching: true
     steps:
       - checkout
       - extract-code-coverage:
@@ -116,6 +120,7 @@ jobs:
   build-light-bulb:
     machine:
       image: ubuntu-2204:current
+      docker_layer_caching: true
     steps:
       - checkout
       - extract-code-coverage:
@@ -135,6 +140,7 @@ jobs:
   build-light-bulb-monitor:
     machine:
       image: ubuntu-2204:current
+      docker_layer_caching: true
     steps:
       - checkout
       - extract-code-coverage:
@@ -154,6 +160,7 @@ jobs:
   build-remote:
     machine:
       image: ubuntu-2204:current
+      docker_layer_caching: true
     steps:
       - checkout
       - build-docker:
@@ -165,8 +172,6 @@ jobs:
 workflows:
   workflow-build-shared-utils:
     when: << pipeline.parameters.param-build-shared-utils >>
-    machine:
-      image: ubuntu-2204:current
     jobs:
       - build-shared-utils:
           context:
