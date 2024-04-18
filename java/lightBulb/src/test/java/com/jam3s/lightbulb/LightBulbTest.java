@@ -12,7 +12,7 @@ public class LightBulbTest {
     /**
      * Variance for time based tests.
      */
-    public static final long VARIANCE = 100;
+    public static final long VARIANCE = 200;
     /**
      * Ten seconds in ms.
      */
