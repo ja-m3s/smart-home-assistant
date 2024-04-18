@@ -1,13 +1,10 @@
 plugins {
     id 'groovy-gradle-plugin'
+    id("com.github.spotbugs") version "6.0.12"
 }
 
 repositories {
     gradlePluginPortal() // so that external plugins can be resolved in dependencies section
-}
-
-dependencies {
-    implementation 'com.github.spotbugs:spotbugs-gradle-plugin:5.2.1'
 }
 
 tasks.named('test', Test) {
