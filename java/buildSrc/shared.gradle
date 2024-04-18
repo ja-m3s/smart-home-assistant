@@ -2,6 +2,12 @@ repositories {
     mavenCentral()
 }
 
+plugins {
+    id 'checkstyle'
+    id 'jacoco'
+    id "com.github.spotbugs" version "6.0.12"
+}
+
 group = 'com.jam3s'
 version = '0.0.1-SNAPSHOT'
 
