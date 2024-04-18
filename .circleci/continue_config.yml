@@ -5,9 +5,6 @@
 # Author: ja-m3s
 version: 2.1
 parameters:
-  param-build-shared-utils:
-    type: boolean
-    default: false
   param-build-db-importer:
     type: boolean
     default: false
@@ -20,6 +17,9 @@ parameters:
   param-build-remote:
     type: boolean
     default: false
+  param-store-docs-in-git:
+    type: boolean
+    default: true
 
 executors:
   build:
@@ -65,6 +65,15 @@ jobs:
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "<< parameters.docker-repo >>:latest"
 
+  push-docs-to-git:
+    executor: build
+    steps:
+      - run:
+        name: 'Push Docs to Git'
+        command: |
+          git add docs/*;
+          git push;
+
 workflows:
 
   workflow-build-db-importer:
@@ -108,5 +117,12 @@ workflows:
           docker-file-location: "java/remote/Dockerfile"
           path-to-metrics-inside-docker: /app/remote/build/metrics.zip
           metrics-zip-file-name: metrics-remote.zip
+          context:
+            - org-context-smart-home
+
+  workflow-store-docs-in-git:
+    when: << pipeline.parameters.param-store-docs-in-git >>
+    jobs:
+      - push-docs-to-git:
           context:
             - org-context-smart-home

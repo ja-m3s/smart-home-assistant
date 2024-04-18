@@ -14,17 +14,14 @@ workflows:
       - path-filtering/filter:
           base-revision: main
           mapping: |
-            java/sharedUtils/.* param-build-shared-utils true
             java/dbImporter/.* param-build-db-importer true
             java/lightBulb/.* param-build-light-bulb true
             java/lightBulbMonitor/.* param-build-light-bulb-monitor true
             java/remote/.* param-build-remote true
-            .circleci/.* param-build-shared-utils true
             .circleci/.* param-build-db-importer true
             .circleci/.* param-build-light-bulb true
             .circleci/.* param-build-light-bulb-monitor true
             .circleci/.* param-build-remote true
-            java/buildSrc/.* param-build-shared-utils true
             java/buildSrc/.* param-build-db-importer true
             java/buildSrc/.* param-build-light-bulb true
             java/buildSrc/.* param-build-light-bulb-monitor true
