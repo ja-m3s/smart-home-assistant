@@ -16,6 +16,6 @@ public class LightBulbMonitorTest {
     @Test
     public void testSendMessage() throws IOException, InterruptedException {
         
-        assertEquals(2, Integer.sum(1, 1);
+        assertEquals(2, Integer.sum(1, 1));
     }
 }
