@@ -60,6 +60,7 @@ jobs:
           command: |
             git pull
             ls -lah
+            ls -lah docs
             git add docs/<< parameters.metrics-zip-file-name >>
             git commit 'added << parameters.metrics-zip-file-name >>'
             git push
