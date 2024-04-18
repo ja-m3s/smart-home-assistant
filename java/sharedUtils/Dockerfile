@@ -5,8 +5,6 @@ WORKDIR /app
 COPY sharedUtils sharedUtils
 COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
-
-WORKDIR /app/sharedUtils
 RUN gradle :check :shadowJar :test :jacocoReport :javadoc
 # Zip app metrics
 RUN apt update && apt install -y zip
