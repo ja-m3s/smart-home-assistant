@@ -8,7 +8,7 @@ COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
 COPY config config
 RUN gradle sharedUtils:check test shadowJar jacocoReport javadoc
-RUN gradle remote:test shadowJar jacocoReport javadoc
+RUN gradle remote:test war jacocoReport javadoc
 
 RUN apt update && apt install -y zip
 RUN zip -r metrics.zip sharedUtils/build/reports \
