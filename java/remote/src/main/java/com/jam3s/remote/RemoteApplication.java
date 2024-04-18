@@ -1,8 +1,6 @@
 package com.jam3s.remote;
 
 import com.jam3s.sharedutils.SharedUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
