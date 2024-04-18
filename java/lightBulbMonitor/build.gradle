@@ -7,6 +7,14 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.jam3s.lightbulbmonitor.LightBulbMonitor'
+        )
+    }
+}
+
 dependencies {
     implementation 'com.rabbitmq:amqp-client:5.21.0'
     implementation 'org.slf4j:slf4j-api:2.0.13'
@@ -21,14 +29,6 @@ dependencies {
     implementation files('../sharedUtils/build/libs/sharedUtils-0.0.1-SNAPSHOT-all.jar')
 }
 
-description = 'lightBulb'
-
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'com.jam3s.lightbulb.LightBulbController'
-        )
-    }
-}
+description = 'lightBulbMonitor'
 
 apply from: rootProject.file('buildSrc/shared.gradle')
