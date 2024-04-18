@@ -6,10 +6,8 @@ COPY dbImporter dbImporter
 COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
 
-WORKDIR /app/sharedUtils
-RUN gradle :shadowJar
-WORKDIR /app/dbImporter
-RUN gradle :test :shadowJar :jacocoReport :javadoc
+RUN gradle sharedUtils:shadowJar
+RUN gradle dbImporter:test shadowJar jacocoReport javadoc
 
 # Zip app metrics
 RUN apt update && apt install -y zip
