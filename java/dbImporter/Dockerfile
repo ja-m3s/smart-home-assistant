@@ -1,11 +1,11 @@
 #Build the utility package
 FROM gradle:jdk-jammy as build
 WORKDIR /app
-COPY sharedUtils sharedUtils
-COPY dbImporter dbImporter
-COPY buildSrc buildSrc
-COPY settings.gradle settings.gradle
-COPY config config
+COPY sharedUtils .
+COPY dbImporter .
+COPY buildSrc .
+COPY settings.gradle .
+COPY config .
 RUN gradle sharedUtils:check test shadowJar jacocoReport javadoc
 RUN gradle dbImporter:check test shadowJar jacocoReport javadoc
 
@@ -18,5 +18,6 @@ RUN zip -r metrics.zip sharedUtils/build/reports \
 
 # Create production image
 FROM eclipse-temurin:22_36-jre-alpine as production
-COPY --from=build /app/dbImporter/build/libs/dbImporter-0.0.1-SNAPSHOT-all.jar /opt/app/app.jar
-CMD ["java", "-jar", "/opt/app/app.jar"]
+WORKDIR /opt/app
+COPY --from=build /app/dbImporter/build/libs/dbImporter-0.0.1-SNAPSHOT-all.jar app.jar
+CMD ["java", "-jar", "app.jar"]
