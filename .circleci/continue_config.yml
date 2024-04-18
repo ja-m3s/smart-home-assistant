@@ -38,6 +38,7 @@ commands:
             mv /tmp/metrics.zip << parameters.doc-location >><< parameters.file-name >>
             git add << parameters.doc-location >><< parameters.file-name >>
             git commit -m "added << parameters.doc-location >><< parameters.file-name >>"
+            git push
 
   extract-code-coverage:
     description: "Extract Code Coverage from the build"
