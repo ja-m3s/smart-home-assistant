@@ -41,7 +41,7 @@ public final class LightBulbController {
     /**
      * Represents the current state of the light bulb.
      */
-    private static LightBulb lightBulb = new LightBulb();;
+    private static final LightBulb lightBulb = new LightBulb();;
 
     /**
      * The hostname of the current environment.

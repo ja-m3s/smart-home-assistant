@@ -48,15 +48,4 @@ dependencies {
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
 }
 
-
-dependencyManagement {
-	imports {
-		mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
-	}
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
 tasks.compileJava.dependsOn ':sharedUtils:shadowJar'

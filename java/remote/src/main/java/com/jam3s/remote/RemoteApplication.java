@@ -94,14 +94,14 @@ public class RemoteApplication implements CommandLineRunner {
         try {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), "UTF-8");
-                LOG.info("Received: " + message);
+                LOG.info("Received: {}", message);
                 receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
                 // Make json object from message
                 JSONObject msg = new JSONObject(message);
 
                 // Check message is from a lightbulb, if not, disregard it.
                 String originHostname = msg.getString("hostname");
-                LOG.info("Message from: " + originHostname);
+                LOG.info("Message from: {}", originHostname);
                 if (!originHostname.matches(LIGHT_BULB_HOSTNAME_REGEX)) {
                     LOG.info("originHostname is not a light bulb. Disregarding message.");
                     return;
@@ -152,7 +152,7 @@ public class RemoteApplication implements CommandLineRunner {
             }
         } 
         sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
-        LOG.info("Sent '" + message + "'");
+        LOG.info("Sent '{}'", message);
     }
 
 	    /**
@@ -184,7 +184,7 @@ public class RemoteApplication implements CommandLineRunner {
         msg.put("target", target);
         msg.put("sent_timestamp", System.currentTimeMillis());
 
-        LOG.info("JSON message: " + msg);
+        LOG.info("JSON message: {}", msg);
 
         return msg;
     }
@@ -203,7 +203,7 @@ public class RemoteApplication implements CommandLineRunner {
 		try {
 			SharedUtils.setupQueue(QUEUE_NAME);
 		} catch (IOException e) {
-			e.printStackTrace();
+            LOG.info(e.toString());
 		}
         consumeQueue();
     }

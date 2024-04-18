@@ -120,7 +120,7 @@ public final class SharedUtils {
                         .port(METRICS_SERVER_PORT)
                         .buildAndStart();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.info(e.toString());
             }
         });
         serverThread.start();

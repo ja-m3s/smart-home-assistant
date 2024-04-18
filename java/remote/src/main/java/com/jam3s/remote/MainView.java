@@ -19,8 +19,7 @@ import com.vaadin.flow.router.Route;
 @Route(value = "")
 public class MainView extends VerticalLayout {
 
-    private VerticalLayout refreshButtonDisplayVLayout = new VerticalLayout();
-    private VerticalLayout lightBulbDisplayVLayout = new VerticalLayout();
+    private final VerticalLayout lightBulbDisplayVLayout = new VerticalLayout();
     protected static final Logger LOG = LoggerFactory.getLogger(MainView.class);
 
     public MainView() {
@@ -30,6 +29,7 @@ public class MainView extends VerticalLayout {
         // Add a button to turn lights on/off.
         Button refreshLightBulbList = new Button("Refresh");
         refreshLightBulbList.addClickListener(d -> handleGetLightBulbStatus());
+        VerticalLayout refreshButtonDisplayVLayout = new VerticalLayout();
         refreshButtonDisplayVLayout.add(refreshLightBulbList);
 
         add(refreshButtonDisplayVLayout,lightBulbDisplayVLayout);

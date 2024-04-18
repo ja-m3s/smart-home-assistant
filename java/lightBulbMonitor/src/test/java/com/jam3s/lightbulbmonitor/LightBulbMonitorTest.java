@@ -9,11 +9,9 @@ public class LightBulbMonitorTest {
 
     /**
      * Test sendMessage.
-     * @throws IOException
-     * @throws InterruptedException
      */
     @Test
-    public void testSendMessage() throws IOException, InterruptedException {
+    public void testSendMessage()  {
         //NYI
         assertEquals(2, Integer.sum(1, 1));
     }
