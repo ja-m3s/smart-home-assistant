@@ -33,7 +33,6 @@ ext {
 }
 
 dependencies {
-    implementation group: 'org.json', name: 'json', version: '20240303'
 	implementation 'org.springframework.boot:spring-boot-starter-tomcat'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework.boot:spring-boot-starter-web'

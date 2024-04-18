@@ -6,8 +6,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class RemoteApplicationTests {
 
+	/**
+	 * Dummy Test.
+	 */
 	@Test
-	void contextLoads() {
+	public void testDummy() {
+		assertEquals(1, 1);
 	}
 
 }
