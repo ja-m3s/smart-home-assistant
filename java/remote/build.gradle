@@ -38,7 +38,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'com.vaadin:vaadin-spring-boot-starter'
-	implementation files('sharedUtils-0.0.1-SNAPSHOT-all.jar')
+    implementation files('../sharedUtils/build/libs/sharedUtils-0.0.1-SNAPSHOT-all.jar')
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	annotationProcessor 'org.projectlombok:lombok'
