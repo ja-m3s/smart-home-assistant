@@ -21,6 +21,12 @@ parameters:
     type: boolean
     default: false
 
+executors:
+  build:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
+
 commands:
   push-metrics-to-git:
     description: "Send Metrics to git"
@@ -83,9 +89,7 @@ commands:
 
 jobs:
   build-shared-utils:
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
+    executor: build
     steps:
       - checkout
       - extract-code-coverage:
@@ -98,9 +102,7 @@ jobs:
           file-name: "sharedUtils-metrics.zip"
 
   build-db-importer:
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
+    executor: build
     steps:
       - checkout
       - extract-code-coverage:
@@ -118,9 +120,7 @@ jobs:
           file-name: "dbImporter-metrics.zip"
 
   build-light-bulb:
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
+    executor: build
     steps:
       - checkout
       - extract-code-coverage:
@@ -138,9 +138,7 @@ jobs:
           file-name: "lightBulb-metrics.zip"
 
   build-light-bulb-monitor:
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
+    executor: build
     steps:
       - checkout
       - extract-code-coverage:
@@ -158,9 +156,7 @@ jobs:
           file-name: "lightBulbMonitor-metrics.zip"
 
   build-remote:
-    machine:
-      image: ubuntu-2204:current
-      docker_layer_caching: true
+    executor: build
     steps:
       - checkout
       - build-docker:
