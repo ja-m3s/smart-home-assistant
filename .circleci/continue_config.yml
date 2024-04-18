@@ -56,6 +56,13 @@ jobs:
           path: docs/<< parameters.metrics-zip-file-name >>
           destination: << parameters.metrics-zip-file-name >>
       - run:
+          name: 'Push to git'
+          command: |
+            git pull
+            git add docs/<< parameters.metrics-zip-file-name >>
+            git commit 'added << parameters.metrics-zip-file-name >>'
+            git push
+      - run:
           name: 'Build Docker image'
           command: |
             docker build -t "<< parameters.docker-repo >>:latest" -f "<< parameters.docker-file-location >>" "java"
@@ -64,17 +71,6 @@ jobs:
           command: |
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "<< parameters.docker-repo >>:latest"
-
-  push-docs-to-git:
-    executor: build
-    steps:
-      - run:
-          name: 'Push Docs to Git'
-          command: |
-            ls -lah
-            pwd
-            git add docs/*;
-            git push;
 
 workflows:
 
@@ -119,12 +115,5 @@ workflows:
           docker-file-location: "java/remote/Dockerfile"
           path-to-metrics-inside-docker: /app/remote/build/metrics.zip
           metrics-zip-file-name: metrics-remote.zip
-          context:
-            - org-context-smart-home
-
-  workflow-store-docs-in-git:
-    when: << pipeline.parameters.param-store-docs-in-git >>
-    jobs:
-      - push-docs-to-git:
           context:
             - org-context-smart-home
