@@ -69,10 +69,10 @@ jobs:
     executor: build
     steps:
       - run:
-        name: 'Push Docs to Git'
-        command: |
-          git add docs/*;
-          git push;
+          name: 'Push Docs to Git'
+          command: |
+            git add docs/*;
+            git push;
 
 workflows:
 
