@@ -27,8 +27,8 @@ workflows:
             .circleci/.* param-build-light-bulb true
             .circleci/.* param-build-light-bulb-monitor true
             .circleci/.* param-build-remote true
-            java/buildSrc/* param-build-shared-utils true
-            java/buildSrc/* param-build-db-importer true
-            java/buildSrc/* param-build-light-bulb true
-            java/buildSrc/* param-build-light-bulb-monitor true
-            java/buildSrc/* param-build-remote true
+            java/buildSrc/.* param-build-shared-utils true
+            java/buildSrc/.* param-build-db-importer true
+            java/buildSrc/.* param-build-light-bulb true
+            java/buildSrc/.* param-build-light-bulb-monitor true
+            java/buildSrc/.* param-build-remote true
