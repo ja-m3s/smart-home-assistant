@@ -2,22 +2,12 @@ package com.jam3s.sharedutils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for the SharedUtils class.
  */
 public class SharedUtilsTest {
-
-    /**
-     * Mocked logger.
-     */
-    @Mock
-    private Logger loggerMock;
-
 
     /**
      * Test for the getExchangeName method.
