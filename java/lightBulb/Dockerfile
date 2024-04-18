@@ -6,7 +6,7 @@ COPY lightBulb lightBulb
 COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
 RUN gradle sharedUtils:shadowJar
-RUN gradle lightBulb:test shadowJar jacocoReport javadoc
+RUN gradle lightBulb:check test shadowJar jacocoReport javadoc
 
 # Zip app metrics
 RUN apt update && apt install -y zip
