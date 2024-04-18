@@ -36,12 +36,12 @@ public final class LightBulbController {
     /**
      * Regular expression pattern for matching hostnames of light bulb monitors.
      */
-    protected static final String LIGHT_BULB_MONITOR_HOSTNAME_REGEX = "light-bulb-monitor-.+";
+    private static final String LIGHT_BULB_MONITOR_HOSTNAME_REGEX = "light-bulb-monitor-.+";
 
     /**
      * Represents the current state of the light bulb.
      */
-    private static final LightBulb lightBulb = new LightBulb();;
+    private static final LightBulb LIGHT_BULB = new LightBulb();;
 
     /**
      * The hostname of the current environment.
@@ -170,9 +170,9 @@ public final class LightBulbController {
     private static JSONObject createMessage() {
         JSONObject msg = new JSONObject();
         msg.put("hostname", hostname);
-        msg.put("bulb_state", lightBulb.getState());
+        msg.put("bulb_state", LIGHT_BULB.getState());
         msg.put("sent_timestamp", System.currentTimeMillis());
-        msg.put("time_turned_on", lightBulb.getTimeTurnedOn());
+        msg.put("time_turned_on", LIGHT_BULB.getTimeTurnedOn());
 
         LOG.info("JSON message: " + msg);
 
@@ -216,11 +216,11 @@ public final class LightBulbController {
                 }
 
                 LOG.info("Toggling light");
-                if (lightBulb.getState() == LightBulbState.ON) {
-                    lightBulb.setState(LightBulbState.OFF);
+                if (LIGHT_BULB.getState() == LightBulbState.ON) {
+                    LIGHT_BULB.setState(LightBulbState.OFF);
                 } else {
-                    lightBulb.setState(LightBulbState.ON);
-                    lightBulb.setTimeTurnedOn(System.currentTimeMillis());
+                    LIGHT_BULB.setState(LightBulbState.ON);
+                    LIGHT_BULB.setTimeTurnedOn(System.currentTimeMillis());
                 }
             }
         };
