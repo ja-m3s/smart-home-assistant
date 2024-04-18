@@ -142,7 +142,7 @@ public final class RemoteApplication implements CommandLineRunner {
      *
      * @param message The message to be sent.
      */
-    private static void sendMessage(final JSONObject message) {
+    protected static void sendMessage(final JSONObject message) {
         Channel channel = SharedUtils.getChannel();
         while (true) {
             try {
