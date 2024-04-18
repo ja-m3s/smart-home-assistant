@@ -1,11 +1,12 @@
 #Build the utility package
 FROM gradle:jdk-jammy as build
 WORKDIR /app
-COPY sharedUtils .
-COPY dbImporter .
-COPY buildSrc .
-COPY settings.gradle .
-COPY config .
+COPY sharedUtils sharedUtils
+COPY dbImporter dbImporter
+COPY buildSrc buildSrc
+COPY settings.gradle settings.gradle
+COPY config config
+
 RUN gradle sharedUtils:check test shadowJar jacocoReport javadoc
 RUN gradle dbImporter:check test shadowJar jacocoReport javadoc
 
