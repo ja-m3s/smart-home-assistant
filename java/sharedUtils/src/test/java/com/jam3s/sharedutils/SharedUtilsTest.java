@@ -1,8 +1,7 @@
 package com.jam3s.sharedutils;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
@@ -19,13 +18,6 @@ public class SharedUtilsTest {
     @Mock
     private Logger loggerMock;
 
-    /**
-     * Setup method to initialize mocks.
-     */
-    @Before
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     /**
      * Test for the getExchangeName method.
