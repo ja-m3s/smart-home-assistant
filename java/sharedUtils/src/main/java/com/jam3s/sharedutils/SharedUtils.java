@@ -1,6 +1,8 @@
 package com.jam3s.sharedutils;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.rabbitmq.client.Channel;
@@ -44,7 +46,7 @@ public final class SharedUtils {
     /**
      * sl4f logger.
      */
-    protected static final Logger LOG = LoggerFactory.getLogger(SharedUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SharedUtils.class);
 
     /**
      * Private constructor.
@@ -83,7 +85,17 @@ public final class SharedUtils {
                 factory.setPassword(SharedUtils.getEnvVar("RABBITMQ_PASS"));
                 channel = factory.newConnection().createChannel();
                 break;
-            } catch (Exception e) {
+            } catch (IOException e) {
+                LOG.info("Failed to connect to RabbitMQ on attempt " + attempt + ". Retrying...");
+                if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
+                    throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
+                }
+                try {
+                    Thread.sleep(RETRY_DELAY_MILLIS);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            } catch (TimeoutException e) {
                 LOG.info("Failed to connect to RabbitMQ on attempt " + attempt + ". Retrying...");
                 if (attempt == RETRY_MAX_ATTEMPTS && RETRY_MAX_ATTEMPTS != 0) {
                     throw new RuntimeException("Failed to connect to RabbitMQ after multiple attempts.", e);
@@ -96,6 +108,7 @@ public final class SharedUtils {
             }
         }
     }
+
 
     /**
      * Sets up the RabbitMQ queue.
@@ -153,12 +166,4 @@ public final class SharedUtils {
         return channel;
     }
 
-    /**
-     * Sets the RabbitMQ channel.
-     *
-     * @param newChannel a new channel.
-     */
-    public static void setChannel(final Channel newChannel) {
-        channel = newChannel;
-    }
 }
