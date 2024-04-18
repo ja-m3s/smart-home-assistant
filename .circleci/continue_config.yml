@@ -50,10 +50,10 @@ jobs:
               "java" \
               --target build
             docker create --name temp_container "<< parameters.docker-repo >>:latest"
-            docker cp temp_container:<< parameters.path-to-metrics-inside-docker >> /docs/<< parameters.metrics-zip-file-name >>
+            docker cp temp_container:<< parameters.path-to-metrics-inside-docker >> docs/<< parameters.metrics-zip-file-name >>
             docker rm temp_container
       - store_artifacts:
-          path: /docs/<< parameters.metrics-zip-file-name >>
+          path: docs/<< parameters.metrics-zip-file-name >>
           destination: << parameters.metrics-zip-file-name >>
       - run:
           name: 'Build Docker image'
