@@ -7,3 +7,9 @@ plugins {
 description = 'sharedUtils'
 
 apply from: rootProject.file('buildSrc/shared.gradle')
+
+import com.github.spotbugs.snom.Confidence
+import com.github.spotbugs.snom.Effort
+spotbugs {
+    ignoreFailures = false
+}
