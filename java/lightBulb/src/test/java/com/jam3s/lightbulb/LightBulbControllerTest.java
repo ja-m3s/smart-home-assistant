@@ -6,16 +6,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * The LightBulbMonitorTest class contains unit tests for the LightBulbMonitor
- * class.
+ * The LightBulbMonitorTest class contains unit tests for the LightBulbMonitor class.
  */
 public class LightBulbControllerTest {
 
     /**
-     * Public Constructor
-     * To satisfy JavaDoc plugin
+     * Public Constructor To satisfy JavaDoc plugin.
      */
-    public LightBulbControllerTest(){
+    public LightBulbControllerTest() {
     }
     /**
      * Tests the getEnvVar method when the variable does not exist.
