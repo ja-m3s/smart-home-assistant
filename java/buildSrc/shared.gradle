@@ -1,0 +1,36 @@
+repositories {
+    mavenCentral()
+}
+
+group = 'com.jam3s'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+}
+
+spotbugs {
+    ignoreFailures = true // Ignore failures, let the build continue
+    reportsDir = file("$buildDir/reports/spotbugs")
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
