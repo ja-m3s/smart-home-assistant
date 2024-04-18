@@ -1,15 +1,12 @@
 plugins {
     id 'myproject.java-conventions'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id "com.github.spotbugs" version "6.0.12"
 }
 
 description = 'sharedUtils'
 
 apply from: rootProject.file('buildSrc/shared.gradle')
 
-import com.github.spotbugs.snom.Confidence
-import com.github.spotbugs.snom.Effort
-spotbugs {
-    ignoreFailures = false
-}
+
+//  removed from plugins -   id "com.github.spotbugs" version "6.0.12"
+
