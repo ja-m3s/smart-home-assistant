@@ -28,6 +28,7 @@ executors:
       docker_layer_caching: true
 
 jobs:
+
   build:
     executor: build
     parameters:
@@ -35,8 +36,25 @@ jobs:
           type: string
         docker-file-location:
           type: string
+        path-to-metrics-inside-docker:
+          type: string
+        metrics-zip-file-name:
+          type: string
     steps:
       - checkout
+      - run:
+          name: 'Gather Metrics'
+          command: |
+            docker build -t "<< parameters.docker-repo >>:latest" \
+              -f "<< parameters.docker-file-location >>" \
+              "java" \
+              --target build
+            docker create --name temp_container "<< parameters.docker-repo >>:latest"
+            docker cp temp_container:<< parameters.path-to-metrics-inside-docker >> /docs/<< parameters.metrics-zip-file-name >>
+            docker rm temp_container
+      - store_artifacts:
+          path: /docs/<< parameters.metrics-zip-file-name >>
+          destination: << parameters.metrics-zip-file-name >>
       - run:
           name: 'Build Docker image'
           command: |
@@ -55,6 +73,8 @@ workflows:
       - build:
           docker-repo: ${DOCKER_REPO_DB_IMPORTER}
           docker-file-location: "java/dbImporter/Dockerfile"
+          path-to-metrics-inside-docker: /app/dbImporter/build/metrics.zip
+          metrics-zip-file-name: metrics-dbImporter.zip
           context:
             - org-context-smart-home
 
@@ -64,6 +84,8 @@ workflows:
       - build:
           docker-repo: ${DOCKER_REPO_LIGHT_BULB}
           docker-file-location: "java/lightBulb/Dockerfile"
+          path-to-metrics-inside-docker: /app/lightBulb/build/metrics.zip
+          metrics-zip-file-name: metrics-lightBulb.zip
           context:
             - org-context-smart-home
 
@@ -73,6 +95,8 @@ workflows:
       - build:
           docker-repo: ${DOCKER_REPO_LIGHT_BULB_MONITOR}
           docker-file-location: "java/lightBulbMonitor/Dockerfile"
+          path-to-metrics-inside-docker: /app/lightBulbMonitor/build/metrics.zip
+          metrics-zip-file-name: metrics-lightBulbMonitor.zip
           context:
             - org-context-smart-home
 
@@ -82,5 +106,7 @@ workflows:
       - build:
           docker-repo: ${DOCKER_REPO_REMOTE}
           docker-file-location: "java/remote/Dockerfile"
+          path-to-metrics-inside-docker: /app/remote/build/metrics.zip
+          metrics-zip-file-name: metrics-remote.zip
           context:
             - org-context-smart-home
