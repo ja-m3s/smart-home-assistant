@@ -20,13 +20,12 @@ test {
 }
 
 dependencies {
-    implementation 'libs.com.rabbitmq.amqp.client'
-    implementation 'libs.org.slf4j.slf4j.api'
-    implementation 'libs.org.slf4j.slf4j.simple'
-    implementation 'libs.org.json.json'
-    implementation 'libs.io.prometheus.prometheus.metrics.core'
-    implementation 'libs.io.prometheus.prometheus.metrics.instrumentation.jvm'
-    implementation 'libs.io.prometheus.prometheus.metrics.exporter.httpserver'
+    implementation 'com.rabbitmq.amqp.client'
+    implementation 'org.slf4j.slf4j.api'
+    implementation 'org.slf4j.slf4j.simple'
+    implementation 'io.prometheus.prometheus.metrics.core'
+    implementation 'io.prometheus.prometheus.metrics.instrumentation.jvm'
+    implementation 'io.prometheus.prometheus.metrics.exporter.httpserver'
     implementation group: 'org.json', name: 'json', version: '20240303'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.11.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
