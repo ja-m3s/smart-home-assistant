@@ -110,7 +110,7 @@ public final class LightBulbController {
      */
     public static void main(final String[] args) throws IOException, InterruptedException {
         LOG.info("Starting Light Bulb.");
-        LOG.info(lightBulb.toString());
+        LOG.info(LIGHT_BULB.toString());
         hostname = SharedUtils.getEnvVar("HOSTNAME");
         SharedUtils.setupRabbitMQConnection();
         SharedUtils.setupQueue(QUEUE_NAME);
