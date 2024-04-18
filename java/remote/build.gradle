@@ -30,18 +30,22 @@ ext {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-tomcat'
-	//implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	//implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'com.vaadin:vaadin-spring-boot-starter'
-    implementation files('../sharedUtils/build/libs/sharedUtils-0.0.1-SNAPSHOT-all.jar')
+	implementation files('../sharedUtils/build/libs/sharedUtils-0.0.1-SNAPSHOT-all.jar')
 	compileOnly 'org.projectlombok:lombok'
-	//runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	annotationProcessor 'org.projectlombok:lombok'
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
+	//implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	//implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	//runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	//testImplementation 'org.springframework.amqp:spring-rabbit-test'
+}
+
+configurations.all {
+	exclude group:"ch.qos.logback", module:"logback-core"
 }
 
 dependencyManagement {

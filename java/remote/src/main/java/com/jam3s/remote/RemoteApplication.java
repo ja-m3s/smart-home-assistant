@@ -18,7 +18,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 
 @SpringBootApplication
-public final class RemoteApplication implements CommandLineRunner {
+public class RemoteApplication implements CommandLineRunner {
     /**
      * Stores light bulb data.
      */

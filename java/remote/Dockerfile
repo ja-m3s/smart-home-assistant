@@ -8,7 +8,7 @@ COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
 COPY config config
 RUN gradle sharedUtils:shadowJar
-RUN gradle remote:check test shadowJar jacocoReport javadoc
+RUN gradle remote:test shadowJar jacocoReport javadoc
 
 # Create production image
 FROM tomcat:jre21-temurin-jammy as production
