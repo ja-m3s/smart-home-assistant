@@ -146,7 +146,7 @@ public final class DBImporter {
 
         while (true) {
             try {
-                channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {});
+                channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> { });
                 break; // Exit the loop if basicConsume is successful
             } catch (IOException e) {
                 LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
