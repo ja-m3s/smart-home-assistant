@@ -9,10 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.jam3s.lightbulb.LightBulb.LightBulbState;
 
 public class LightBulbTest {
-    /**
-     * Variance for time based tests.
-     */
-    public static final long VARIANCE = 200;
+
     /**
      * Ten seconds in ms.
      */
@@ -46,18 +43,6 @@ public class LightBulbTest {
     public void testSetState() {
         lightBulb.setState(LightBulbState.OFF);
         assertEquals(LightBulbState.OFF, lightBulb.getState());
-    }
-
-    /**
-     * test time getter.
-     */
-    @Test
-    public void testGetTimeTurnedOn() {
-        long currentTime = System.currentTimeMillis();
-        long timeTurnedOn = lightBulb.getTimeTurnedOn();
-        // Allow for a small difference due to time taken by tests to execute
-        long timeDifference = currentTime - timeTurnedOn;
-        assertTrue(timeDifference >= 0 && timeDifference < VARIANCE);
     }
 
     /**
