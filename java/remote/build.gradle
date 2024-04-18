@@ -46,7 +46,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
+	implementation('dependency.group:dependency.name:version') {
+		exclude group: 'org.slf4j', module: 'logback-classic'
+	}
 }
+
 
 dependencyManagement {
 	imports {
