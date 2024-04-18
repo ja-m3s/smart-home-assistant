@@ -33,8 +33,6 @@ jobs:
           type: string
         docker-file-location:
           type: string
-        path-to-metrics-inside-docker:
-          type: string
         metrics-zip-file-name:
           type: string
     steps:
