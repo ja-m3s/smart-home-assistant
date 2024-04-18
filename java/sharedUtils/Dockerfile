@@ -3,6 +3,9 @@
 FROM gradle:jdk-jammy as build
 WORKDIR /app
 COPY sharedUtils sharedUtils
+COPY buildSrc buildSrc
+COPY settings.gradle settings.gradle
+
 WORKDIR /app/sharedUtils
 RUN gradle :check :shadowJar :test :jacocoReport :javadoc
 # Zip app metrics
