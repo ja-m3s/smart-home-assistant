@@ -9,3 +9,7 @@ apply from: rootProject.file('buildSrc/shared.gradle')
 
 
 //  removed from plugins -   id "com.github.spotbugs" version "6.0.12"
+dependencies {
+    implementation 'org.slf4j:slf4j-api:2.0.13'
+    implementation 'org.slf4j:slf4j-simple:2.0.13'
+}
