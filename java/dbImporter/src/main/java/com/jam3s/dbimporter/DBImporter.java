@@ -4,11 +4,11 @@ import io.prometheus.metrics.core.metrics.Counter;
 import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,7 @@ import com.rabbitmq.client.DeliverCallback;
 
 /**
  * This class represents a DBImporter which consumes messages from RabbitMQ
- * and inserts them into a PostgreSQL database.
+ * and inserts them into a database.
  */
 public final class DBImporter {
 
@@ -79,22 +79,14 @@ public final class DBImporter {
         LoggerFactory.getLogger(DBImporter.class);
 
     private DBImporter() {
-    };
+    }
 
     /**
      * Main method to start the DBImporter.
      *
      * @param args Command line arguments (not used)
-     * @throws InterruptedException if a thread is interrupted
-     * @throws TimeoutException     if a timeout occurs
-     * @throws SQLException         if a SQL error occurs
-     * @throws IOException          if an I/O error occurs
      */
-    public static void main(final String[] args)
-        throws InterruptedException,
-               TimeoutException,
-               SQLException,
-               IOException {
+    public static void main(final String[] args) throws IOException {
 
         LOG.info("Starting DBImporter.");
         setupMetricServer();
@@ -120,24 +112,23 @@ public final class DBImporter {
     /**
      * Consumes messages from RabbitMQ.
      *
-     * @throws IOException if an I/O error occurs
      */
-    private static void consumeQueue() throws IOException {
+    private static void consumeQueue() {
         // Callback for processing incoming messages
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            String message = new String(delivery.getBody(), "UTF-8");
-            LOG.info("Received Message:" + message);
+            String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
+            LOG.info("Received Message:{}", message);
             receivedCounter.labelValues(COUNTER_RECEIVED_LABEL).inc();
             try (
                 PreparedStatement preparedStatement =
                     dbConnection.prepareStatement(INSERT_QUERY)) {
                     preparedStatement.setString(1, message);
                     preparedStatement.executeUpdate();
-                    LOG.info("Inserted record into the database: " + message);
+                    LOG.info("Inserted record into the database: {}", message);
                     SharedUtils.getEnvVar("HOSTNAME");
             } catch (SQLException e) {
                 setupDBConnection();
-                e.printStackTrace();
+                LOG.info(e.getMessage());
             }
         };
 
