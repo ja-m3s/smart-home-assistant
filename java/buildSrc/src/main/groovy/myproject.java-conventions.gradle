@@ -1,0 +1,11 @@
+plugins {
+    id 'checkstyle'
+    id 'jacoco'
+}
+
+repositories {
+    mavenCentral()
+}
+
+group = 'com.jam3s'
+version = '0.0.1-SNAPSHOT'

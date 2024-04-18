@@ -1,7 +1,7 @@
 plugins {
     id 'java'
+    id 'myproject.java-conventions'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'buildSrc.shared-plugins'
 }
 
 description = 'sharedUtils'
