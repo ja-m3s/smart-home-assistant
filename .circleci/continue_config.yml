@@ -48,9 +48,19 @@ jobs:
             docker push "<< parameters.docker-repo >>:latest"
 
 workflows:
+  version: 2
+  build-workflows:
+    jobs:
+      - workflow-build-db-importer:
+          when: << pipeline.parameters.param-build-db-importer >>
+      - workflow-build-light-bulb:
+          when: << pipeline.parameters.param-build-light-bulb >>
+      - workflow-build-light-bulb-monitor:
+          when: << pipeline.parameters.param-build-light-bulb-monitor >>
+      - workflow-build-remote:
+          when: << pipeline.parameters.param-build-remote >>
 
   workflow-build-db-importer:
-    when: << pipeline.parameters.param-build-db-importer >>
     jobs:
       - build:
           docker-repo: ${DOCKER_REPO_DB_IMPORTER}
@@ -59,7 +69,6 @@ workflows:
             - org-context-smart-home
 
   workflow-build-light-bulb:
-    when: << pipeline.parameters.param-build-light-bulb >>
     jobs:
       - build:
           docker-repo: ${DOCKER_REPO_LIGHT_BULB}
@@ -68,7 +77,6 @@ workflows:
             - org-context-smart-home
 
   workflow-build-light-bulb-monitor:
-    when: << pipeline.parameters.param-build-light-bulb-monitor >>
     jobs:
       - build:
           docker-repo: ${DOCKER_REPO_LIGHT_BULB_MONITOR}
@@ -77,7 +85,6 @@ workflows:
             - org-context-smart-home
 
   workflow-build-remote:
-    when: << pipeline.parameters.param-build-remote >>
     jobs:
       - build:
           docker-repo: ${DOCKER_REPO_REMOTE}
