@@ -89,6 +89,7 @@ public final class RemoteApplication implements CommandLineRunner {
      * @param args
      */
     public static void main(final String[] args) {
+        hostname = SharedUtils.getEnvVar("HOSTNAME");
         SpringApplication.run(RemoteApplication.class, args);
     }
 
@@ -199,8 +200,6 @@ public final class RemoteApplication implements CommandLineRunner {
     @Override
     public void run(final String... args) {
         SharedUtils.setupRabbitMQConnection();
-        hostname = SharedUtils.getEnvVar("HOSTNAME");
-        System.out.println(hostname);
         setupMetricServer();
         SharedUtils.startMetricsServer();
 
