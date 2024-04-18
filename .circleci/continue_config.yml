@@ -71,6 +71,8 @@ jobs:
       - run:
           name: 'Push Docs to Git'
           command: |
+            ls -lah
+            pwd
             git add docs/*;
             git push;
 
