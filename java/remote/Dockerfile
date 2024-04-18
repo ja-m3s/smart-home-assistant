@@ -7,10 +7,8 @@ COPY remote remote
 COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
 
-WORKDIR /app/sharedUtils
-RUN gradle :shadowJar
-WORKDIR /app/remote
-RUN gradle :war
+RUN gradle sharedUtils:shadowJar
+RUN gradle remote:test :shadowJar :jacocoReport :javadoc
 
 # Create production image
 FROM tomcat:jre21-temurin-jammy as production

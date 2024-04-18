@@ -5,11 +5,8 @@ COPY sharedUtils sharedUtils
 COPY lightBulb lightBulb
 COPY buildSrc buildSrc
 COPY settings.gradle settings.gradle
-
-WORKDIR /app/sharedUtils
-RUN gradle :shadowJar
-WORKDIR /app/lightBulb
-RUN gradle :test :shadowJar :jacocoReport :javadoc
+RUN gradle sharedUtils:shadowJar
+RUN gradle lightBulb:test :shadowJar :jacocoReport :javadoc
 
 # Zip app metrics
 RUN apt update && apt install -y zip

@@ -19,3 +19,5 @@ dependencies {
 description = 'lightBulbMonitor'
 
 apply from: rootProject.file('buildSrc/shared.gradle')
+
+tasks.compileJava.dependsOn ':sharedUtils:shadowJar'

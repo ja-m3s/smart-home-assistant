@@ -59,3 +59,5 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.compileJava.dependsOn ':sharedUtils:shadowJar'
