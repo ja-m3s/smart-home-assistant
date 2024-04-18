@@ -10,6 +10,14 @@ import com.jam3s.lightbulb.LightBulb.LightBulbState;
 
 public class LightBulbTest {
     /**
+     * Variance for time based tests.
+     */
+    public static final long VARIANCE = 100;
+    /**
+     * Ten seconds in ms.
+     */
+    public static final long TEN_SECONDS = 10000;
+    /**
      * A lightbulb.
      */
     private static LightBulb lightBulb;
@@ -49,8 +57,7 @@ public class LightBulbTest {
         long timeTurnedOn = lightBulb.getTimeTurnedOn();
         // Allow for a small difference due to time taken by tests to execute
         long timeDifference = currentTime - timeTurnedOn;
-        long variance = 100;
-        assertTrue(timeDifference >= 0 && timeDifference < variance);
+        assertTrue(timeDifference >= 0 && timeDifference < VARIANCE);
     }
 
     /**
@@ -58,8 +65,8 @@ public class LightBulbTest {
      */
     @Test
     public void testSetTimeTurnedOn() {
-        long tenSeconds = 10000;
-        long newTime = System.currentTimeMillis() - tenSeconds; // Subtract 10 seconds
+
+        long newTime = System.currentTimeMillis() - TEN_SECONDS; // Subtract 10 seconds
         lightBulb.setTimeTurnedOn(newTime);
         assertEquals(newTime, lightBulb.getTimeTurnedOn());
     }
