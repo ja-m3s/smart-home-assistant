@@ -44,10 +44,6 @@ dependencies {
 	//testImplementation 'org.springframework.amqp:spring-rabbit-test'
 }
 
-configurations.all {
-	exclude group:"ch.qos.logback", module:"logback-core"
-}
-
 dependencyManagement {
 	imports {
 		mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
