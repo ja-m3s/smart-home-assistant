@@ -93,6 +93,9 @@ public final class LightBulbController {
      */
     private static final Logger LOG = LoggerFactory.getLogger(LightBulbController.class);
 
+    /**
+     * Regex for detecting a remote.
+     */
     protected static final String REMOTE_HOSTNAME_REGEX = "remote-.+";
 
     private LightBulbController() {
@@ -142,22 +145,21 @@ public final class LightBulbController {
     private static void sendMessage(final JSONObject message) throws IOException {
         // Only broadcast when lightbulb is on
         Channel channel = SharedUtils.getChannel();
-        
-        //if (lightBulb.getState() == LightBulbState.ON) {
-            while (true) {
-                try {
-                    channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null,
-                    message.toString().getBytes(StandardCharsets.UTF_8));           
-                    break; // Exit the loop if basicPublish is successful
-                } catch (IOException e) {
-                    LOG.error("Error occurred while publishing from the queue. Attempting to reconnect to RabbitMQ...");
-                    SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
-                    channel = SharedUtils.getChannel(); // Get a new channel
-                }
-            } 
-            sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
-            LOG.info("Sent :" + message);
-        //}
+
+        while (true) {
+            try {
+                channel.basicPublish(SharedUtils.getExchangeName(), QUEUE_NAME, null,
+                message.toString().getBytes(StandardCharsets.UTF_8));
+                break; // Exit the loop if basicPublish is successful
+            } catch (IOException e) {
+                LOG.error("Error occurred while publishing from the queue. Attempting to reconnect to RabbitMQ...");
+                SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
+                channel = SharedUtils.getChannel(); // Get a new channel
+            }
+        }
+        sentCounter.labelValues(COUNTER_SENT_LABEL).inc();
+        LOG.info("Sent :{}", message);
+
     }
 
     /**

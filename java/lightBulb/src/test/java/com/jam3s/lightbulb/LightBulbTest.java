@@ -49,7 +49,8 @@ public class LightBulbTest {
         long timeTurnedOn = lightBulb.getTimeTurnedOn();
         // Allow for a small difference due to time taken by tests to execute
         long timeDifference = currentTime - timeTurnedOn;
-        assertTrue(timeDifference >= 0 && timeDifference < 100);
+        long variance = 100;
+        assertTrue(timeDifference >= 0 && timeDifference < variance);
     }
 
     /**
@@ -57,13 +58,14 @@ public class LightBulbTest {
      */
     @Test
     public void testSetTimeTurnedOn() {
-        long newTime = System.currentTimeMillis() - 10000; // Subtract 10 seconds
+        long tenSeconds = 10000;
+        long newTime = System.currentTimeMillis() - tenSeconds; // Subtract 10 seconds
         lightBulb.setTimeTurnedOn(newTime);
         assertEquals(newTime, lightBulb.getTimeTurnedOn());
     }
 
     /**
-     * test toString
+     * test toString.
      */
     @Test
     public void testToString() {
