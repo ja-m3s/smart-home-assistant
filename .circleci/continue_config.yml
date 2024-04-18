@@ -17,9 +17,6 @@ parameters:
   param-build-remote:
     type: boolean
     default: false
-  param-store-docs-in-git:
-    type: boolean
-    default: true
 
 executors:
   build:
@@ -55,13 +52,6 @@ jobs:
       - store_artifacts:
           path: docs/<< parameters.metrics-zip-file-name >>
           destination: << parameters.metrics-zip-file-name >>
-      - run:
-          name: 'Push to git'
-          command: |
-            git pull
-            git add docs/<< parameters.metrics-zip-file-name >>
-            git commit -m 'added << parameters.metrics-zip-file-name >>'
-            git push
       - run:
           name: 'Build Docker image'
           command: |
