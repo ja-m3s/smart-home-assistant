@@ -27,172 +27,60 @@ executors:
       image: ubuntu-2204:current
       docker_layer_caching: true
 
-commands:
-  push-metrics-to-git:
-    description: "Send Metrics to git"
+jobs:
+  build:
+    executor: build
     parameters:
-      doc-location:
-        type: string
-        default: "docs/"
-      file-name:
-        type: string
+        docker-repo:
+          type: string
+        docker-file-location:
+          type: string
     steps:
-      - run:
-          name: 'Add Metrics to git'
-          command: |
-            git pull
-            mv /tmp/metrics.zip << parameters.doc-location >><< parameters.file-name >>
-            git add << parameters.doc-location >><< parameters.file-name >>
-            git commit -m "added << parameters.doc-location >><< parameters.file-name >>"
-            git push
-
-  extract-code-coverage:
-    description: "Extract Code Coverage from the build"
-    parameters:
-      docker-file-location:
-        type: string
-      path-to-metrics:
-        type: string
-    steps:
-      - run:
-          name: 'Extract code coverage'
-          command: |
-            docker build -t temp_build -f "<< parameters.docker-file-location >>" "java" --target build
-            docker create --name temp_container temp_build
-            docker cp temp_container:<< parameters.path-to-metrics >> /tmp/
-            docker rm temp_container
-
-  build-docker:
-    description: "Build Docker image"
-    parameters:
-      docker-repo:
-        type: string
-      docker-file-location:
-        type: string
-    steps:
+      - checkout
       - run:
           name: 'Build Docker image'
           command: |
             docker build -t "<< parameters.docker-repo >>:latest" -f "<< parameters.docker-file-location >>" "java"
-
-  push-docker-to-repo:
-    description: "Push build to docker repo"
-    parameters:
-      docker-repo:
-        type: string
-    steps:
       - run:
           name: 'Push to repository'
           command: |
             docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
             docker push "<< parameters.docker-repo >>:latest"
 
-jobs:
-  build-shared-utils:
-    executor: build
-    steps:
-      - checkout
-      - extract-code-coverage:
-          docker-file-location: "java/sharedUtils/Dockerfile" 
-          path-to-metrics: /app/sharedUtils/build/metrics.zip
-      - store_artifacts:
-          path: /tmp/metrics.zip
-          destination: sharedUtils-metrics.zip
-      - push-metrics-to-git:
-          file-name: "sharedUtils-metrics.zip"
-
-  build-db-importer:
-    executor: build
-    steps:
-      - checkout
-      - extract-code-coverage:
-          docker-file-location: "java/dbImporter/Dockerfile" 
-          path-to-metrics: /app/dbImporter/build/metrics.zip
-      - build-docker:
-          docker-repo: ${DOCKER_REPO_DB_IMPORTER}
-          docker-file-location: "java/dbImporter/Dockerfile"
-      - push-docker-to-repo:
-          docker-repo: ${DOCKER_REPO_DB_IMPORTER}
-      - store_artifacts:
-          path: /tmp/metrics.zip
-          destination: dbImporter-metrics.zip
-      - push-metrics-to-git:
-          file-name: "dbImporter-metrics.zip"
-
-  build-light-bulb:
-    executor: build
-    steps:
-      - checkout
-      - extract-code-coverage:
-          docker-file-location: "java/lightBulb/Dockerfile" 
-          path-to-metrics: /app/lightBulb/build/metrics.zip
-      - store_artifacts:
-          path: /tmp/metrics.zip
-          destination: lightBulb-metrics.zip
-      - build-docker:
-          docker-repo: ${DOCKER_REPO_LIGHT_BULB}
-          docker-file-location: "java/lightBulb/Dockerfile"
-      - push-docker-to-repo:
-          docker-repo: ${DOCKER_REPO_LIGHT_BULB}
-      - push-metrics-to-git:
-          file-name: "lightBulb-metrics.zip"
-
-  build-light-bulb-monitor:
-    executor: build
-    steps:
-      - checkout
-      - extract-code-coverage:
-          docker-file-location: "java/lightBulbMonitor/Dockerfile" 
-          path-to-metrics: /app/lightBulbMonitor/build/metrics.zip      
-      - store_artifacts:
-          path: /tmp/metrics.zip
-          destination: lightBulbMonitor-metrics.zip
-      - build-docker:
-          docker-repo: ${DOCKER_REPO_LIGHT_BULB_MONITOR}
-          docker-file-location: "java/lightBulbMonitor/Dockerfile"
-      - push-docker-to-repo:
-          docker-repo: ${DOCKER_REPO_LIGHT_BULB_MONITOR}
-      - push-metrics-to-git:
-          file-name: "lightBulbMonitor-metrics.zip"
-
-  build-remote:
-    executor: build
-    steps:
-      - checkout
-      - build-docker:
-          docker-repo: ${DOCKER_REPO_REMOTE}
-          docker-file-location: "java/remote/Dockerfile"
-      - push-docker-to-repo:
-          docker-repo: ${DOCKER_REPO_REMOTE}
-
 workflows:
-  workflow-build-shared-utils:
-    when: << pipeline.parameters.param-build-shared-utils >>
-    jobs:
-      - build-shared-utils:
-          context:
-            - org-context-smart-home
+
   workflow-build-db-importer:
     when: << pipeline.parameters.param-build-db-importer >>
     jobs:
-      - build-db-importer:
+      - build:
+          docker-repo: ${DOCKER_REPO_DB_IMPORTER}
+          docker-file-location: "java/dbImporter/Dockerfile"
           context:
             - org-context-smart-home
+
   workflow-build-light-bulb:
     when: << pipeline.parameters.param-build-light-bulb >>
     jobs:
-      - build-light-bulb:
+      - build:
+          docker-repo: ${DOCKER_REPO_LIGHT_BULB}
+          docker-file-location: "java/lightBulb/Dockerfile"
           context:
             - org-context-smart-home
+
   workflow-build-light-bulb-monitor:
     when: << pipeline.parameters.param-build-light-bulb-monitor >>
     jobs:
-      - build-light-bulb-monitor:
+      - build:
+          docker-repo: ${DOCKER_REPO_LIGHT_BULB_MONITOR}
+          docker-file-location: "java/lightBulbMonitor/Dockerfile"
           context:
             - org-context-smart-home
+
   workflow-build-remote:
     when: << pipeline.parameters.param-build-remote >>
     jobs:
-      - build-remote:
+      - build:
+          docker-repo: ${DOCKER_REPO_REMOTE}
+          docker-file-location: "java/remote/Dockerfile"
           context:
             - org-context-smart-home
