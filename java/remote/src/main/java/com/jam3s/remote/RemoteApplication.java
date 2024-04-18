@@ -2,6 +2,8 @@ package com.jam3s.remote;
 
 import com.jam3s.sharedutils.SharedUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +12,8 @@ import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+
+
 import org.json.JSONObject;
 
 import com.rabbitmq.client.Channel;
@@ -25,7 +29,7 @@ public class RemoteApplication implements CommandLineRunner {
      */
     protected static final String QUEUE_NAME = "REMOTE";
 
-	    /**
+    /**
      * Regular expression pattern for matching hostnames of light bulbs.
      */
     protected static final String LIGHT_BULB_HOSTNAME_REGEX = "light-bulb-\\d+";
@@ -60,10 +64,7 @@ public class RemoteApplication implements CommandLineRunner {
      */
     protected static final String COUNTER_RECEIVED_LABEL = "requests_received";
 
-    /**
-     * slf4j logger.
-     */
-    protected static final Logger LOG = LoggerFactory.getLogger(RemoteApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteApplication.class);
 
     /**
      * Counter for tracking the number of received messages.
