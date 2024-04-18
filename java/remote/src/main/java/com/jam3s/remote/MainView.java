@@ -1,7 +1,5 @@
 package com.jam3s.remote;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,10 +67,6 @@ public class MainView extends VerticalLayout {
 
     private void handleToggleState(String key) {
         Notification.show("Toggling light bulb...");
-        try {
-            RemoteApplication.sendMessage(RemoteApplication.createTurnOnMessage(key));
-        } catch (IOException | InterruptedException e) {
-            Notification.show("Failed to toggle light bulb: " + e.getMessage());
-        }
+        RemoteApplication.sendMessage(RemoteApplication.createTurnOnMessage(key));
     }
 }

@@ -133,7 +133,6 @@ public class RemoteApplication implements CommandLineRunner {
      * Sends a message to RabbitMQ.
      *
      * @param message The message to be sent.
-     * @throws InterruptedException if the thread is interrupted.
      */
     protected static void sendMessage(final JSONObject message) {
         Channel channel = SharedUtils.getChannel();
