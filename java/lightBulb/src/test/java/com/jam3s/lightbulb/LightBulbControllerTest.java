@@ -19,7 +19,7 @@ public class LightBulbControllerTest {
      * Tests the getEnvVar method when the variable does not exist.
      */
     @Test
-    public void testgetEnvVar_VariableDoesNotExist_ThrowsException() {
+    public void testgetEnvVarWhenVariableDoesNotExistThrowsException() {
         // Arrange
         String variableName = "NON_EXISTENT_VARIABLE";
 
