@@ -11,10 +11,10 @@ RUN gradle dbImporter:check test shadowJar jacocoReport javadoc
 
 # Zip app metrics
 RUN apt update && apt install -y zip
-RUN zip -r metrics.zip sharedUtils/build/reports
-RUN zip -r metrics.zip sharedUtils/build/docs
-RUN zip -r metrics.zip dbImporter/build/reports
-RUN zip -r metrics.zip dbImporter/build/docs
+RUN zip -r metrics.zip sharedUtils/build/reports \
+    sharedUtils/build/docs \
+    dbImporter/build/reports \
+    dbImporter/build/docs
 
 # Create production image
 FROM eclipse-temurin:22_36-jre-alpine as production
