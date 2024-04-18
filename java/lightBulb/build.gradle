@@ -41,6 +41,14 @@ java {
     targetCompatibility = '21'
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.jam3s.lightbulb.LightBulbController'
+        )
+    }
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
