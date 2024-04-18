@@ -17,9 +17,19 @@ import com.vaadin.flow.router.Route;
 @Route(value = "")
 public class MainView extends VerticalLayout {
 
+    /**
+     * Layout to hold the light bulb states.
+     */
     private final VerticalLayout lightBulbDisplayVLayout = new VerticalLayout();
+
+    /**
+     * Logger.
+     */
     protected static final Logger LOG = LoggerFactory.getLogger(MainView.class);
 
+    /**
+     * Main View.
+     */
     public MainView() {
 
         setMargin(true);
@@ -30,19 +40,16 @@ public class MainView extends VerticalLayout {
         VerticalLayout refreshButtonDisplayVLayout = new VerticalLayout();
         refreshButtonDisplayVLayout.add(refreshLightBulbList);
 
-        add(refreshButtonDisplayVLayout,lightBulbDisplayVLayout);
+        add(refreshButtonDisplayVLayout, lightBulbDisplayVLayout);
 
     }
 
     private void handleGetLightBulbStatus() {
         LOG.info("Getting light bulb status");
         Notification.show("Getting light bulb status...");
-        
         lightBulbDisplayVLayout.removeAll(); // Remove existing content before adding new content
-    
         // Iterate over the entries in the HashMap
         RemoteApplication.getLightBulbStatus().forEach((key, value) -> {
-
             // Extracting values from JSON
             String bulbStatus = value.optString("bulb_state");
             long timeTurnedOnMillis = value.optLong("time_turned_on");
@@ -52,20 +59,18 @@ public class MainView extends VerticalLayout {
             NativeLabel lightBulbNameNativeLabel = new NativeLabel(key);
             NativeLabel bulbStatusNativeLabel = new NativeLabel(bulbStatus);
             NativeLabel timeTurnedOnNativeLabel = new NativeLabel(timeTurnedOn.toString());
-            
             // Add a button to turn lights on/off.
             Button toggleState = new Button("Toggle On/Off");
             toggleState.addClickListener(d -> handleToggleState(key));
-            
             // Add the items to a HorizontalLayout
-            HorizontalLayout entryLayout = new HorizontalLayout(lightBulbNameNativeLabel, bulbStatusNativeLabel, timeTurnedOnNativeLabel, toggleState);
-            
+            HorizontalLayout entryLayout = new HorizontalLayout(lightBulbNameNativeLabel,
+                    bulbStatusNativeLabel, timeTurnedOnNativeLabel, toggleState);
             // Add the HorizontalLayout to the VerticalLayout
-            lightBulbDisplayVLayout.add(entryLayout); 
+            lightBulbDisplayVLayout.add(entryLayout);
         });
     }
 
-    private void handleToggleState(String key) {
+    private void handleToggleState(final String key) {
         Notification.show("Toggling light bulb...");
         RemoteApplication.sendMessage(RemoteApplication.createTurnOnMessage(key));
     }
