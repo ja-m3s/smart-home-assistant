@@ -83,8 +83,6 @@ commands:
 
 jobs:
   build-shared-utils:
-    docker:
-      - image: cimg/base:2024.02
     steps:
       - checkout
       - extract-code-coverage:
@@ -97,8 +95,8 @@ jobs:
           file-name: "sharedUtils-metrics.zip"
 
   build-db-importer:
-    docker:
-      - image: cimg/base:2024.02
+    machine:
+      image: ubuntu-2204:current
     steps:
       - checkout
       - extract-code-coverage:
@@ -116,8 +114,8 @@ jobs:
           file-name: "dbImporter-metrics.zip"
 
   build-light-bulb:
-    docker:
-      - image: cimg/base:2024.02
+    machine:
+      image: ubuntu-2204:current
     steps:
       - checkout
       - extract-code-coverage:
@@ -135,8 +133,8 @@ jobs:
           file-name: "lightBulb-metrics.zip"
 
   build-light-bulb-monitor:
-    docker:
-      - image: cimg/base:2024.02
+    machine:
+      image: ubuntu-2204:current
     steps:
       - checkout
       - extract-code-coverage:
@@ -154,8 +152,8 @@ jobs:
           file-name: "lightBulbMonitor-metrics.zip"
 
   build-remote:
-    docker:
-      - image: cimg/base:2024.02
+    machine:
+      image: ubuntu-2204:current
     steps:
       - checkout
       - build-docker:
@@ -167,6 +165,8 @@ jobs:
 workflows:
   workflow-build-shared-utils:
     when: << pipeline.parameters.param-build-shared-utils >>
+    machine:
+      image: ubuntu-2204:current
     jobs:
       - build-shared-utils:
           context:
