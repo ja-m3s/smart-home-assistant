@@ -18,11 +18,9 @@ It can also be build using the build script located in /scripts/build:
 If you just want to build the jar file, rather than the docker image, then you will first need to add the sharedUtils jar to the 
 maven repository with the following commands:
 ```
-cd java/sharedUtils
-mvn clean test compile site
-cd java/lightBulb
-mvn install:install-file -Dfile=../../java/sharedUtils/target/sharedUtils-0.0.1-SNAPSHOT-jar-with-dependencies.jar -DgroupId=com.jam3s -DartifactId=sharedUtils -Dpackaging=jar -Dversion=0.0.1-SNAPSHOT
-mvn clean test compile site
+cd java
+gradle sharedUtils:shadowJar
+gradle lightBulb:shadowjar
 ```
 
 ## How to run and debug locally

@@ -16,8 +16,8 @@ It can also be build using the build script located in /scripts/build:
 If you just want to build the jar file, rather than the docker image, then you will first need to add the sharedUtils jar to the 
 maven repository with the following commands:
 ```
-cd java/sharedUtils
-mvn clean test compile site
+cd java
+gradle sharedUtils:shadowJar
 ```
 
 ## How to run and debug locally

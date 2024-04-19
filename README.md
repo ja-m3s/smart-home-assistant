@@ -38,7 +38,7 @@ A data visualization system.
 
 ## Technology Stack
 
-- The java applications use the following technologies: Java, jUnit, Jacoco, Maven, Docker, SpotBugs, Checkstyle and JavaDocs
+- The java applications use the following technologies: Java, jUnit, Jacoco, Gradle, Docker, SpotBugs, Checkstyle and JavaDocs
 - The event bus uses RabbitMQ
 - The database uses cockroachDB
 - Deployment is done via helm3
