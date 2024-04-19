@@ -78,17 +78,11 @@ public class RemoteApplication implements CommandLineRunner {
     private static Counter sentCounter;
 
     /**
-     * The hostname of the current environment.
-     */
-    private static String hostname;
-
-    /**
      * Main Method.
      *
      * @param args
      */
     public static void main(final String[] args) {
-        hostname = SharedUtils.getEnvVar("HOSTNAME");
         SpringApplication.run(RemoteApplication.class, args);
     }
 
@@ -182,7 +176,7 @@ public class RemoteApplication implements CommandLineRunner {
      */
     static JSONObject createTurnOnMessage(final String target) {
         JSONObject msg = new JSONObject();
-        msg.put("hostname", hostname);
+        msg.put("hostname", SharedUtils.getEnvVar("HOSTNAME"));
         msg.put("bulb_state", "triggered");
         msg.put("target", target);
         msg.put("sent_timestamp", System.currentTimeMillis());
