@@ -62,17 +62,56 @@ All configuration can be found within the helm folder Values.yaml files, or the 
 
 ## Setup
 
+### Quick start
+
+This will use the pre-built images in hub.docker.com
+
+1. Installs a development kubernetes:
+```
+sudo ./scripts/environment-setup/microk8s.sh install 
+```
+2. Apply the application suite: 
+```
+./scripts/deploy/helm-apply.sh
+```
+
 ### Local Cluster Deployment on Ubuntu
-1. cd scripts && ./microk8s.sh install -- this installs a development kubernetes
-2. ./build-images.sh -- build images and add to the repository
-3. ./helm-apply.sh -- deploy into K8S
+1. Installs a development kubernetes:
+```
+sudo ./scripts/environment-setup/microk8s.sh install 
+```
+2. Build the images locally: 
+```
+./scripts/build/build-images.sh
+```
+3. Apply the application suite: 
+```
+./scripts/deploy/helm-apply.sh
+```
 
 ### Remote Cluster Deployment
-1. cd scripts
-2. ./build-images 'your registry'
-3.  amend helm values.yaml and change registry to your 'your registry' in Values.yaml
-4. point kubectl to K8S cluster
-5.  helm install "release-name" helm
+1. Installs a development kubernetes:
+```
+sudo ./scripts/environment-setup/microk8s.sh install 
+```
+2. Build the images remotely: 
+```
+./scripts/build/build-images.sh 'YOUR REGISTRY NAME'
+```
+3. Amend helm values.yaml and change registry to your registry in helm/Values.yaml
+4. Apply the application suite: 
+```
+./scripts/deploy/helm-apply.sh
+```
+
+## Repositories
+
+The circleci pipeline pushes the build images into the following repositories:
+
+dockerjam3s/sma-remote
+dockerjam3s/sma-light-bulb
+dockerjam3s/sma-light-bulb-monitor
+dockerjam3s/sma-db-importer
 
 ## Credits: 
 

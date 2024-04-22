@@ -1,10 +1,12 @@
-package com.jam3s.lightbulb;
+package com.jam3s.lightbulbtest;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.jam3s.lightbulb.LightBulb;
 import com.jam3s.lightbulb.LightBulb.LightBulbState;
 
 public class LightBulbTest {

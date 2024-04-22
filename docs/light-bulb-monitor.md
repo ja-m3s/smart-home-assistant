@@ -15,8 +15,7 @@ It can also be build using the build script located in /scripts/build:
 ```
 ./build-images.sh
 ```
-If you just want to build the jar file, rather than the docker image, then you will first need to add the sharedUtils jar to the 
-maven repository with the following commands:
+If you just want to build the jar file, rather than the docker image, then you will first need to build the sharedUtils jar with the following commands::
 ```
 cd java
 gradle sharedUtils:shadowJar
@@ -44,7 +43,7 @@ Deployment is via helm3 along with the other applications. This can be achieved 
 ```
 ## Technologies
 
-The application used Maven and docker for building. 
+The application used Gradle and docker for building. 
 
 It uses Prometheus client for providing metrics which gives access to 
 standard JVM metrics and two bespoke metrics: sent messages and received messages.

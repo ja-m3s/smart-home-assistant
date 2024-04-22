@@ -1,8 +1,10 @@
-package com.jam3s.sharedutils;
+package com.jam3s.sharedutilstest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+
+import com.jam3s.sharedutils.SharedUtils;
 
 /**
  * Unit tests for the SharedUtils class.

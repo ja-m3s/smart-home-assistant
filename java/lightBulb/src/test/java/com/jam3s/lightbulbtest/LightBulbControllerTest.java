@@ -1,4 +1,4 @@
-package com.jam3s.lightbulb;
+package com.jam3s.lightbulbtest;
 
 import com.jam3s.sharedutils.SharedUtils;
 

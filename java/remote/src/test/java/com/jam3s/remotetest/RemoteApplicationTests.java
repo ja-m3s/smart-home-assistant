@@ -1,4 +1,4 @@
-package com.jam3s.remote;
+package com.jam3s.remotetest;
 
 import org.junit.jupiter.api.Test;
 //import org.springframework.boot.test.context.SpringBootTest;
