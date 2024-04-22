@@ -72,7 +72,7 @@ sudo ./scripts/environment-setup/microk8s.sh install
 ```
 2. Apply the application suite: 
 ```
-./scripts/deploy/helm-apply.sh
+./scripts/deploy/helm-apply-microk8s.sh
 ```
 
 ### Local Cluster Deployment on Ubuntu
@@ -86,7 +86,7 @@ sudo ./scripts/environment-setup/microk8s.sh install
 ```
 3. Apply the application suite: 
 ```
-./scripts/deploy/helm-apply.sh
+./scripts/deploy/helm-apply-microk8s.sh
 ```
 
 ### Remote Cluster Deployment
