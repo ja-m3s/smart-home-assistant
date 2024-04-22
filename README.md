@@ -108,10 +108,10 @@ sudo ./scripts/environment-setup/microk8s.sh install
 
 The circleci pipeline pushes the build images into the following repositories:
 
-dockerjam3s/sma-remote
-dockerjam3s/sma-light-bulb
-dockerjam3s/sma-light-bulb-monitor
-dockerjam3s/sma-db-importer
+- dockerjam3s/sma-remote
+- dockerjam3s/sma-light-bulb
+- dockerjam3s/sma-light-bulb-monitor
+- dockerjam3s/sma-db-importer
 
 ## Credits: 
 
