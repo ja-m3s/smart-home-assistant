@@ -31,7 +31,7 @@ of K8S for it to start working as it usually would.
 
 The unit tests can be run with the command:
 ```
-mvn test
+gradle lightBulbMonitor:test
 ```
 A test plan for this application is located in the /test-plans/ directory.
 
