@@ -30,7 +30,7 @@ Once you've added the sharedUtils.jar you can debug as with any other applicatio
 
 The unit tests can be run with the command:
 ```
-mvn test
+gradle lightBulb:test
 ```
 A test plan for this application is located in the /test-plans/ directory.
 
@@ -38,7 +38,7 @@ A test plan for this application is located in the /test-plans/ directory.
 
 Deployment is via helm along with the other applications. This can be achieved by running:
 ```
-./scripts/deploy/./helm-apply.sh
+./scripts/deploy/helm-apply.sh
 ```
 ## Technologies
 
