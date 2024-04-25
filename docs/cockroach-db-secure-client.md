@@ -3,8 +3,7 @@
 ## Brief Overview
 
 This is a system which functions as the schema management and database administration console. On pod creation, it
-creates or updates the database schema used by the suite of applications. The application also exposes metrics to Prometheus.
-By default, it functions as part of a three pod cluster.
+creates or updates the database schema used by the suite of applications. 
 
 ## How to build
 
