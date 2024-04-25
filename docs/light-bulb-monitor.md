@@ -39,7 +39,7 @@ A test plan for this application is located in the /test-plans/ directory.
 
 Deployment is via helm3 along with the other applications. This can be achieved by running:
 ```
-./scripts/deploy/./helm-apply.sh
+./scripts/deploy/helm-apply.sh
 ```
 ## Technologies
 
