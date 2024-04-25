@@ -58,7 +58,7 @@ A data visualization system.
 
 ## Configuration
 
-All configuration can be found within the helm folder Values.yaml files, or the config maps associated with each component. In the cases of the Java programs, some configuration is performed in the source code.
+All configuration can be found within the helm folder Values.yaml files, or the config maps associated with each component. In the cases of the Java programs, some configuration is performed in the source code. The database schema is configured in helm/raw-files/.
 
 ## Setup
 
