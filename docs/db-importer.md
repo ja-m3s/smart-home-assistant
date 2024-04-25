@@ -30,7 +30,7 @@ of K8S for it to start working as it usually would.
 
 The unit tests can be run with the command:
 ```
-gradle db-importer:test
+gradle dbImporter:test
 ```
 A test plan for this application is located in the /test-plans/ directory.
 
