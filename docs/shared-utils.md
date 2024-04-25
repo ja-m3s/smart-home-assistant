@@ -27,7 +27,7 @@ The library is meant to be ran and debug as part of the other Java applications.
 
 The unit tests can be run with the command:
 ```
-mvn test
+gradle sharedUtils:test
 ```
 A test plan for this application is located in the /test-plans/ directory.
 
@@ -35,7 +35,7 @@ A test plan for this application is located in the /test-plans/ directory.
 
 Deployment is via helm3 along with the other applications. This can be achieved by running:
 ```
-./scripts/deploy/./helm-apply.sh
+./scripts/deploy/helm-apply.sh
 ```
 ## Technologies
 
