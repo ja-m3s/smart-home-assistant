@@ -16,6 +16,10 @@ The light-bulb-monitor java application aims to simulate a monitor which turns o
 
 The db-importer java application aims feeds messages from RabbitMQ into the CockroachDB database.
 
+### remote
+
+The remote java application can switch on and off a light-bulb via a web front-end.
+
 ### rabbitmq
 
 A scaleable, fault-tolerant event bus.
