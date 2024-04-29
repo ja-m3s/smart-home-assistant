@@ -7,5 +7,5 @@
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 RELEASE_NAME="${1:-"test-release"}"
-microk8s helm3 upgrade --timeout 900 "${RELEASE_NAME}" "${SCRIPT_DIR}/../../helm"
+microk8s helm3 upgrade --timeout 900s "${RELEASE_NAME}" "${SCRIPT_DIR}/../../helm"
 
