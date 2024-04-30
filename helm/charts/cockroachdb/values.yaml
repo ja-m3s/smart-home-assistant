@@ -169,7 +169,7 @@ conf:
     attrs:
 
 statefulset:
-  replicas: 3
+  replicas: 1
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -460,7 +460,7 @@ init:
 
 # Whether to run securely using TLS certificates.
 tls:
-  enabled: false
+  enabled: true
   copyCerts:
     image: busybox
   certs:
