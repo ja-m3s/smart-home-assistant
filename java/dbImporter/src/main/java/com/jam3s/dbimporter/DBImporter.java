@@ -172,6 +172,7 @@ public final class DBImporter {
                 dbConnection = DriverManager.getConnection(connectionString, dbUser, dbPassword);
                 break;
             } catch (SQLException e) {
+		e.printStackTrace();
                 LOG.info("Failed to connect to database on attempt #" + attempt + ". Retrying...");
                 if (DATABASE_RETRY_MAX_ATTEMPTS != 0 && attempt == DATABASE_RETRY_MAX_ATTEMPTS) {
                     throw new RuntimeException(
