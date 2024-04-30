@@ -53,8 +53,8 @@ spec:
             - name: client-certs
               mountPath: /certs
       volumes:
-      - name: certs
-        projected:
+        - name: certs
+          projected:
             defaultMode: 0400
             sources:
               - secret:
