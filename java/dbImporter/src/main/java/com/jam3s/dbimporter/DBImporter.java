@@ -170,9 +170,8 @@ public final class DBImporter {
                 String connectionString = "jdbc:postgresql://" + dbHost + ":"
                     + dbPort + "/" + dbName
                     + "?ssl=true" + "?sslmode=verify-full" + "?sslcert=certs/client.root.crt"
-                    + "?sslkey=certs/client.root.key" + "?sslrootcert=certs/ca.crt" 
+                    + "?sslkey=certs/client.root.key" + "?sslrootcert=certs/ca.crt"
                     + "?user=" + dbUser + "?password=" + dbPassword;
-                
                 PGSimpleDataSource ds = new PGSimpleDataSource();
                 ds.setApplicationName("DBImporter");
                 ds.setUrl(connectionString);
