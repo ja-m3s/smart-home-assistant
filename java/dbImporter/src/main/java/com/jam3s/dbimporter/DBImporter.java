@@ -168,7 +168,7 @@ public final class DBImporter {
 
                 // Construct JDBC connection string and establish connection
                 String connectionString = "jdbc:postgresql://" + dbHost + ":"
-                    + dbPort + "/" + dbName +"&sslmode=verify-ca&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory";
+                    + dbPort + "/" + dbName + "&sslmode=verify-ca&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory";
                 dbConnection = DriverManager.getConnection(connectionString, dbUser, dbPassword);
                 break;
             } catch (SQLException e) {
