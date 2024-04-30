@@ -166,16 +166,19 @@ public final class DBImporter {
                 String dbUser = SharedUtils.getEnvVar("DB_USER");
                 String dbPassword = SharedUtils.getEnvVar("DB_PASSWORD");
 
-                // Construct JDBC connection string and establish connection
-                String connectionString = "jdbc:postgresql://" + dbHost + ":"
-                    + dbPort + "/" + dbName
-                    + "?ssl=true" + "?sslmode=verify-full" + "?sslcert=certs/client.root.crt"
-                    + "?sslkey=certs/client.root.key" + "?sslrootcert=certs/ca.crt"
-                    + "?user=" + dbUser + "?password=" + dbPassword;
                 PGSimpleDataSource ds = new PGSimpleDataSource();
+                ds.setServerName(dbHost);
+                ds.setPortNumber(dbPort);
+                ds.setUser(dbUser);
+                ds.setPassword(dbPassword);
+                ds.setDatabaseName(dbName);
                 ds.setApplicationName("DBImporter");
-                ds.setUrl(connectionString);
-
+                ds.setSsl(true);
+                ds.setSslMode("verify-full");
+                ds.setSslCert("certs/client.root.crt");
+                ds.setSslRootCert("certs/ca.crt");
+                ds.setSslKey("certs/client.root.key");
+    
                 //Connect
                 dbConnection = ds.getConnection();
                 break;
