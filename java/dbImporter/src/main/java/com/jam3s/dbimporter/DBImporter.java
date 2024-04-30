@@ -161,7 +161,7 @@ public final class DBImporter {
                 }
                 // Retrieve database connection parameters from environment variables
                 String dbHost = SharedUtils.getEnvVar("DB_HOST");
-                String dbPort = SharedUtils.getEnvVar("DB_PORT");
+                Integer dbPort = Integer.parseInt(SharedUtils.getEnvVar("DB_PORT"));
                 String dbName = SharedUtils.getEnvVar("DB_NAME");
                 String dbUser = SharedUtils.getEnvVar("DB_USER");
                 String dbPassword = SharedUtils.getEnvVar("DB_PASSWORD");
