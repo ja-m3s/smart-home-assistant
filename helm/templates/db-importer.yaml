@@ -49,9 +49,9 @@ spec:
               value: {{ .Values.dbconf.dbUserPassword }}
             - name: DB_SCHEMA
               value: {{ .Values.dbconf.dbSchema }}
-        volumeMounts:
-        - name: client-certs
-          mountPath: /cockroach/cockroach-certs/
+          volumeMounts:
+            - name: client-certs
+              mountPath: /cockroach-certs/
       volumes:
       - name: client-certs
         projected:
