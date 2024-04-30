@@ -51,7 +51,7 @@ spec:
               value: {{ .Values.dbconf.dbSchema }}
           volumeMounts:
             - name: client-certs
-              mountPath: /cockroach-certs/
+              mountPath: /certs/
       volumes:
       - name: client-certs
         projected:
