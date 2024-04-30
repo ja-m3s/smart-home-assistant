@@ -178,7 +178,6 @@ public final class DBImporter {
                 ds.setSslCert("certs/client.root.crt");
                 ds.setSslRootCert("certs/ca.crt");
                 ds.setSslKey("certs/client.root.key");
-    
                 //Connect
                 dbConnection = ds.getConnection();
                 break;
