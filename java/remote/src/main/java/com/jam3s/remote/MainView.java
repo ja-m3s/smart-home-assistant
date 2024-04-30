@@ -62,7 +62,7 @@ public class MainView extends VerticalLayout {
     }
 
     private void handleToggleState(final String key) {
-        Notification.show("Toggling "+key);
+        Notification.show("Toggling " + key);
         RemoteApplication.sendMessage(RemoteApplication.createTurnOnMessage(key));
     }
 }

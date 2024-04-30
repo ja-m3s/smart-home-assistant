@@ -63,11 +63,6 @@ public class RemoteApplication implements CommandLineRunner {
     private static final String COUNTER_RECEIVED_LABEL = "requests_received";
 
     /**
-     * Logger.
-     */
-    //private static final Logger LOG = LoggerFactory.getLogger(RemoteApplication.class);
-
-    /**
      * Counter for tracking the number of received messages.
      */
     private static Counter receivedCounter;
@@ -119,7 +114,6 @@ public class RemoteApplication implements CommandLineRunner {
                     });
                     break; // Exit the loop if basicConsume is successful
                 } catch (IOException e) {
-                  //  LOG.error("Error occurred while consuming from the queue. Attempting to reconnect to RabbitMQ...");
                     SharedUtils.setupRabbitMQConnection(); // Attempt to set up RabbitMQ connection again
                     channel = SharedUtils.getChannel(); // Get a new channel
                 }
@@ -190,6 +184,9 @@ public class RemoteApplication implements CommandLineRunner {
         return LIGHT_BULB_HASH_MAP;
     }
 
+    /**
+     * Run method.
+     */
     @Override
     public void run(final String... args) {
         SharedUtils.setupRabbitMQConnection();
