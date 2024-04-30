@@ -49,4 +49,21 @@ spec:
               value: {{ .Values.dbconf.dbUserPassword }}
             - name: DB_SCHEMA
               value: {{ .Values.dbconf.dbSchema }}
+            volumeMounts:
+            - name: client-certs
+              mountPath: /certs
+      volumes:
+      - name: certs
+        projected:
+            defaultMode: 0400
+            sources:
+              - secret:
+                  name: cockroach-db-client-secret # Use the existing secret name
+                  items:
+                    - key: ca.crt
+                      path: ca.crt
+                    - key: tls.crt
+                      path: client.root.crt
+                    - key: tls.key
+                      path: client.root.key    
 {{- end }}
