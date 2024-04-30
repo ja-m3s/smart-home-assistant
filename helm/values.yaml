@@ -14,7 +14,8 @@ dbconf:
   dbPort: "26257"
   dbName: db_smart_home
   dbSchema: s_smart_home
-  dbHost: cockroach-db-public.default.svc.cluster.local
+  #dbHost: cockroach-db-public.default.svc.cluster.local
+  dbHost: cockroach-db-public
 
 eventBus:
   enabled: true
