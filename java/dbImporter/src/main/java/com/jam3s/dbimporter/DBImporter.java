@@ -175,9 +175,9 @@ public final class DBImporter {
                 ds.setApplicationName("DBImporter");
                 ds.setSsl(true);
                 ds.setSslMode("verify-ca");
-                ds.setSslCert("certs/client.root.crt");
-                ds.setSslRootCert("certs/ca.crt");
-                ds.setSslKey("certs/client.root.key");
+                ds.setSslCert("/var/opt/certs/client.root.crt");
+                ds.setSslRootCert("/var/opt/certs/ca.crt");
+                ds.setSslKey("/var/opt/certs/client.root.key");
                 //Connect
                 dbConnection = ds.getConnection();
                 break;
