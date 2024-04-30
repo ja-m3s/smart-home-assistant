@@ -6,7 +6,7 @@ import io.prometheus.metrics.instrumentation.jvm.JvmMetrics;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import org.postgresql.ds.PGSimpleDataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import org.slf4j.Logger;
@@ -171,9 +171,13 @@ public final class DBImporter {
                     + dbPort + "/" + dbName
                     + "?ssl=true" + "?sslmode=verify-full" + "?sslcert=certs/client.root.crt"
                     + "?sslkey=certs/client.root.key" + "?sslrootcert=certs/ca.crt";
+                
+                PGSimpleDataSource ds = new PGSimpleDataSource();
+                ds.setApplicationName("DBImporter");
+                ds.setUrl(connectionString);
 
                 //Connect
-                dbConnection = DriverManager.getConnection(connectionString, dbUser, dbPassword);
+                dbConnection = ds.getConnection(connectionString, dbUser, dbPassword);
                 break;
             } catch (SQLException e) {
                 e.printStackTrace();
