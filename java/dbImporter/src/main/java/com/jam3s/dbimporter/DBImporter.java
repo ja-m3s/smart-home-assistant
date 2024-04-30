@@ -178,7 +178,7 @@ public final class DBImporter {
                 ds.setUrl(connectionString);
 
                 //Connect
-                dbConnection = ds.getConnection(connectionString);
+                dbConnection = ds.getConnection();
                 break;
             } catch (SQLException e) {
                 e.printStackTrace();
